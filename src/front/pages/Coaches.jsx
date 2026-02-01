@@ -8,13 +8,17 @@ export const Coaches = () => {
 
   const [coach, setCoach] = useState([]);
 
+  const [cargando, setCargando] = useState(false)
+
   const get_all_coaches = async () => {
     try {
+      setCargando(true)
       const res = await fetch(backendURL + "/coach");
 
       if (!res.ok) throw new Error("We can’t get coaches right now");
 
       const data = await res.json();
+      setCargando(false)
       setCoach(data.coaches);
       console.log(data)
 
@@ -23,6 +27,22 @@ export const Coaches = () => {
     }
   };
 
+  const delete_coach = async (id) => {
+    try {
+      const res = await fetch(`${backendURL}/coach/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Not deleted the coach");
+
+      setCoach(prev => prev.filter(coach => coach.id !== id));
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
   useEffect(() => {
     get_all_coaches();
   }, []);
@@ -30,16 +50,32 @@ export const Coaches = () => {
   return (
     <div className="container">
       <div className="row">
-        {coach.map((coach, index) => (
-          <div className="col-md-4" key={index}>
+        {cargando &&
+          <div class="card">
+            <div class="card-body">
+              Cargando...
+            </div>
+          </div>
+          }
+        {!cargando && coach.map((coach) => (
+          <div className="col-md-4" key={coach.id}>
             <div className="card mt-3">
               <div className="card-body">
                 <h5 className="card-title">{coach.name} {coach.last_name}</h5>
                 <p className="card-text">{coach.email}</p>
+                <button className="btn btn-success me-2" onClick={() => navigate(`/coaches/${coach.id}`)}>
+                  Editar
+                </button>
+                <button className="btn btn-danger" onClick={() => delete_coach(coach.id)}>
+                  🗑️
+                </button>
               </div>
             </div>
           </div>
         ))}
+        <button className="btn btn-secondary mt-3" onClick={() => navigate("/")}>
+          Volver a home
+        </button>
       </div>
     </div>
   );

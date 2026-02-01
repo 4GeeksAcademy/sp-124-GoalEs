@@ -23,6 +23,18 @@ export const Home = () => {
 							</div>
 						</div>
 					</div>
+					<div className="col-xl-4 col-md-6 col-sm-12">
+						<div className="card mt-3" style={{ width: "18rem" }}>
+							<img src="https://nb.scene7.com/is/image/NB/mj43504ikw_nb_70_i?$pdpflexf2$&wid=440&hei=440" className="card-img-top" alt="Imagen representativa sobre que es un posible coach dentro de la aplicación" />
+							<div className="card-body">
+								<h5 className="card-title">¡Quieres ayudar a la gente en progresar en sus metas?</h5>
+								<p className="card-text">¡Rellena el la información neecsaria y conviertete en coach! ¡Haz del mundo un sitio mucho mejor! <br/>¡ole!</p>
+								<button className="btn btn-primary" onClick={() => navigate("/singup")}>
+									Empezar
+								</button>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</>

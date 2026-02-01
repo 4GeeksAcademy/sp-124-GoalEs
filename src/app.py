@@ -20,6 +20,14 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
+CORS(
+    app,
+    resources={r"/*": {"origins": "https://congenial-goldfish-g95wxr6979qfpv44-3000.app.github.dev"}}
+)
+
+
+app.url_map.strict_slashes = False
+
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
@@ -42,6 +50,7 @@ setup_commands(app)
 app.register_blueprint(api, url_prefix='/api')
 
 # Handle/serialize errors like a JSON object
+
 
 
 
