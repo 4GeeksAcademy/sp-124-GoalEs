@@ -9,14 +9,15 @@ from flask_cors import CORS
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
-CORS(api)
+CORS(api, resources={r"/*": {"origins": "https://congenial-goldfish-g95wxr6979qfpv44-3000.app.github.dev"}})
+
 
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
 
     response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
+        "message": "FUNCIONA LA CONEXION BACK CON"
     }
 
     return jsonify(response_body), 200

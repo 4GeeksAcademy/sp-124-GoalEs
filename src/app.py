@@ -10,6 +10,7 @@ from api.models import db, User, Coach, Course, Message
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from flask_cors import CORS
 
 # from models import Person
 
@@ -41,6 +42,7 @@ setup_commands(app)
 app.register_blueprint(api, url_prefix='/api')
 
 # Handle/serialize errors like a JSON object
+
 
 
 @app.errorhandler(APIException)
