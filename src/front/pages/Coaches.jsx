@@ -51,8 +51,8 @@ export const Coaches = () => {
     <div className="container">
       <div className="row">
         {cargando &&
-          <div class="card">
-            <div class="card-body">
+          <div className="card">
+            <div className="card-body">
               Cargando...
             </div>
           </div>
@@ -73,6 +73,9 @@ export const Coaches = () => {
             </div>
           </div>
         ))}
+        <button className="btn btn-primary mt-3" onClick={() => navigate("/singup")}>
+          Crear Coach
+        </button>
         <button className="btn btn-secondary mt-3" onClick={() => navigate("/")}>
           Volver a home
         </button>
