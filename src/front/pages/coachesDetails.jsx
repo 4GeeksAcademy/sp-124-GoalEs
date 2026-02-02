@@ -26,7 +26,7 @@ export const CoachDetails = () => {
         }
     }
 
-    const update_coach = async () => {
+    const updateCoach = async () => {
         await fetch(`${backendURL}/coach/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -59,7 +59,7 @@ export const CoachDetails = () => {
                                         <input input type="password" className="form-control my-3" id="floatingInput" placeholder="name@example.com"value={coach.password} onChange={e => setCoach({ ...coach, password: e.target.value })} />
                                     </div>
 
-                                    <button className="btn btn-primary" onClick={update_coach}>Guardar cambios</button>
+                                    <button className="btn btn-primary" onClick={updateCoach}>Guardar cambios</button>
 
                                 </div>
                             </div>

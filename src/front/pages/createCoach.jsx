@@ -34,7 +34,7 @@ export const CreateCoach = () => {
 
       if (!res.ok) throw new Error("Error creating coach");
 
-      navigate("/");
+      navigate("/coaches");
 
     } catch (err) {
       console.error(err);
@@ -87,7 +87,7 @@ export const CreateCoach = () => {
         <button
           type="button"
           className="btn btn-secondary ms-2"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/coaches")}
         >
           Cancel
         </button>
