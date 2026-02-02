@@ -10,6 +10,7 @@ import { Coaches } from "./pages/Coaches";
 import { Demo } from "./pages/Demo";
 import { CoachDetails } from "./pages/coachesDetails";
 import { CreateCoach } from "./pages/createCoach";
+import { MainSection } from "./pages/mainSection.jsx"
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -17,6 +18,7 @@ export const router = createBrowserRouter(
         <Route path= "/" element={<Home />} />
         <Route path="/coaches" element={ <Coaches />} />
         <Route path="/singup" element={ <CreateCoach />} />
+        <Route path="/home" element={<MainSection />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/coaches/:id" element={<CoachDetails />} />
       </Route>

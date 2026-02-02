@@ -76,7 +76,7 @@ export const Coaches = () => {
         <button className="btn btn-primary mt-3" onClick={() => navigate("/singup")}>
           Crear Coach
         </button>
-        <button className="btn btn-secondary mt-3" onClick={() => navigate("/")}>
+        <button className="btn btn-secondary mt-3" onClick={() => navigate("/home")}>
           Volver a home
         </button>
       </div>
