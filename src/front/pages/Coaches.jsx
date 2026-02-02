@@ -53,7 +53,7 @@ export const Coaches = () => {
         {cargando &&
           <div className="card">
             <div className="card-body">
-              Cargando...
+              Loading...
             </div>
           </div>
           }
@@ -64,7 +64,7 @@ export const Coaches = () => {
                 <h5 className="card-title">{coach.name} {coach.last_name}</h5>
                 <p className="card-text">{coach.email}</p>
                 <button className="btn btn-success me-2" onClick={() => navigate(`/coaches/${coach.id}`)}>
-                  Editar
+                  Edit
                 </button>
                 <button className="btn btn-danger" onClick={() => deletedCoach(coach.id)}>
                   🗑️
@@ -74,10 +74,10 @@ export const Coaches = () => {
           </div>
         ))}
         <button className="btn btn-primary mt-3" onClick={() => navigate("/singup")}>
-          Crear Coach
+          New Coach
         </button>
-        <button className="btn btn-secondary mt-3" onClick={() => navigate("/home")}>
-          Volver a home
+        <button className="btn btn-secondary mt-3" onClick={() => navigate("/main")}>
+          Back to main
         </button>
       </div>
     </div>

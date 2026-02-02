@@ -45,7 +45,7 @@ export const Home = () => {
 				{store.message ? (
 					<div>
 					<span>{store.message}</span>
-					<button className="btn btn-primary" onClick={() => navigate("/home")}>Ir A Coaches</button>
+					<button className="btn btn-primary" onClick={() => navigate("/main")}>Go to Coaches</button>
 					</div>
 				) : (
 					<span className="text-danger">

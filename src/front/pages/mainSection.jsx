@@ -12,10 +12,10 @@ export const MainSection = () => {
                         <div className="card mt-3" style={{ width: "18rem" }}>
                             <img src="https://img.freepik.com/foto-gratis/entrenamiento-entrenador-personal-interiores_23-2148795206.jpg?semt=ais_hybrid&w=740&q=80" className="card-img-top" alt="Imagen representativa sobre que es un posible coach dentro de la aplicación" />
                             <div className="card-body">
-                                <h5 className="card-title">¡Descubre cuantos coaches hay en nuestra comunidad!</h5>
-                                <p className="card-text">Recuerda ser amigable y respetuoso, en caso de querer a un coach para ti ¡puedes enviarle mensajes!</p>
+                                <h5 className="card-title">Discover how many coaches there are in our community!</h5>
+                                <p className="card-text">Remember to be friendly and respectful. If you'd like a coach for yourself, you can send them a message!</p>
                                 <button className="btn btn-primary" onClick={() => navigate("/coaches")}>
-                                    Ver Coaches
+                                    See Coaches
                                 </button>
                             </div>
                         </div>
@@ -24,14 +24,17 @@ export const MainSection = () => {
                         <div className="card mt-3" style={{ width: "18rem" }}>
                             <img src="https://nb.scene7.com/is/image/NB/mj43504ikw_nb_70_i?$pdpflexf2$&wid=440&hei=440" className="card-img-top" alt="Imagen representativa sobre que es un posible coach dentro de la aplicación" />
                             <div className="card-body">
-                                <h5 className="card-title">¡Quieres ayudar a la gente en progresar en sus metas?</h5>
-                                <p className="card-text">¡Rellena el la información neecsaria y conviertete en coach! ¡Haz del mundo un sitio mucho mejor! <br/>¡ole!</p>
+                                <h5 className="card-title">Do you want to help people progress towards their goals?</h5>
+                                <p className="card-text">Fill in the required information and become a coach! Make the world a much better place!</p>
                                 <button className="btn btn-primary" onClick={() => navigate("/singup")}>
-                                    Empezar
+                                    Start
                                 </button>
                             </div>
                         </div>
                     </div>
+                    <button className="btn btn-secondary mt-3" onClick={() => navigate("/")}>
+                        Back to main
+                    </button>
                 </div>
             </div>
         </>

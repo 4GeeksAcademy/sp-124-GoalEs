@@ -87,7 +87,7 @@ export const CreateCoach = () => {
         <button
           type="button"
           className="btn btn-secondary ms-2"
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/main")}
         >
           Cancel
         </button>

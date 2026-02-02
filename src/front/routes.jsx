@@ -18,7 +18,7 @@ export const router = createBrowserRouter(
         <Route path= "/" element={<Home />} />
         <Route path="/coaches" element={ <Coaches />} />
         <Route path="/singup" element={ <CreateCoach />} />
-        <Route path="/home" element={<MainSection />} />
+        <Route path="/main" element={<MainSection />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/coaches/:id" element={<CoachDetails />} />
       </Route>
