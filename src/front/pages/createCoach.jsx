@@ -20,7 +20,7 @@ export const CreateCoach = () => {
     });
   };
 
-  const create_coach = async (e) => {
+  const createCoach = async (e) => {
     e.preventDefault();
 
     try {
@@ -45,7 +45,7 @@ export const CreateCoach = () => {
     <div className="container mt-5">
       <h2>Create Coach</h2>
 
-      <form onSubmit={create_coach} className="col-md-6">
+      <form onSubmit={createCoach} className="col-md-6">
 
         <input
           type="text"

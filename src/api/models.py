@@ -17,9 +17,6 @@ class User(db.Model):
     password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-    message: Mapped[List["Message"]] = relationship(back_populates="user_message")
-
-
     def serialize(self):
         return {
             "id": self.id,
@@ -35,11 +32,6 @@ class Coach(db.Model):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
-
-    #relationships
-    course: Mapped[List["Course"]] = relationship(back_populates="auth_course")
-    message: Mapped[List["Message"]] = relationship(back_populates="coach_message")
-
 
     def serialize(self):
         return {
@@ -58,13 +50,6 @@ class Course(db.Model):
     description: Mapped[str] = mapped_column(String(300), nullable=False)
     cost: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    #foreign keys
-    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable = False)
-
-    #relationships
-    auth_course: Mapped["Coach"] = relationship(back_populates="course")
-
-
     def serialize(self):
         return {
             "id": self.id,
@@ -78,16 +63,6 @@ class Message(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     message: Mapped[str] = mapped_column(String(), nullable=False)
-
-    #foreign key
-    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable = False)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable = False)
-
-    #relationships
-    user_message: Mapped["User"] = relationship(back_populates="message")
-    coach_message: Mapped["Coach"] = relationship(back_populates="message")
-    
-
 
     def serialize(self):
         return {

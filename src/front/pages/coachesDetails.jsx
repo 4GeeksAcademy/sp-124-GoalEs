@@ -12,7 +12,7 @@ export const CoachDetails = () => {
 
     const [coach, setCoach] = useState(null);
 
-    const get_coach = async () => {
+    const getCoach = async () => {
         try {
             const res = await fetch(`${backendURL}/coach/${id}`)
 
@@ -36,7 +36,7 @@ export const CoachDetails = () => {
     };
 
     useEffect(() => {
-        get_coach();
+        getCoach();
     }, [id])
 
     return (
