@@ -10,7 +10,7 @@ export const Coaches = () => {
 
   const [cargando, setCargando] = useState(false)
 
-  const get_all_coaches = async () => {
+  const getAllCoaches = async () => {
     try {
       setCargando(true)
       const res = await fetch(backendURL + "/coach");
@@ -27,7 +27,7 @@ export const Coaches = () => {
     }
   };
 
-  const delete_coach = async (id) => {
+  const deletedCoach = async (id) => {
     try {
       const res = await fetch(`${backendURL}/coach/${id}`, {
         method: "DELETE",
@@ -44,7 +44,7 @@ export const Coaches = () => {
 
 
   useEffect(() => {
-    get_all_coaches();
+    getAllCoaches();
   }, []);
 
   return (
@@ -66,7 +66,7 @@ export const Coaches = () => {
                 <button className="btn btn-success me-2" onClick={() => navigate(`/coaches/${coach.id}`)}>
                   Editar
                 </button>
-                <button className="btn btn-danger" onClick={() => delete_coach(coach.id)}>
+                <button className="btn btn-danger" onClick={() => deletedCoach(coach.id)}>
                   🗑️
                 </button>
               </div>
