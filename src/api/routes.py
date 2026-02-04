@@ -2,14 +2,15 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from sqlalchemy import select
+from api.models import db, User, Coach
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
-CORS(api, resources={r"/*": {"origins": "https://congenial-goldfish-g95wxr6979qfpv44-3000.app.github.dev"}})
+CORS(api)
 
 
 
@@ -21,3 +22,5 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+#Started my code from here - GET

@@ -6,11 +6,14 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, Message
+from api.models import db, User, Coach
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
+from sqlalchemy import select
+
+
 
 # from models import Person
 
@@ -20,10 +23,7 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-CORS(
-    app,
-    resources={r"/*": {"origins": "https://congenial-goldfish-g95wxr6979qfpv44-3000.app.github.dev"}}
-)
+CORS(app)
 
 
 app.url_map.strict_slashes = False
@@ -52,8 +52,6 @@ app.register_blueprint(api, url_prefix='/api')
 # Handle/serialize errors like a JSON object
 
 
-
-
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
@@ -78,6 +76,108 @@ def serve_any_other_file(path):
     response.cache_control.max_age = 0  # avoid cache memory
     return
 
+
+@app.route('/users', methods=['GET'])
+def get_users():
+
+    all_user = db.session.execute(select(User)).scalars().all()
+    result = [u.serialize() for u in all_user]
+
+    if result is None:
+        return jsonify({"msg": "No hay mi bro"})
+
+    response_body = {
+        "msg": "We get users",
+        "users": result
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/users/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+
+    if user is None:
+        return jsonify("User not found"), 404
+    return jsonify(user.serialize()), 200
+
+## ===========================
+## now Post 
+
+@app.route('/users', methods=['POST'])
+def created_user():
+    body = request.get_json()
+
+    if body is None: 
+        return jsonify({"error": "Request body is missing"}), 400
+    
+    name = body.get("name")
+    surname = body.get("surname")
+    email = body.get("email")
+    password = body.get("password")
+
+    if not name or not surname or not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
+    
+    ## if already exists:
+    existing_user = db.session.execute(select(User).where(User.email == email)).scalar_one_or_none()
+
+    if existing_user:
+        return jsonify({"error": "User already exists"}), 409
+    
+    new_user = User(name=name, surname=surname,email=email, password=password, is_active=True)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify(new_user.serialize()), 201
+
+## follow -CRUD, now it's time to do PUT
+
+@app.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    user_update = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+
+    if update_user is None:
+        return jsonify({"error": "User not found"}), 404
+    
+    body = request.get_json()
+    
+    if not body:
+        return jsonify({"error": "No data provided to update"}), 400
+    
+    if "name" in body:
+        user_update.name = body["name"]
+
+    if "surname" in body:
+        user_update.surname = body["surname"]    
+    
+    if "email" in body:
+        user_update.email = body["email"]
+
+    if "password" in body:
+        user_update.password = body["password"]
+
+    if "is_active" in body:
+        user_update.is_active = body["is_active"] 
+
+    db.session.commit()      
+
+    return jsonify(user_update.serialize()), 200 
+
+## The last one -  CRUD - DELETE
+
+@app.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    deleted = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+
+    if deleted is None:
+        return jsonify({"error": "User not found to delete"}), 404 
+    
+    db.session.delete(deleted)
+    db.session.commit()
+
+    return jsonify({"message": "User deleted successfully"}), 200
 
 @app.route('/coach', methods=['GET'])
 def get_coaches():

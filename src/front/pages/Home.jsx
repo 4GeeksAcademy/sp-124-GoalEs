@@ -3,11 +3,12 @@ import { Navigate, useNavigate } from "react-router-dom";
 import rigoImageUrl from "../assets/img/rigo-baby.jpg";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
+
 export const Home = () => {
 
-	const { store, dispatch } = useGlobalReducer()
-
 	const navigate = useNavigate();
+
+	const { store, dispatch } = useGlobalReducer()
 
 	const loadMessage = async () => {
 		try {
@@ -40,7 +41,10 @@ export const Home = () => {
 			<h1 className="display-4">Hello Rigo!!</h1>
 			<p className="lead">
 				<img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
+				
 			</p>
+			<button className="btn btn-primary" onClick={() => navigate ("/users")}>Go to Users</button>
+			
 			<div className="alert alert-info">
 				{store.message ? (
 					<div>
