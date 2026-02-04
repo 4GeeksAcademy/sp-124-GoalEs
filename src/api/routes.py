@@ -17,7 +17,7 @@ CORS(api, resources={r"/*": {"origins": "https://congenial-goldfish-g95wxr6979qf
 def handle_hello():
 
     response_body = {
-        "message": "FUNCIONA LA CONEXION BACK CON"
+        "message": "FUNCIONA LA CONEXION BACK CON FRONTEND"
     }
 
     return jsonify(response_body), 200

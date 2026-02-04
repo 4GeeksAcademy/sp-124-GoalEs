@@ -20,7 +20,6 @@ export const Coaches = () => {
       const data = await res.json();
       setCargando(false)
       setCoach(data.coaches);
-      console.log(data)
 
     } catch (err) {
       console.error(err);
@@ -62,12 +61,14 @@ export const Coaches = () => {
             <div className="card mt-3">
               <div className="card-body">
                 <h5 className="card-title">{coach.name} {coach.last_name}</h5>
-                <p className="card-text">{coach.email}</p>
-                <button className="btn btn-success me-2" onClick={() => navigate(`/coaches/${coach.id}`)}>
+                <button className="btn btn-success me-2" onClick={() => navigate(`/coaches-edit/${coach.id}`)}>
                   Edit
                 </button>
-                <button className="btn btn-danger" onClick={() => deletedCoach(coach.id)}>
+                <button className="btn btn-danger me-2" onClick={() => deletedCoach(coach.id)}>
                   🗑️
+                </button>
+                <button className="btn btn-primary" onClick={() => navigate(`/coaches-details/${coach.id}`)}>
+                  Show details
                 </button>
               </div>
             </div>

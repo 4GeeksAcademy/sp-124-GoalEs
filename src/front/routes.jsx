@@ -8,9 +8,10 @@ import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
 import { Coaches } from "./pages/Coaches";
 import { Demo } from "./pages/Demo";
-import { CoachDetails } from "./pages/coachesDetails";
+import { CoachEdit } from "./pages/coachesEdit";
 import { CreateCoach } from "./pages/createCoach";
-import { MainSection } from "./pages/mainSection.jsx"
+import { MainSection } from "./pages/mainSection"
+import { CoachDetails } from "./pages/coachesDetails";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -20,7 +21,8 @@ export const router = createBrowserRouter(
         <Route path="/singup" element={ <CreateCoach />} />
         <Route path="/main" element={<MainSection />} />
         <Route path="/demo" element={<Demo />} />
-        <Route path="/coaches/:id" element={<CoachDetails />} />
+        <Route path="/coaches-edit/:id" element={<CoachEdit />} />
+        <Route path="/coaches-details/:id" element={<CoachDetails />} />
       </Route>
     )
 );
