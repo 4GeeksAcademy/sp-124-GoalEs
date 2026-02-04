@@ -37,6 +37,8 @@ const User = () => {
             });
 
             if (!res.ok) throw new Error("Error to delete user");
+
+            setUsers(prev => prev.filter(users => users.id !== id));
         } catch (e) {
             setError(e.message);
         }

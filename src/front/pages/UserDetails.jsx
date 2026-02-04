@@ -29,7 +29,7 @@ const UserDetails = () => {
    
    if (error) return <div style={{color: "red"}}>{error}</div>;
 
-   
+
     return (
         <div className="container py-4">
             <h1 className="mb-4">User details</h1>
