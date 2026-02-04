@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const back_url = "https://glorious-engine-wr4pp7xr49g5c5gj9-3001.app.github.dev";
 const User = () => {
+  const navigate = useNavigate()
 
     const [users, setUsers] = useState([]);
     const [error, setError] = useState("");
-
-
-//to create - POST
-    const[form, setForm] = useState({name: "", surname: "", email: "", password: ""});
-
-    // to edit - PUT
-    const [edit, setEdit] = useState({name: "", surname: "", email: "", password: ""});
-    const [editId, setEditId] = useState(null);
 
 // GET
 
@@ -32,33 +26,6 @@ const User = () => {
         userFetch();
     },[]);
 
-    //POST
-
-    const userCreate = async (e) => {
-        e.preventDefault();
-
-        if (!form.name || !form.surname || !form.email) {
-            setError("Fill name, surname and email to complete.");
-            return;
-        }
-        try {
-            setError("");
-
-            const res = await fetch(`${back_url}/api/users`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(form),
-            });
-
-            if (!res.ok) throw new Error("Error to create user");
-
-            setForm({name: "", surname: "", email: "", password: ""});
-            await userFetch();
-        } catch (e) {
-            setError(e.message);
-        }
-    };
-
     //DELETE
 
     const deleteUser = async (id) => {
@@ -75,132 +42,85 @@ const User = () => {
         }
     };
 
-    // PUT
-
-    const editUser = (user) => { 
-        setEditId(user.id);
-        setEdit({
-            name: user.name || "",
-            surname: user.surname || "",
-            email: user.email || "",
-            password: user.password || "",
-        });
-        setError("");
-    };
-
-    const cancelEdit = () => {
-        setEditId(null);
-        setEdit({name: "", surname: "", email: "", password: ""});
-    };
-
-    const changeUpddate = async (id) => {
-        if (!edit.name || !edit.surname || !edit.email || !edit.password) {
-            setError("Fill name, surname, email and password to update.");
-            return;
-        }
-
-        try {
-            setError("");
-
-            const res = await fetch(`${back_url}/api/users/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json"},
-                body: JSON.stringify(edit),
-            });
-
-            if (!res.ok) throw new Error("Error to update user");
-            cancelEdit();
-        } catch (e) {
-            setError(e.message);
-        }
-    };
-
     // UI
 
     if (error) return <div style={{color: "red"}}>{error}</div>;
 
     return (
   <>
-    <h1 className="container justify-content-center py-4">Users</h1>
 
-    <form onSubmit={userCreate}>
-        <h3 className="container align-items-center mb-4">Creating user</h3>
-      <input
-        placeholder="name"      
-        value={form.name}
-        onChange={(e) => setForm(p => ({ ...p, name: e.target.value }))}
-      />
-      {" "}
-      <input
-      placeholder="surname"
-        value={form.surname}
-        onChange={(e) => setForm(p => ({ ...p, surname: e.target.value }))}
-      />
-      {" "}
-      <input
-      placeholder="email"
-        value={form.email}
-        onChange={(e) => setForm(p => ({ ...p, email: e.target.value }))}
-      />
-      {" "}
-      <input
-      placeholder="password"
-      value={form.password}
-      onChange={(e) => setForm(p => ({...p, password: e.target.value}))}
-      />
-      {" "}
-      <button className="btn btn-primary">Create</button>
-    </form>
+   <div className="container py-4">
+      {/* HEADER */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 className="m-0">Users</h1>
 
-<h3 className="container justify-content-center py-4">Editing users</h3>
-    <ul>
-      {users.map(user => (
-        <li key={user.id}>
-          {editId === user.id ? (
-            // 
-            <>
-              <input
-                placeholder="name"
-                value={edit.name}
-                onChange={(e) => setEdit(p => ({ ...p, name: e.target.value }))}
-              />
-              {" "}
-              <input
-                placeholder="surname"
-                value={edit.surname}
-                onChange={(e) => setEdit(p => ({ ...p, surname: e.target.value }))}
-              />
-              {" "}
-              <input
-                placeholder="email"
-                value={edit.email}
-                onChange={(e) => setEdit(p => ({ ...p, email: e.target.value }))}
-              />
-              {" "}
-              <input
-                placeholder="password"
-                value={edit.password}
-                onChange={(e) => setEdit(p => ({ ...p, password: e.target.value }))}
-              />
-              <button className="btn btn-primary" onClick={() => changeUpddate(user.id)}>Save</button> {" "}
-              <button className="btn btn-primary"  onClick={cancelEdit}>Cancel</button>
-            </>
-          ) : (
-        
-            <>
-              <div> Full Name: {user.name} {user.surname} </div>
-              <button className="btn btn-primary" onClick={() => editUser(user)}>Edit</button> {" "}
-              <button className="btn btn-primary" onClick={() => deleteUser(user.id)}>Delete</button>
-            </>
-          )}
-        </li>
-      ))}
-    </ul>
+        <div className="d-flex gap-2">
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate("/users/new")}
+          >
+            Create new user
+          </button>
 
-    <button className="d-grid gap-2 mx-auto btn btn-primary" onClick={userFetch}>Reload</button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => navigate("/")}
+          >
+            Back to home
+          </button>
+        </div>
+      </div>
+
+      {/* CARDS */}
+      <div className="row">
+        {users.map((user) => (
+          <div key={user.id} className="col-md-4 mb-4">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body d-flex flex-column">
+                <h5 className="card-title">
+                  {user.name} {user.surname}
+                </h5>
+
+                <p className="card-text text-muted">{user.email}</p>
+
+                <div className="mt-auto d-flex gap-2">
+                  <button
+                    className="btn btn-outline-primary btn-sm"
+                    onClick={() => navigate(`/users/${user.id}`)}
+                  >
+                    View details
+                  </button>
+
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => navigate(`/users/${user.id}/edit`)}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => deleteUser(user.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+
+      <div className="d-flex justify-content-center mt-3">
+        <button className="btn btn-primary" onClick={userFetch}>
+          Reload
+        </button>
+      </div>
+    </div>
   </>
-);
-}
+  );
+};
 
   
 export default User
