@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const back_url = import.meta.env.VITE_BACKEND_URL;
 
-const EditUser = () => {
+export const EditUser = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 

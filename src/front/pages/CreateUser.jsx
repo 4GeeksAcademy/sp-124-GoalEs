@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const back_url = import.meta.env.VITE_BACKEND_URL;
 
-const CreateUser = () => {
+export const CreateUser = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", surname: "", email: "", password: "" });
   const [error, setError] = useState("");

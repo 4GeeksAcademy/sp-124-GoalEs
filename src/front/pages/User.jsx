@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const back_url = import.meta.env.VITE_BACKEND_URL;
-const User = () => {
+
+export const User = () => {
   const navigate = useNavigate()
 
     const [users, setUsers] = useState([]);
