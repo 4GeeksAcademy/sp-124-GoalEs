@@ -1,13 +1,15 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean
+from sqlalchemy import String, Boolean, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 
 db = SQLAlchemy()
 
 
+# ======================
+# USER (REQUIRED – DO NOT DELETE)
+# ======================
 class User(db.Model):
-
-    _tablename_ = "user"
+    __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
@@ -22,5 +24,24 @@ class User(db.Model):
             "name": self.name,
             "surname": self.surname,
             "email": self.email,
-            # do not serialize the password, its a security breach
+        }
+
+
+# ======================
+# COURSE
+# ======================
+class Course(db.Model):
+    __tablename__ = "course"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(120), nullable=False)
+    description: Mapped[str] = mapped_column(String(300), nullable=False)
+    cost: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "cost": self.cost,
         }
