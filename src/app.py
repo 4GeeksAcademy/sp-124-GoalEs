@@ -6,10 +6,14 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db
+from api.models import db, User, Coach
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from flask_cors import CORS
+from sqlalchemy import select
+
+
 
 # from models import Person
 
@@ -17,6 +21,11 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
+app.url_map.strict_slashes = False
+
+CORS(app)
+
+
 app.url_map.strict_slashes = False
 
 # database condiguration
@@ -57,13 +66,220 @@ def sitemap():
     return send_from_directory(static_file_dir, 'index.html')
 
 # any other endpoint will try to serve it like a static file
+
+
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):
     if not os.path.isfile(os.path.join(static_file_dir, path)):
         path = 'index.html'
     response = send_from_directory(static_file_dir, path)
     response.cache_control.max_age = 0  # avoid cache memory
-    return response
+    return
+
+
+@app.route('/users', methods=['GET'])
+def get_users():
+
+    all_user = db.session.execute(select(User)).scalars().all()
+    result = [u.serialize() for u in all_user]
+
+    if result is None:
+        return jsonify({"msg": "No hay mi bro"})
+
+    response_body = {
+        "msg": "We get users",
+        "users": result
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/users/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+
+    if user is None:
+        return jsonify("User not found"), 404
+    return jsonify(user.serialize()), 200
+
+## ===========================
+## now Post 
+
+@app.route('/users', methods=['POST'])
+def created_user():
+    body = request.get_json()
+
+    if body is None: 
+        return jsonify({"error": "Request body is missing"}), 400
+    
+    name = body.get("name")
+    surname = body.get("surname")
+    email = body.get("email")
+    password = body.get("password")
+
+    if not name or not surname or not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
+    
+    ## if already exists:
+    existing_user = db.session.execute(select(User).where(User.email == email)).scalar_one_or_none()
+
+    if existing_user:
+        return jsonify({"error": "User already exists"}), 409
+    
+    new_user = User(name=name, surname=surname,email=email, password=password, is_active=True)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify(new_user.serialize()), 201
+
+## follow -CRUD, now it's time to do PUT
+
+@app.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    user_update = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+
+    if update_user is None:
+        return jsonify({"error": "User not found"}), 404
+    
+    body = request.get_json()
+    
+    if not body:
+        return jsonify({"error": "No data provided to update"}), 400
+    
+    if "name" in body:
+        user_update.name = body["name"]
+
+    if "surname" in body:
+        user_update.surname = body["surname"]    
+    
+    if "email" in body:
+        user_update.email = body["email"]
+
+    if "password" in body:
+        user_update.password = body["password"]
+
+    if "is_active" in body:
+        user_update.is_active = body["is_active"] 
+
+    db.session.commit()      
+
+    return jsonify(user_update.serialize()), 200 
+
+## The last one -  CRUD - DELETE
+
+@app.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    deleted = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+
+    if deleted is None:
+        return jsonify({"error": "User not found to delete"}), 404 
+    
+    db.session.delete(deleted)
+    db.session.commit()
+
+    return jsonify({"message": "User deleted successfully"}), 200
+
+@app.route('/coach', methods=['GET'])
+def get_coaches():
+    all_coaches = Coach.query.all()
+
+    if not all_coaches:
+        return jsonify({
+            "error": "No coaches found"
+        }), 404
+
+    results_coaches = list(map(lambda coach: coach.serialize(), all_coaches))
+
+    response_body = {
+        "msg": "This is your GET /coach response",
+        "coaches": results_coaches
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/coach/<int:id>', methods=['GET'])
+def get_coach(id):
+    coach = Coach.query.get(id)
+
+    if coach is None:
+        return jsonify({"msg": "Coach not found"}), 404
+
+    response_body = {
+        "msg": "This is your GET /coach/<id> response",
+        "coach": coach.serialize()
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/coach', methods=['POST'])
+def post_coach():
+    body = request.get_json()
+
+    if body is None:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    name = body.get("name")
+    last_name = body.get("last_name")
+    email = body.get("email")
+    password = body.get("password")
+
+    if not name or not last_name or not email or not password:
+        return jsonify({"error": "name, last_name, email and password are required"}), 400
+
+    new_coach = Coach(
+        name = name,
+        last_name = last_name,
+        email = email,
+        password = password,
+        is_active = True
+    )
+
+    db.session.add(new_coach)
+    db.session.commit()
+
+    response_body = {
+        "msg": "Coach created successfully",
+        "new_coach": new_coach.serialize()
+    }
+
+    return jsonify(response_body), 201
+
+@app.route('/coach/<int:id>', methods=['PUT'])
+def put_coach(id):
+    coach = Coach.query.get(id)
+
+    if coach is None:
+        return jsonify({"error": "Coach not found"}), 404
+    
+    body = request.get_json()
+    if body is None:
+        return jsonify({"error": "Missing JSON body"}), 400
+    
+    coach.name = body.get("name", coach.name)
+    coach.last_name = body.get("last_name", coach.last_name)
+    coach.email = body.get("email", coach.email)
+    coach.password = body.get("password", coach.password)
+
+    db.session.commit()
+
+    response_body = {
+        "msg": "Coach updated",
+        "coach": coach.serialize()
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/coach/<int:id>', methods=['DELETE'])
+def delete_coach(id):
+    coach = Coach.query.get(id)
+
+    if coach is None:
+        return jsonify({"error": "Coach not found"}), 404
+    
+    db.session.delete(coach)
+    db.session.commit()
+    
+    return jsonify({"msg": "Coach deleted"}), 200
 
 
 # this only runs if `$ python src/main.py` is executed

@@ -1,67 +1,62 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react"
+import { Navigate, useNavigate } from "react-router-dom";
+import rigoImageUrl from "../assets/img/rigo-baby.jpg";
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const Home = () => {
-  const navigate = useNavigate();
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
 
-  const loadMessage = async () => {
-    try {
-      if (!BACKEND_URL) {
-        throw new Error("VITE_BACKEND_URL is not defined");
-      }
+	const navigate = useNavigate();
 
-      const res = await fetch(`${BACKEND_URL}/api/hello`);
-      if (!res.ok) throw new Error("Backend not responding");
+	const { store, dispatch } = useGlobalReducer()
 
-      const data = await res.json();
-      setMessage(data.message);
-    } catch (e) {
-      setError(e.message);
-    }
-  };
+	const loadMessage = async () => {
+		try {
+			const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-  useEffect(() => {
-    loadMessage();
-  }, []);
+			if (!backendUrl) throw new Error("VITE_BACKEND_URL is not defined in .env file")
 
-  return (
-    <div className="container py-5 text-center">
-      <h1 className="mb-3">Course Platform</h1>
-      <p className="text-muted mb-4">
-        Manage courses from a single place
-      </p>
+			const response = await fetch(backendUrl + "/api/hello")
+			const data = await response.json()
 
-      {/* NAV BUTTONS */}
-      <div className="d-flex justify-content-center gap-3 mb-4">
+			if (response.ok) dispatch({ type: "set_hello", payload: data.message })
 
-        <button
-          className="btn btn-success"
-          onClick={() => navigate("/courses")}
-        >
-          Courses
-        </button>
-      </div>
+			return data
 
-      {/* BACKEND STATUS */}
-      <div className="mt-4">
-        {error ? (
-          <div className="alert alert-danger">
-            ❌ {error}
-          </div>
-        ) : message ? (
-          <div className="alert alert-info">
-            ✅ {message}
-          </div>
-        ) : (
-          <div className="alert alert-secondary">
-            ⏳ Connecting to backend...
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+		} catch (error) {
+			if (error.message) throw new Error(
+				`Could not fetch the message from the backend.
+				Please check if the backend is running and the backend port is public.`
+			);
+		}
+
+	}
+
+	useEffect(() => {
+		loadMessage()
+	}, [])
+
+	return (
+		<div className="text-center mt-5">
+			<h1 className="display-4">Hello Rigo!!</h1>
+			<p className="lead">
+				<img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
+				
+			</p>
+			<button className="btn btn-primary" onClick={() => navigate ("/users")}>Go to Users</button>
+			
+			<div className="alert alert-info">
+				{store.message ? (
+					<div>
+					<span>{store.message}</span>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/main")}>Go to Coaches</button>
+					</div>
+				) : (
+					<span className="text-danger">
+						Loading message from the backend (make sure your python 🐍 backend is running)...
+					</span>
+				)}
+			</div>
+		</div>
+	);
+}; 

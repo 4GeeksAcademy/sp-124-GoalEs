@@ -22,6 +22,7 @@ def setup_admin(app):
     )
 
     for name, obj in inspect.getmembers(models):
+        # Verify that the object is a SQLAlchemy model before adding it to the admin.
         if (
             inspect.isclass(obj)
             and issubclass(obj, db.Model)
