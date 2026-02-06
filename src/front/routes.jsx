@@ -15,16 +15,16 @@ import CreateUser from "./pages/CreateUser";
 import EditUser from "./pages/EditUser";
 
 import { Coaches } from "./pages/Coaches";
-import { CoachDetails } from "./pages/coachesDetails";
-import { CoachEdit } from "./pages/coachesEdit";
-import { CreateCoach } from "./pages/createCoach";
+import { CoachDetails } from "./pages/CoachDetails";
+import { CoachEdit } from "./pages/CoachEdit";
+import { CreateCoach } from "./pages/CreateCoach";
 
 import {MainSection} from "./pages/MainSection";
 
-import { Courses } from "./pages/courses";
-import { CourseDetail } from "./pages/courseDetail";
-import { EditCourse } from "./pages/editCourse";
-import { CreateCourse } from "./pages/createCourse";
+import { Courses } from "./pages/Courses";
+import { CourseDetail } from "./pages/CourseDetail";
+import { EditCourse } from "./pages/EditCourse";
+import { CreateCourse } from "./pages/CreateCourse";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
