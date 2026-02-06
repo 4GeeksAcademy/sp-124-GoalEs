@@ -6,10 +6,10 @@ import {
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
 import { Coaches } from "./pages/Coaches";
-import { CoachEdit } from "./pages/coachesEdit";
-import { CreateCoach } from "./pages/createCoach";
-import { MainSection } from "./pages/mainSection"
-import { CoachDetails } from "./pages/coachesDetails";
+import { CoachEdit } from "./pages/CoachEdit";
+import { CreateCoach } from "./pages/CreateCoach";
+import { MainSection } from "./pages/MainSection"
+import { CoachDetails } from "./pages/CoachDetails";
 import { Demo } from "./pages/Demo";
 import { User } from "./pages/User";
 import { EditUser } from "./pages/EditUser";
@@ -25,10 +25,11 @@ export const router = createBrowserRouter(
       <Route path="/users/new" element={<CreateUser />} />
       <Route path="/users/:id/edit" element={<EditUser />} />
       <Route path="/demo" element={<Demo />} />
+
       <Route path="/coaches-edit/:id" element={<CoachEdit />} />
       <Route path="/coaches-details/:id" element={<CoachDetails />} />
       <Route path="/coaches" element={<Coaches />} />
-      <Route path="/singup" element={<CreateCoach />} />
+      <Route path="/coaches/singup" element={<CreateCoach />} />
       <Route path="/main" element={<MainSection />} />
     </Route>
   )

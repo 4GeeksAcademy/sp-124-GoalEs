@@ -22,6 +22,7 @@ export const Coaches = () => {
       setCoach(data.coaches);
 
     } catch (err) {
+      setCargando(false)
       console.error(err);
     }
   };
@@ -74,7 +75,7 @@ export const Coaches = () => {
             </div>
           </div>
         ))}
-        <button className="btn btn-primary mt-3" onClick={() => navigate("/singup")}>
+        <button className="btn btn-primary mt-3" onClick={() => navigate("/coaches/singup")}>
           New Coach
         </button>
         <button className="btn btn-secondary mt-3" onClick={() => navigate("/main")}>

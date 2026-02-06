@@ -52,11 +52,11 @@ export const CoachEdit = () => {
                                         <p>Name</p>
                                         <input type="text"input className="form-control my-3" id="floatingInput" placeholder="Pepe" value={coach.name} onChange={e => setCoach({ ...coach, name: e.target.value })} />
                                         <p>Last Name</p>
-                                        <input input className="form-control my-3" id="floatingPassword" placeholder="Pepito"value={coach.last_name} onChange={e => setCoach({ ...coach, last_name: e.target.value })} />
+                                        <input input className="form-control my-3" id="floatingPassword" placeholder="Pepito" value={coach.last_name} onChange={e => setCoach({ ...coach, last_name: e.target.value })} />
                                         <p>Email</p>
-                                        <input input type="email" className="form-control my-3" id="floatingInput" placeholder="name@example.com"value={coach.email} onChange={e => setCoach({ ...coach, email: e.target.value })} />
+                                        <input input type="email" className="form-control my-3" id="floatingInput" placeholder="name@example.com" value={coach.email} onChange={e => setCoach({ ...coach, email: e.target.value })} />
                                         <p>Password</p>
-                                        <input input type="password" className="form-control my-3" id="floatingInput" placeholder="name@example.com"value={coach.password} onChange={e => setCoach({ ...coach, password: e.target.value })} />
+                                        <input input type="password" className="form-control my-3" id="floatingInput" placeholder="name@example.com" value={coach.password} onChange={e => setCoach({ ...coach, password: e.target.value })} />
                                     </div>
 
                                     <button className="btn btn-primary" onClick={updateCoach}>Guardar cambios</button>

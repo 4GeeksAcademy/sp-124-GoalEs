@@ -26,7 +26,7 @@ export const MainSection = () => {
                             <div className="card-body">
                                 <h5 className="card-title">Do you want to help people progress towards their goals?</h5>
                                 <p className="card-text">Fill in the required information and become a coach! Make the world a much better place!</p>
-                                <button className="btn btn-primary" onClick={() => navigate("/singup")}>
+                                <button className="btn btn-primary" onClick={() => navigate("/coaches/singup")}>
                                     Start
                                 </button>
                             </div>
