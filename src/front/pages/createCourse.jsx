@@ -22,7 +22,7 @@ export const CreateCourse = () => {
     }
 
     try {
-      const res = await fetch(`${BACKEND_URL}/api/course`, {
+      const res = await fetch(`${BACKEND_URL}/course`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form)
