@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach
+from api.models import db, User, Coach, Course
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -233,13 +233,14 @@ def post_coach():
         password = password,
         is_active = True
     )
-
+    print("print anted de print new coach")
+    print (new_coach)
     db.session.add(new_coach)
     db.session.commit()
 
     response_body = {
-        "msg": "Coach created successfully",
-        "new_coach": new_coach.serialize()
+        "msg": "Coach created successfully"
+        #"new_coach": new_coach.serialize()
     }
 
     return jsonify(response_body), 201
@@ -280,6 +281,73 @@ def delete_coach(id):
     db.session.commit()
     
     return jsonify({"msg": "Coach deleted"}), 200
+
+@app.route("/course", methods=["GET"])
+def get_courses():
+    print("hola desde get course")
+    courses = db.session.execute(select(Course)).scalars().all()
+    return jsonify(courses=[c.serialize() for c in courses]), 200
+
+
+@app.route("/course/<int:id>", methods=["GET"])
+def get_course(id):
+    course = db.session.execute(
+        select(Course).where(Course.id == id)
+    ).scalar_one_or_none()
+
+    if not course:
+        return jsonify({"error": "Course not found"}), 404
+
+    return jsonify(course=course.serialize()), 200
+
+
+@app.route("/course", methods=["POST"])
+def create_course():
+    body = request.get_json()
+
+    new_course = Course(
+        title=body["title"],
+        description=body["description"],
+        cost=int(body["cost"])
+    )
+
+    db.session.add(new_course)
+    db.session.commit()
+
+    return jsonify(course=new_course.serialize()), 201
+
+
+@app.route("/course/<int:id>", methods=["PUT"])
+def update_course(id):
+    course = db.session.execute(
+        select(Course).where(Course.id == id)
+    ).scalar_one_or_none()
+
+    if not course:
+        return jsonify({"error": "Course not found"}), 404
+
+    body = request.get_json()
+    course.title = body["title"]
+    course.description = body["description"]
+    course.cost = int(body["cost"])
+
+    db.session.commit()
+    return jsonify(course=course.serialize()), 200
+
+
+@app.route("/course/<int:id>", methods=["DELETE"])
+def delete_course(id):
+    course = db.session.execute(
+        select(Course).where(Course.id == id)
+    ).scalar_one_or_none()
+
+    if not course:
+        return jsonify({"error": "Course not found"}), 404
+
+    db.session.delete(course)
+    db.session.commit()
+    return jsonify({"msg": "Course deleted"}), 200
+
 
 
 # this only runs if `$ python src/main.py` is executed

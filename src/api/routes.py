@@ -1,26 +1,19 @@
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Blueprint, request, jsonify
 from sqlalchemy import select
-from api.models import db, User, Coach
+from api.models import db, User, Coach, Course
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
-api = Blueprint('api', __name__)
-
-# Allow CORS requests to this API
+api = Blueprint("api", __name__)
 CORS(api)
 
+# ======================
+# TEST
+# ======================
 
 
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
+@api.route("/hello", methods=["GET", "POST"])
+def hello():
+    return jsonify({"message": "Backend working"}), 200
 
-    response_body = {
-        "message": "FUNCIONA LA CONEXION BACK CON FRONTEND"
-    }
 
-    return jsonify(response_body), 200
-
-#Started my code from here - GET

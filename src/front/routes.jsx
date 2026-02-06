@@ -1,25 +1,38 @@
 import {
   createBrowserRouter,
   createRoutesFromElements,
-  Route,
+  Route
 } from "react-router-dom";
+
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
-import { Coaches } from "./pages/Coaches";
-import { CoachEdit } from "./pages/CoachEdit";
-import { CreateCoach } from "./pages/CreateCoach";
-import { MainSection } from "./pages/MainSection"
-import { CoachDetails } from "./pages/CoachDetails";
 import { Demo } from "./pages/Demo";
-import { User } from "./pages/User";
-import { EditUser } from "./pages/EditUser";
-import { CreateUser } from "./pages/CreateUser";
-import { UserDetails } from "./pages/UserDetails";
+import { Single } from "./pages/Single";
+
+import User from "./pages/User";
+import UserDetails from "./pages/UserDetails";
+import CreateUser from "./pages/CreateUser";
+import EditUser from "./pages/EditUser";
+
+import { Coaches } from "./pages/Coaches";
+import { CoachDetails } from "./pages/coachesDetails";
+import { CoachEdit } from "./pages/coachesEdit";
+import { CreateCoach } from "./pages/createCoach";
+
+import {MainSection} from "./pages/MainSection";
+
+import { Courses } from "./pages/courses";
+import { CourseDetail } from "./pages/courseDetail";
+import { EditCourse } from "./pages/editCourse";
+import { CreateCourse } from "./pages/createCourse";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
+    <Route path="/" element={<Layout />} errorElement={<h1>Not found</h1>}>
+
+      {/* Home */}
       <Route path="/" element={<Home />} />
+
       <Route path="/users" element={<User />} />
       <Route path="/users/:id" element={<UserDetails />} />
       <Route path="/users/new" element={<CreateUser />} />
@@ -31,6 +44,15 @@ export const router = createBrowserRouter(
       <Route path="/coaches" element={<Coaches />} />
       <Route path="/coaches/singup" element={<CreateCoach />} />
       <Route path="/main" element={<MainSection />} />
+
+      <Route path="/courses" element={<Courses />} />
+      <Route path="/courses/:id" element={<CourseDetail />} />
+      <Route path="/courses/new" element={<CreateCourse />} />
+      <Route path="/courses/:id/edit" element={<EditCourse />} />
+
+      <Route path="/single/:theid" element={<Single />} />
+      <Route path="/demo" element={<Demo />} />
+
     </Route>
   )
 );
