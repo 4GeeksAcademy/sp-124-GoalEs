@@ -22,6 +22,7 @@ export const Coaches = () => {
       setCoach(data.coaches);
 
     } catch (err) {
+      setCargando(false)
       console.error(err);
     }
   };
