@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-const CourseDetail = () => {
+export const CourseDetail = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -12,7 +13,7 @@ const CourseDetail = () => {
 
   const fetchCourse = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/api/course/${id}`);
+      const res = await fetch(`${BACKEND_URL}/course/${id}`);
       if (!res.ok) throw new Error("Error loading course");
 
       const data = await res.json();
@@ -52,4 +53,3 @@ const CourseDetail = () => {
   );
 };
 
-export default CourseDetail;

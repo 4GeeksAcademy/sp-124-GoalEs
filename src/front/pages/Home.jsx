@@ -44,12 +44,15 @@ export const Home = () => {
 				
 			</p>
 			<button className="btn btn-primary" onClick={() => navigate ("/users")}>Go to Users</button>
+			<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
+			<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
+
+
 			
 			<div className="alert alert-info">
 				{store.message ? (
 					<div>
 					<span>{store.message}</span>
-					<button className="btn btn-primary ms-3" onClick={() => navigate("/main")}>Go to Coaches</button>
 					</div>
 				) : (
 					<span className="text-danger">

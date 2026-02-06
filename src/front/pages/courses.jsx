@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-const Courses = () => {
+export const Courses = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
@@ -11,7 +12,7 @@ const Courses = () => {
   const fetchCourses = async () => {
     try {
       setError("");
-      const res = await fetch(`${BACKEND_URL}/api/course`);
+      const res = await fetch(`${BACKEND_URL}/course`);
       if (!res.ok) throw new Error("Error fetching courses");
 
       const data = await res.json();
@@ -27,7 +28,7 @@ const Courses = () => {
 
   const deleteCourse = async (id) => {
     try {
-      const res = await fetch(`${BACKEND_URL}/api/course/${id}`, {
+      const res = await fetch(`${BACKEND_URL}/course/${id}`, {
         method: "DELETE"
       });
 
@@ -96,4 +97,3 @@ const Courses = () => {
   );
 };
 
-export default Courses;

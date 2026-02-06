@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-const CreateCourse = () => {
+export const CreateCourse = () => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   const navigate = useNavigate();
   const [form, setForm] = useState({
     title: "",
@@ -79,4 +80,3 @@ const CreateCourse = () => {
   );
 };
 
-export default CreateCourse;
