@@ -82,6 +82,7 @@ export const EditCourse = () => {
           className="form-control mb-3"
           type="number"
           value={form.cost}
+          max={999999999}
           onChange={e => setForm(p => ({ ...p, cost: e.target.value }))}
         />
 
