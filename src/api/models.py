@@ -24,6 +24,7 @@ class User(db.Model):
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
     messages: Mapped[list["Message"]] = relationship(back_populates="user")
+    courses: Mapped[list["User_course"]] = relationship(back_populates="user")
 
 
     def serialize(self):
@@ -45,6 +46,8 @@ class Course(db.Model):
     title: Mapped[str] = mapped_column(String(120), nullable=False)
     description: Mapped[str] = mapped_column(String(300), nullable=False)
     cost: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    user_course: Mapped[list["User_course"]] = relationship(back_populates="course")
 
     def serialize(self):
         return {
@@ -91,6 +94,10 @@ class User_course(db.Model):
     course_id: Mapped[int] = mapped_column(ForeignKey("course.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
 
+    #relationships
+    user: Mapped["User"] = relationship(back_populates="courses")
+    course: Mapped["Course"] = relationship(back_populates="user_course")
+
     def serialize(self):
         return {
             "id": self.id,
@@ -113,8 +120,6 @@ class Message(db.Model):
 
     user: Mapped["User"] = relationship(back_populates="messages")
     coach: Mapped["Coach"] = relationship(back_populates="messages")
-
-
 
     def serialize(self):
         return {
