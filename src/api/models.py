@@ -75,3 +75,22 @@ class Coach(db.Model):
             "last_name": self.last_name,
             "is_active": self.is_active
         }
+    
+class User_course(db.Model):
+    __tablename__ = "user_course"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement= True)
+    active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+
+    #foreign keys
+    course_id: Mapped[int] = mapped_column(ForeignKey("course.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "active": self.active,
+            "course_id": self.course_id,
+            "user_id": self.user_id
+        }
+
