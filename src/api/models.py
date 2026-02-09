@@ -23,8 +23,8 @@ class User(db.Model):
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-    messages: Mapped[list["Message"]] = relationship(back_populates="user")
-    courses: Mapped[list["User_course"]] = relationship(back_populates="user")
+    messages: Mapped[list["Message"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    courses: Mapped[list["User_course"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 
     def serialize(self):
@@ -47,7 +47,12 @@ class Course(db.Model):
     description: Mapped[str] = mapped_column(String(300), nullable=False)
     cost: Mapped[int] = mapped_column(Integer, nullable=False)
 
+    #foreign key
+    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"))
+
+    #realationship
     user_course: Mapped[list["User_course"]] = relationship(back_populates="course")
+    auth_coach: Mapped[list["Coach"]] = relationship(back_populates="course")
 
     def serialize(self):
         return {
@@ -72,7 +77,10 @@ class Coach(db.Model):
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
+    #relationships
     messages: Mapped[list["Message"]] = relationship(back_populates="coach")
+    course: Mapped[list["Course"]] = relationship(back_populates="auth_coach")
+    
 
 
     def serialize(self):
