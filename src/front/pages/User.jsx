@@ -58,7 +58,7 @@ export const User = () => {
 
         <div className="d-flex gap-2">
           <button
-            className="btn btn-primary"
+            className="d-flex gap-2 justify-content-md-end btn btn-primary"
             onClick={() => navigate("/users/new")}
           >
             Create new user

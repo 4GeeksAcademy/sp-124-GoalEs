@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course
+from api.models import db, User, Coach, Course, Message
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -347,6 +347,72 @@ def delete_course(id):
     db.session.delete(course)
     db.session.commit()
     return jsonify({"msg": "Course deleted"}), 200
+
+@app.route('/messages', methods=['GET'])
+def get_messages():
+    all_messages = db.session.execute(select(Message)).scalars().all()
+    result = [m.serialize() for m in all_messages]
+
+    return jsonify({
+        "msg": "We get messages",
+        "messages": result
+    }), 200
+
+@app.route('/messages/<int:message_id>', methods=['GET'])
+def get_message(message_id):
+    message = db.session.execute(
+        select(Message).where(Message.id == message_id)
+    ).scalar_one_or_none()
+
+    if message is None:
+        return jsonify({"msg": "Message not found"}), 404
+
+    return jsonify(message.serialize()), 200
+
+@app.route('/messages', methods=['POST'])
+def create_message():
+    body = request.get_json()
+
+    new_message = Message(
+        message=body["message"],
+        userMessage_id=body["userMessage_id"],
+        coachMessage_id=body["coachMessage_id"]
+    )
+
+    db.session.add(new_message)
+    db.session.commit()
+
+    return jsonify(new_message.serialize()), 201
+
+@app.route('/messages/<int:message_id>', methods=['PUT'])
+def update_message(message_id):
+    message = db.session.execute(
+        select(Message).where(Message.id == message_id)
+    ).scalar_one_or_none()
+
+    if message is None:
+        return jsonify({"msg": "Message not found"}), 404
+
+    body = request.get_json()
+    message.message = body.get("message", message.message)
+
+    db.session.commit()
+    return jsonify(message.serialize()), 200
+
+@app.route('/messages/<int:message_id>', methods=['DELETE'])
+def delete_message(message_id):
+    message = db.session.execute(
+        select(Message).where(Message.id == message_id)
+    ).scalar_one_or_none()
+
+    if message is None:
+        return jsonify({"msg": "Message not found"}), 404
+
+    db.session.delete(message)
+    db.session.commit()
+
+    return jsonify({"msg": "Message deleted"}), 200
+
 
 
 
