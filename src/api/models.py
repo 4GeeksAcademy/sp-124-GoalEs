@@ -1,8 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, Integer
+from sqlalchemy import String, Boolean, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from typing import List
-from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship
 
@@ -23,6 +22,9 @@ class User(db.Model):
         String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+
+    messages: Mapped[list["Message"]] = relationship(back_populates="user")
+
 
     def serialize(self):
         return {
@@ -67,6 +69,9 @@ class Coach(db.Model):
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
+    messages: Mapped[list["Message"]] = relationship(back_populates="coach")
+
+
     def serialize(self):
         return {
             "id": self.id,
@@ -94,3 +99,27 @@ class User_course(db.Model):
             "user_id": self.user_id
         }
 
+
+# MESSAGE
+
+class Message(db.Model):
+    __tablename__ = "message"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    message: Mapped[str] = mapped_column(String(500), nullable=False)
+
+    userMessage_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    coachMessage_id: Mapped[int] = mapped_column(ForeignKey("coach.id"))
+
+    user: Mapped["User"] = relationship(back_populates="messages")
+    coach: Mapped["Coach"] = relationship(back_populates="messages")
+
+
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "message": self.message,
+            "userMessage_id": self.userMessage_id,
+            "coachMessage_id": self.coachMessage_id,
+        }

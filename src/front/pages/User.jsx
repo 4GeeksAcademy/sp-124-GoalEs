@@ -56,13 +56,13 @@ export const User = () => {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="m-0">Users</h1>
 
-          <div className="d-flex gap-2">
-            <button
-              className="btn btn-primary"
-              onClick={() => navigate("/users/new")}
-            >
-              Create new user
-            </button>
+        <div className="d-flex gap-2">
+          <button
+            className="d-flex gap-2 justify-content-md-end btn btn-primary"
+            onClick={() => navigate("/users/new")}
+          >
+            Create new user
+          </button>
 
             <button
               className="btn btn-secondary"
@@ -128,8 +128,7 @@ export const User = () => {
             </div>
           ))}
         </div>
-
-
+        
         <div className="d-flex justify-content-center mt-3">
           <button className="btn btn-primary" onClick={userFetch}>
             Reload

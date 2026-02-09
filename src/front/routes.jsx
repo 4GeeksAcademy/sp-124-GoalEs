@@ -14,6 +14,8 @@ import UserDetails from "./pages/UserDetails";
 import CreateUser from "./pages/CreateUser";
 import EditUser from "./pages/EditUser";
 
+import Message from "./pages/Message";
+
 import { Coaches } from "./pages/Coaches";
 import { CoachDetails } from "./pages/CoachDetails";
 import { CoachEdit } from "./pages/CoachEdit";
@@ -40,6 +42,7 @@ export const router = createBrowserRouter(
       <Route path="/users/new" element={<CreateUser />} />
       <Route path="/users/:id/edit" element={<EditUser />} />
       <Route path="/demo" element={<Demo />} />
+      <Route path="/messages" element={<Message />} />
 
       <Route path="/coaches-edit/:id" element={<CoachEdit />} />
       <Route path="/coaches-details/:id" element={<CoachDetails />} />
