@@ -106,6 +106,7 @@ export const User = () => {
                   >
                     Delete
                   </button>
+                  
                 </div>
               </div>
             </div>

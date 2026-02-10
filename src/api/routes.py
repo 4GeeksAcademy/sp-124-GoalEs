@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy import select
-from api.models import db, User, Coach, Course
+from api.models import db, User, Coach, Course, UserCourseFavorite
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 

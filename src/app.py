@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course
+from api.models import db, User, Coach, Course, UserCourseFavorite
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -138,7 +138,7 @@ def created_user():
 def update_user(user_id):
     user_update = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
 
-    if update_user is None:
+    if user_update is None:
         return jsonify({"error": "User not found"}), 404
     
     body = request.get_json()
@@ -347,6 +347,87 @@ def delete_course(id):
     db.session.delete(course)
     db.session.commit()
     return jsonify({"msg": "Course deleted"}), 200
+
+
+@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["POST"])
+def add_favorite(user_id, course_id):
+
+    exists = UserCourseFavorite.query.filter_by(
+        user_id=user_id,
+        course_id=course_id
+    ).first()
+
+    if exists:
+        return jsonify({"error": "Already favorite"}), 400
+
+    fav = UserCourseFavorite(
+        user_id=user_id,
+        course_id=course_id
+    )
+
+    db.session.add(fav)
+    db.session.commit()
+
+    return jsonify(fav.serialize()), 201
+
+
+@app.route("/users/<int:user_id>/favorites", methods=["GET"])
+def get_user_favorites(user_id):
+
+    favorites = UserCourseFavorite.query.filter_by(user_id=user_id).all()
+
+    results = []
+    for fav in favorites:
+        course = Course.query.get(fav.course_id)
+        results.append({
+            "id": fav.id,
+            "course": course.serialize()
+        })
+
+    return jsonify({"favorites": results}), 200
+
+
+@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["DELETE"])
+def remove_favorite(user_id, course_id):
+
+    fav = UserCourseFavorite.query.filter_by(
+        user_id=user_id,
+        course_id=course_id
+    ).first()
+
+    if not fav:
+        return jsonify({"error": "Favorite not found"}), 404
+
+    db.session.delete(fav)
+    db.session.commit()
+
+    return jsonify({"msg": "Favorite removed"}), 200
+
+@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["PUT"])
+def modificar_favorite(user_id, course_id):
+    favorite = UserCourseFavorite.query.filter_by(
+        user_id=user_id,
+        course_id=course_id
+    ).first()
+
+    if favorite:
+        return jsonify({
+            "msg": "Already in favorites",
+            "favorite": favorite.serialize()
+        }), 200
+
+    new_favorite = UserCourseFavorite(
+        user_id=user_id,
+        course_id=course_id
+    )
+
+    db.session.add(new_favorite)
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Favorite added",
+        "favorite": new_favorite.serialize()
+    }), 201
 
 
 
