@@ -9,7 +9,7 @@ const UserCourseFavorite = () => {
   const [courses, setCourses] = useState([]);
   const [favoritesByUser, setFavoritesByUser] = useState({});
 
-  // 1️⃣ Load users
+  //  Load users
   useEffect(() => {
     fetch(`${BACKEND_URL}/users`)
       .then(res => res.json())
@@ -29,14 +29,14 @@ const UserCourseFavorite = () => {
     });
   }, [users]);
 
-  // 2️⃣ Load all courses (for add favorite)
+  // Load all courses (for add favorite)
   useEffect(() => {
     fetch(`${BACKEND_URL}/course`)
       .then(res => res.json())
       .then(data => setCourses(data.courses || []));
   }, []);
 
-  // 3️⃣ Load favorites for a user
+  // Load favorites for a user
   const loadFavorites = (userId) => {
     fetch(`${BACKEND_URL}/users/${userId}/favorites`)
       .then(res => res.json())
@@ -48,14 +48,14 @@ const UserCourseFavorite = () => {
       });
   };
 
-  // 4️⃣ Delete favorite
+  //Delete favorite
   const deleteFavorite = (userId, courseId) => {
     fetch(`${BACKEND_URL}/users/${userId}/favorites/${courseId}`, {
       method: "DELETE"
     }).then(() => loadFavorites(userId));
   };
 
-  // 5️⃣ Add favorite
+  //  Add favorite
   const addFavorite = (userId, courseId) => {
     fetch(`${BACKEND_URL}/users/${userId}/favorites/${courseId}`, {
       method: "POST"
@@ -64,7 +64,7 @@ const UserCourseFavorite = () => {
 
   return (
     <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between mb-4">
         <h1>User Course Favorites</h1>
         <button className="btn btn-secondary" onClick={() => navigate("/")}>
           Back Home
@@ -81,8 +81,6 @@ const UserCourseFavorite = () => {
             
 
             {/* Favorites list */}
-            
-
             <div className="d-flex flex-wrap gap-2 mb-3">
               {favoritesByUser[user.id]?.length === 0 && (
                 <span className="text-muted">No favorites</span>
