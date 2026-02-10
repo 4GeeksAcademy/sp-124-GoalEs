@@ -14,6 +14,8 @@ import UserDetails from "./pages/UserDetails";
 import CreateUser from "./pages/CreateUser";
 import EditUser from "./pages/EditUser";
 
+import Message from "./pages/Message";
+
 import { Coaches } from "./pages/Coaches";
 import { CoachDetails } from "./pages/CoachDetails";
 import { CoachEdit } from "./pages/CoachEdit";
@@ -25,8 +27,6 @@ import { Courses } from "./pages/Courses";
 import { CourseDetail } from "./pages/CourseDetail";
 import { EditCourse } from "./pages/EditCourse";
 import { CreateCourse } from "./pages/CreateCourse";
-
-import UserFavorites from "./pages/UserFavorites";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -40,6 +40,7 @@ export const router = createBrowserRouter(
       <Route path="/users/new" element={<CreateUser />} />
       <Route path="/users/:id/edit" element={<EditUser />} />
       <Route path="/demo" element={<Demo />} />
+      <Route path="/messages" element={<Message />} />
 
       <Route path="/coaches-edit/:id" element={<CoachEdit />} />
       <Route path="/coaches-details/:id" element={<CoachDetails />} />
@@ -51,8 +52,6 @@ export const router = createBrowserRouter(
       <Route path="/courses/:id" element={<CourseDetail />} />
       <Route path="/courses/new" element={<CreateCourse />} />
       <Route path="/courses/:id/edit" element={<EditCourse />} />
-
-      <Route path="/UserCourseFavorite" element={<UserFavorites />} />
 
       <Route path="/single/:theid" element={<Single />} />
       <Route path="/demo" element={<Demo />} />

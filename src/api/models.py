@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, Integer
+from sqlalchemy import String, Boolean, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from typing import List
 from sqlalchemy import ForeignKey, UniqueConstraint
@@ -29,6 +29,9 @@ class User(db.Model):
         back_populates="user",
         cascade="all, delete"
     )
+    messages: Mapped[list["Message"]] = relationship(back_populates="user")
+    courses: Mapped[list["User_course"]] = relationship(back_populates="user")
+
 
     def serialize(self):
         return {
@@ -57,6 +60,7 @@ class Course(db.Model):
         back_populates="course",
         cascade="all, delete"
     )
+    user_course: Mapped[list["User_course"]] = relationship(back_populates="course")
 
     def serialize(self):
         return {
@@ -82,6 +86,9 @@ class Coach(db.Model):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+
+    messages: Mapped[list["Message"]] = relationship(back_populates="coach")
+
 
     def serialize(self):
         return {
@@ -116,10 +123,48 @@ class UserCourseFavorite (db.Model):
 
     user = relationship("User", back_populates="favorites")
     course = relationship("Course", back_populates="favorited_by")
+    
+class User_course(db.Model):
+    __tablename__ = "user_course"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement= True)
+    active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+
+    #foreign keys
+    course_id: Mapped[int] = mapped_column(ForeignKey("course.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+
+    #relationships
+    user: Mapped["User"] = relationship(back_populates="courses")
+    course: Mapped["Course"] = relationship(back_populates="user_course")
 
     def serialize(self):
         return {
             "id": self.id,
-            "user_id": self.user_id,
-            "course_id": self.course_id
+            "active": self.active,
+            "course_id": self.course_id,
+            "user_id": self.user_id
+        }
+
+
+# MESSAGE
+
+class Message(db.Model):
+    __tablename__ = "message"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    message: Mapped[str] = mapped_column(String(500), nullable=False)
+
+    userMessage_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    coachMessage_id: Mapped[int] = mapped_column(ForeignKey("coach.id"))
+
+    user: Mapped["User"] = relationship(back_populates="messages")
+    coach: Mapped["Coach"] = relationship(back_populates="messages")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "message": self.message,
+            "userMessage_id": self.userMessage_id,
+            "coachMessage_id": self.coachMessage_id,
         }

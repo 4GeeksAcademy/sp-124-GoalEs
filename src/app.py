@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
 from api.models import db, User, Coach, Course, UserCourseFavorite
+from api.models import db, User, Coach, Course, Message, User_course
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -348,6 +349,170 @@ def delete_course(id):
     db.session.commit()
     return jsonify({"msg": "Course deleted"}), 200
 
+@app.route('/messages', methods=['GET'])
+def get_messages():
+    all_messages = db.session.execute(select(Message)).scalars().all()
+    result = [m.serialize() for m in all_messages]
+
+    return jsonify({
+        "msg": "We get messages",
+        "messages": result
+    }), 200
+
+@app.route('/messages/<int:message_id>', methods=['GET'])
+def get_message(message_id):
+    message = db.session.execute(
+        select(Message).where(Message.id == message_id)
+    ).scalar_one_or_none()
+
+    if message is None:
+        return jsonify({"msg": "Message not found"}), 404
+
+    return jsonify(message.serialize()), 200
+
+@app.route('/messages', methods=['POST'])
+def create_message():
+    body = request.get_json()
+
+    new_message = Message(
+        message=body["message"],
+        userMessage_id=body["userMessage_id"],
+        coachMessage_id=body["coachMessage_id"]
+    )
+
+    db.session.add(new_message)
+    db.session.commit()
+
+    return jsonify(new_message.serialize()), 201
+
+@app.route('/messages/<int:message_id>', methods=['PUT'])
+def update_message(message_id):
+    message = db.session.execute(
+        select(Message).where(Message.id == message_id)
+    ).scalar_one_or_none()
+
+    if message is None:
+        return jsonify({"msg": "Message not found"}), 404
+
+    body = request.get_json()
+    message.message = body.get("message", message.message)
+
+    db.session.commit()
+    return jsonify(message.serialize()), 200
+
+@app.route('/messages/<int:message_id>', methods=['DELETE'])
+def delete_message(message_id):
+    message = db.session.execute(
+        select(Message).where(Message.id == message_id)
+    ).scalar_one_or_none()
+
+    if message is None:
+        return jsonify({"msg": "Message not found"}), 404
+
+    db.session.delete(message)
+    db.session.commit()
+
+    return jsonify({"msg": "Message deleted"}), 200
+
+@app.route('/user_course', methods=['GET'])
+def get_user_courses():
+    all_user_courses = User_course.query.all()
+
+    if not all_user_courses:
+        return jsonify({
+            "error": "No user-course records found"
+        }), 404
+
+    results_user_courses = list(map(lambda user_course: user_course.serialize(), all_user_courses))
+
+    response_body = {
+        "msg": "This is your GET /user_course response",
+        "user_courses": results_user_courses
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/user_course/<int:id>', methods=['GET'])
+def get_user_course(id):
+    user_course = User_course.query.get(id)
+
+    if user_course is None:
+        return jsonify({"msg": "User-course not found"}), 404
+
+    response_body = {
+        "msg": "This is your GET /user_course/<id> response",
+        "user_course": user_course.serialize()
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/user_course', methods=['POST'])
+def post_user_course():
+    body = request.get_json()
+
+    if body is None:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    active = body.get("active")
+    course_id = body.get("course_id")
+    user_id = body.get("user_id")
+
+    if active is None or not course_id or not user_id:
+        return jsonify({
+            "error": "active, course_id and user_id are required"
+        }), 400
+
+    new_user_course = User_course(
+        active = active,
+        course_id = course_id,
+        user_id = user_id
+    )
+
+    db.session.add(new_user_course)
+    db.session.commit()
+
+    response_body = {
+        "msg": "User-course created successfully"
+    }
+
+    return jsonify(response_body), 201
+
+@app.route('/user_course/<int:id>', methods=['PUT'])
+def put_user_course(id):
+    user_course = User_course.query.get(id)
+
+    if user_course is None:
+        return jsonify({"error": "User-course not found"}), 404
+
+    body = request.get_json()
+
+    if body is None:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    user_course.active = body.get("active", user_course.active)
+    user_course.course_id = body.get("course_id", user_course.course_id)
+    user_course.user_id = body.get("user_id", user_course.user_id)
+
+    db.session.commit()
+
+    response_body = {
+        "msg": "User_course updated",
+        "user_course": user_course.serialize()
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/user_course/<int:id>', methods=['DELETE'])
+def delete_user_course(id):
+    user_course = User_course.query.get(id)
+
+    if user_course is None:
+        return jsonify({"error": "User-course not found"}), 404
+
+    db.session.delete(user_course)
+    db.session.commit()
+
+    return jsonify({"msg": "User-course deleted"}), 200
 
 @app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["POST"])
 def add_favorite(user_id, course_id):
