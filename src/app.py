@@ -6,15 +6,14 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, User_Course_Favorite
 from api.models import db, User, Coach, Course, Message, User_course
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
 from sqlalchemy import select
-
-
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
+import hashlib
 
 # from models import Person
 
@@ -22,9 +21,11 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "anything that is very difficult to read54321"
+jwt = JWTManager(app)
 app.url_map.strict_slashes = False
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, allow_headers=["Content-Type", "Authorization"])
 
 
 app.url_map.strict_slashes = False
@@ -58,6 +59,9 @@ def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
 # generate sitemap with all your endpoints
+
+def hash_password(password: str) -> str:
+ return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
 @app.route('/')
@@ -222,7 +226,7 @@ def post_coach():
     name = body.get("name")
     last_name = body.get("last_name")
     email = body.get("email")
-    password = body.get("password")
+    password =hash_password(password)
 
     if not name or not last_name or not email or not password:
         return jsonify({"error": "name, last_name, email and password are required"}), 400
@@ -245,6 +249,43 @@ def post_coach():
     }
 
     return jsonify(response_body), 201
+
+@app.route("/coach/token", methods=["POST"])
+def coach_token():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+
+    if not email or not password:
+        return jsonify({"error": "Missing email or password"}), 400
+    
+    coach = db.session.execute(select(Coach).where(Coach.email == email)).scalar_one_or_none()
+
+    if coach is None:
+        return jsonify({"error": "Wrong email or password"}), 401
+    
+    if coach.password != hash_password(password):
+        return jsonify({"error": "Wrong email or password"}), 401
+    
+    access_token = create_access_token(
+        identity=str(coach.id),
+        additional_claims={"role": "coach"} )
+    
+    return jsonify({
+        "token": access_token,
+        "coach_id": coach.id
+    }), 200
+
+@app.route("/coach/private", methods=["GET"])
+@jwt_required()
+def coach_private():
+    claims = get_jwt()
+    if claims.get("role") != "coach":
+     return jsonify({"Attention": "Only coach allowed"}), 403
+    
+    coach_id = int(get_jwt_identity())
+    coach = Coach.query.get(coach_id)
+
+    return jsonify({"coach": coach.serialize()}), 200
 
 @app.route('/coach/<int:id>', methods=['PUT'])
 def put_coach(id):
