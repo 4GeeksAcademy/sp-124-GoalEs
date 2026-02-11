@@ -16,7 +16,7 @@ export const Home = () => {
 
 			if (!backendUrl) throw new Error("VITE_BACKEND_URL is not defined in .env file")
 
-			const response = await fetch(backendUrl + "/api/hello")
+			const response = await fetch(backendUrl + "/hello")
 			const data = await response.json()
 
 			if (response.ok) dispatch({ type: "set_hello", payload: data.message })
@@ -47,6 +47,7 @@ export const Home = () => {
 			<button className="btn btn-primary" onClick={() => navigate ("/messages")}>Go to Message</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
+			<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
 
 
 			

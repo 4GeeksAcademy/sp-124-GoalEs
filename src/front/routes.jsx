@@ -27,6 +27,9 @@ import { Courses } from "./pages/Courses";
 import { CourseDetail } from "./pages/CourseDetail";
 import { EditCourse } from "./pages/EditCourse";
 import { CreateCourse } from "./pages/CreateCourse";
+
+import UserCourseFavorite from "./pages/UserFavorites";
+
 import { UserCourses } from "./pages/UserCoursers";
 import UserCourseSelect from "./pages/UserCourseSelect";
 
@@ -55,10 +58,10 @@ export const router = createBrowserRouter(
       <Route path="/courses/new" element={<CreateCourse />} />
       <Route path="/courses/:id/edit" element={<EditCourse />} />
 
-      <Route path="/users/:userId/courses" element={<UserCourses />} />
+      <Route path="/UserCourseFavorite" element={<UserCourseFavorite />} />
+
       <Route path="/users/:userId/courses/select" element={<UserCourseSelect />} />
-
-
+      <Route path="/users/:userId/courses" element={<UserCourses />} />
       <Route path="/single/:theid" element={<Single />} />
       <Route path="/demo" element={<Demo />} />
 
