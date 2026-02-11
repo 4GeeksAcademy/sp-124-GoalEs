@@ -2,51 +2,62 @@ import React from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+
 
 export const LoginUser = () => {
 
-    const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-    const[token, setToken] = useState("")
+  const { dispatch, store } = useGlobalReducer();
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [form, setForm] = useState({
-        email: "",
-        password: ""
-    })
+  const [form, setForm] = useState({
+    email: "",
+    password: ""
+  })
 
-    const [error, setError] = useState(null)
+  const [error, setError] = useState(null)
 
-    const login = async (event) => {
-        event.preventDefault();
+  const login = async (event) => {
+    event.preventDefault();
 
-        try {
-            const res = await fetch(`${backendURL}/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
-            });
+    try {
+      const response = await fetch(`${backendURL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-            if(!res.ok) throw new Error("We can not create a user")
+      if (!response.ok) throw new Error("Invalid credentials");
 
-            const data = await res.json();
+      const data = await response.json();
 
-            setToken(data)
-
-        } catch (err) {
-            setError(err)
-            console.error(err)
+      dispatch({
+        type: "login",
+        payload: {
+          token: data.token,
+          user: data.user
         }
-    }
+      });
 
-    return (
-        <>
-        <div className="container py-4">
-        <h1>Login</h1>
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  useEffect(()=>{
+    console.log(store.token)
+  },[store.token])
+
+  return (
+    <>
+      <div className="container py-4">
+        <h1>Login User</h1>
 
         {error && <div className="text-danger mb-3">{error}</div>}
-        
+
         <form onSubmit={login} className="mt-3">
 
           <input
@@ -64,12 +75,8 @@ export const LoginUser = () => {
             onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
           />
 
-          <button className="btn btn-success">Login</button>
+          <button type="submit" className="btn btn-success">Login</button>
         </form>
-
-        {token && <h1>{token.token}</h1>}
-        {token && <h2>{token.msg}</h2>}
-        {token && <h3>{token.user}</h3>}
 
         <div className="mt-4 d-flex gap-2">
           <button className="btn btn-secondary" onClick={() => navigate("/users")}>
@@ -80,7 +87,12 @@ export const LoginUser = () => {
           </button>
         </div>
 
+        <div>
+          <p className="mt-3">Do you not have a account?</p>
+          <button className="btn btn-outline-primary" onClick={() => navigate("/users/singup")}>Create Account</button>
+        </div>
+
       </div>
-        </>
-    )
+    </>
+  )
 }

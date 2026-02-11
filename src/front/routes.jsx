@@ -45,6 +45,7 @@ export const router = createBrowserRouter(
       <Route path="/users/:id" element={<UserDetails />} />
       <Route path="/users/new" element={<CreateUser />} />
       <Route path="/users/:id/edit" element={<EditUser />} />
+
       <Route path="/users/login" element={<LoginUser />} />
 
 
@@ -55,7 +56,7 @@ export const router = createBrowserRouter(
       <Route path="/coaches-edit/:id" element={<CoachEdit />} />
       <Route path="/coaches-details/:id" element={<CoachDetails />} />
       <Route path="/coaches" element={<Coaches />} />
-      <Route path="/coaches/singup" element={<CreateCoach />} />
+      <Route path="/coaches/new" element={<CreateCoach />} />
 
       <Route path="/main" element={<MainSection />} />
 
