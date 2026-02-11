@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, UserCourseFavorite
+from api.models import db, User, Coach, Course, User_Course_Favorite
 from api.models import db, User, Coach, Course, Message, User_course
 from api.routes import api
 from api.admin import setup_admin
@@ -517,17 +517,17 @@ def delete_user_course(id):
 @app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["POST"])
 def add_favorite(user_id, course_id):
 
-    exists = UserCourseFavorite.query.filter_by(
+    exists = User_Course_Favorite.query.filter_by(
         user_id=user_id,
-        course_id=course_id
+        course_favorite_id=course_id
     ).first()
 
     if exists:
         return jsonify({"error": "Already favorite"}), 400
 
-    fav = UserCourseFavorite(
+    fav = User_Course_Favorite(
         user_id=user_id,
-        course_id=course_id
+        course_favorite_id=course_id
     )
 
     db.session.add(fav)
@@ -539,11 +539,11 @@ def add_favorite(user_id, course_id):
 @app.route("/users/<int:user_id>/favorites", methods=["GET"])
 def get_user_favorites(user_id):
 
-    favorites = UserCourseFavorite.query.filter_by(user_id=user_id).all()
+    favorites = User_Course_Favorite.query.filter_by(user_id=user_id).all()
 
     results = []
     for fav in favorites:
-        course = Course.query.get(fav.course_id)
+        course = Course.query.get(fav.course_favorite_id)
         results.append({
             "id": fav.id,
             "course": course.serialize()
@@ -555,9 +555,9 @@ def get_user_favorites(user_id):
 @app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["DELETE"])
 def remove_favorite(user_id, course_id):
 
-    fav = UserCourseFavorite.query.filter_by(
+    fav = User_Course_Favorite.query.filter_by(
         user_id=user_id,
-        course_id=course_id
+        course_favorite_id=course_id
     ).first()
 
     if not fav:
@@ -570,9 +570,9 @@ def remove_favorite(user_id, course_id):
 
 @app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["PUT"])
 def modificar_favorite(user_id, course_id):
-    favorite = UserCourseFavorite.query.filter_by(
+    favorite = User_Course_Favorite.query.filter_by(
         user_id=user_id,
-        course_id=course_id
+        course_favorite_id=course_id
     ).first()
 
     if favorite:
@@ -581,9 +581,9 @@ def modificar_favorite(user_id, course_id):
             "favorite": favorite.serialize()
         }), 200
 
-    new_favorite = UserCourseFavorite(
+    new_favorite = User_Course_Favorite(
         user_id=user_id,
-        course_id=course_id
+        course_favorite_id=course_id
     )
 
     db.session.add(new_favorite)

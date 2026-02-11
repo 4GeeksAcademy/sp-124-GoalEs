@@ -19,18 +19,15 @@ class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     surname: Mapped[str] = mapped_column(String(120), nullable=False)
-    email: Mapped[str] = mapped_column(
-        String(120), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-    favorites = relationship(
-        "UserCourseFavorite",
-        back_populates="user",
-        cascade="all, delete"
-    )
-    messages: Mapped[list["Message"]] = relationship(back_populates="user")
-    courses: Mapped[list["User_course"]] = relationship(back_populates="user")
+
+    #relationships
+    favorites: Mapped[List["User_Course_Favorite"]] = relationship(back_populates="user")
+    messages: Mapped[List["Message"]] = relationship(back_populates="user")
+    courses: Mapped[List["User_course"]] = relationship(back_populates="user")
 
 
     def serialize(self):
@@ -55,12 +52,8 @@ class Course(db.Model):
     description: Mapped[str] = mapped_column(String(300), nullable=False)
     cost: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    favorited_by = relationship(
-        "UserCourseFavorite",
-        back_populates="course",
-        cascade="all, delete"
-    )
-    user_course: Mapped[list["User_course"]] = relationship(back_populates="course")
+    favorited_course: Mapped[List["User_Course_Favorite"]] = relationship(back_populates="course", cascade="all, delete")
+    user_course: Mapped[List["User_course"]] = relationship(back_populates="course")
 
     def serialize(self):
         return {
@@ -69,8 +62,6 @@ class Course(db.Model):
             "description": self.description,
             "cost": self.cost,
         }
-    def __str__(self):
-        return self.title
 
 
 # ======================
@@ -87,7 +78,7 @@ class Coach(db.Model):
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-    messages: Mapped[list["Message"]] = relationship(back_populates="coach")
+    messages: Mapped[List["Message"]] = relationship(back_populates="coach")
 
 
     def serialize(self):
@@ -99,30 +90,25 @@ class Coach(db.Model):
             "is_active": self.is_active
         }
 
-
-# ======================
-# USER COURSE FAVORITE
-class UserCourseFavorite (db.Model):
+class User_Course_Favorite (db.Model):
     __tablename__ = "user_course_favorite"
-
-    __table_args__ = (
-        UniqueConstraint("user_id", "course_id", name="uq_user_course_favorite"),
-    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("user.id"),
-        nullable=False
-    )
+    #foreign keys
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    course_favorite_id: Mapped[int] = mapped_column(ForeignKey("course.id"), nullable=False)
 
-    course_id: Mapped[int] = mapped_column(
-        ForeignKey("course.id"),
-        nullable=False
-    )
+    #relationsips
+    user: Mapped["User"] = relationship(back_populates="favorites")
+    course: Mapped["Course"] = relationship(back_populates="favorited_course")
 
-    user = relationship("User", back_populates="favorites")
-    course = relationship("Course", back_populates="favorited_by")
+    def serialize(self):
+        return {
+            "id": self.id,
+            "course_favorite_id": self.course_favorite_id,
+            "user_id": self.user_id
+        }
     
 class User_course(db.Model):
     __tablename__ = "user_course"

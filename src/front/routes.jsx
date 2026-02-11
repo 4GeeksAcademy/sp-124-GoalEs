@@ -9,10 +9,10 @@ import { Home } from "./pages/Home";
 import { Demo } from "./pages/Demo";
 import { Single } from "./pages/Single";
 
-import User from "./pages/User";
-import UserDetails from "./pages/UserDetails";
-import CreateUser from "./pages/CreateUser";
-import EditUser from "./pages/EditUser";
+import { User } from "./pages/User";
+import { UserDetails } from "./pages/UserDetails";
+import { CreateUser } from "./pages/CreateUser";
+import { EditUser } from "./pages/EditUser";
 
 import Message from "./pages/Message";
 
@@ -21,7 +21,7 @@ import { CoachDetails } from "./pages/CoachDetails";
 import { CoachEdit } from "./pages/CoachEdit";
 import { CreateCoach } from "./pages/CreateCoach";
 
-import {MainSection} from "./pages/MainSection";
+import { MainSection } from "./pages/MainSection";
 
 import { Courses } from "./pages/Courses";
 import { CourseDetail } from "./pages/CourseDetail";
@@ -31,7 +31,7 @@ import { CreateCourse } from "./pages/CreateCourse";
 import UserCourseFavorite from "./pages/UserFavorites";
 
 import { UserCourses } from "./pages/UserCoursers";
-import UserCourseSelect from "./pages/UserCourseSelect";
+import { UserCourseSelect } from "./pages/UserCourseSelect";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -44,13 +44,16 @@ export const router = createBrowserRouter(
       <Route path="/users/:id" element={<UserDetails />} />
       <Route path="/users/new" element={<CreateUser />} />
       <Route path="/users/:id/edit" element={<EditUser />} />
-      <Route path="/demo" element={<Demo />} />
+
       <Route path="/messages" element={<Message />} />
+
+      <Route path="/demo" element={<Demo />} />
 
       <Route path="/coaches-edit/:id" element={<CoachEdit />} />
       <Route path="/coaches-details/:id" element={<CoachDetails />} />
       <Route path="/coaches" element={<Coaches />} />
       <Route path="/coaches/singup" element={<CreateCoach />} />
+
       <Route path="/main" element={<MainSection />} />
 
       <Route path="/courses" element={<Courses />} />

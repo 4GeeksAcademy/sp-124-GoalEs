@@ -75,7 +75,7 @@ export const User = () => {
 
         {/* CARDS */}
         <div className="row">
-          {users.map((user) => (
+          {users && users.map((user) => (
             <div key={user.id} className="col-md-4 mb-4">
               <div className="card h-100 shadow-sm">
                 <div className="card-body d-flex flex-column">
