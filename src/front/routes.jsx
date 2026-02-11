@@ -13,6 +13,7 @@ import { User } from "./pages/User";
 import { UserDetails } from "./pages/UserDetails";
 import { CreateUser } from "./pages/CreateUser";
 import { EditUser } from "./pages/EditUser";
+import { LoginUser } from "./pages/LoginUser";
 
 import Message from "./pages/Message";
 
@@ -44,6 +45,8 @@ export const router = createBrowserRouter(
       <Route path="/users/:id" element={<UserDetails />} />
       <Route path="/users/new" element={<CreateUser />} />
       <Route path="/users/:id/edit" element={<EditUser />} />
+      <Route path="/users/login" element={<LoginUser />} />
+
 
       <Route path="/messages" element={<Message />} />
 

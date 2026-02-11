@@ -13,6 +13,7 @@ from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
 from sqlalchemy import select
+from flask_jwt_extended import JWTManager, create_access_token
 
 
 
@@ -49,6 +50,9 @@ setup_commands(app)
 
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
+
+app.config["JWT_SECRET_KEY"] = "super-secret-key-change-this"
+jwt = JWTManager(app)
 
 # Handle/serialize errors like a JSON object
 
@@ -131,7 +135,40 @@ def created_user():
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify(new_user.serialize()), 201
+    access_token = create_access_token(identity=new_user.id)
+
+    response_body = {
+        "msg": "User created successfully",
+        "user": new_user.serialize(),
+        "token": access_token
+    }
+
+    return jsonify(response_body), 201
+
+@app.route('/login', methods=['POST'])
+def login():
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"error": "Missing credentials"}), 400
+
+    email = body.get("email")
+    password = body.get("password")
+
+    user = db.session.execute(
+        select(User).where(User.email == email)
+    ).scalar_one_or_none()
+
+    if not user or user.password != password:
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    access_token = create_access_token(identity=user.id)
+
+    return jsonify({
+        "msg": "Login successful",
+        "token": access_token,
+        "user": user.serialize()
+    }), 200
 
 ## follow -CRUD, now it's time to do PUT
 
