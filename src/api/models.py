@@ -94,15 +94,18 @@ class Coach(db.Model):
 class Admin(db.Model):
     __tablename__ = "admin"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(200), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name,
+            "last_name": self.last_name,
             "email": self.email
         }
 

@@ -48,7 +48,7 @@ export const Home = () => {
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
-
+			<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/login")} >Go to login Admin </button>
 
 			
 			<div className="alert alert-info">
