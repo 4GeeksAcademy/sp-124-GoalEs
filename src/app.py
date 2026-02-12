@@ -6,15 +6,13 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, User_Course_Favorite
-from api.models import db, User, Coach, Course, Message, User_course
+from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
 from sqlalchemy import select
-
-
+from flask_jwt_extended import JWTManager, create_access_token
 
 # from models import Person
 
@@ -49,6 +47,9 @@ setup_commands(app)
 
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
+
+app.config["JWT_SECRET_KEY"] = "super-secret-key"
+jwt = JWTManager(app)
 
 # Handle/serialize errors like a JSON object
 
@@ -593,6 +594,32 @@ def modificar_favorite(user_id, course_id):
         "msg": "Favorite added",
         "favorite": new_favorite.serialize()
     }), 201
+
+
+@app.route('/admin/login', methods=['POST'])
+def login_admin():
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"error": "Missing credentials"}), 400
+
+    email = body.get("email")
+    password = body.get("password")
+
+    admin = db.session.execute(
+        select(Admin).where(Admin.email == email)
+    ).scalar_one_or_none()
+
+    if not admin or admin.password != password:
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    access_token = create_access_token(identity=admin.id)
+
+    return jsonify({
+        "msg": "Admin login successful",
+        "token": access_token,
+        "admin": admin.serialize()
+    }), 200
 
 
 
