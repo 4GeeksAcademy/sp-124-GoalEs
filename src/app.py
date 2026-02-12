@@ -14,6 +14,9 @@ from flask_cors import CORS
 from sqlalchemy import select
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 import hashlib
+from datetime import timedelta
+
+
 
 # from models import Person
 
@@ -24,6 +27,7 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "anything that is very difficult to read54321"
 jwt = JWTManager(app)
 app.url_map.strict_slashes = False
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
 CORS(app, resources={r"/*": {"origins": "*"}}, allow_headers=["Content-Type", "Authorization"])
 
@@ -346,13 +350,20 @@ def get_course(id):
 
 
 @app.route("/course", methods=["POST"])
+@jwt_required()
 def create_course():
+    claims = get_jwt()
+    if claims.get("role") != "coach":
+        return jsonify({"msg": "Only coach allowed"}), 403
     body = request.get_json()
+    identity = get_jwt_identity()
+    coach_id = int(identity)
 
     new_course = Course(
         title=body["title"],
         description=body["description"],
-        cost=int(body["cost"])
+        cost=int(body["cost"]),
+        coach_id=coach_id
     )
 
     db.session.add(new_course)

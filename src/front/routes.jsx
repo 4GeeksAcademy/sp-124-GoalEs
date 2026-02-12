@@ -57,6 +57,7 @@ export const router = createBrowserRouter(
       <Route path="/coaches/singup" element={<CreateCoach />} />
       <Route path="/coaches/login" element={<CoachLogin />} />
       <Route path="/coach/private" element={<CoachPrivate />} />
+      <Route path="/coach/create-course" element={<CreateCourse /> } /> 
 
       <Route path="/main" element={<MainSection />} />
 
