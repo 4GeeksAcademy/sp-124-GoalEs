@@ -143,7 +143,7 @@ def created_user():
 def update_user(user_id):
     user_update = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
 
-    if user_update is None:
+    if update_user is None:
         return jsonify({"error": "User not found"}), 404
     
     body = request.get_json()
@@ -226,7 +226,7 @@ def post_coach():
     name = body.get("name")
     last_name = body.get("last_name")
     email = body.get("email")
-    password =hash_password(password)
+    password = body.get("password")
 
     if not name or not last_name or not email or not password:
         return jsonify({"error": "name, last_name, email and password are required"}), 400
@@ -235,7 +235,7 @@ def post_coach():
         name = name,
         last_name = last_name,
         email = email,
-        password = password,
+        password =hash_password(password),
         is_active = True
     )
     print("print anted de print new coach")
@@ -249,6 +249,8 @@ def post_coach():
     }
 
     return jsonify(response_body), 201
+
+
 
 @app.route("/coach/token", methods=["POST"])
 def coach_token():
@@ -554,87 +556,6 @@ def delete_user_course(id):
     db.session.commit()
 
     return jsonify({"msg": "User-course deleted"}), 200
-
-@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["POST"])
-def add_favorite(user_id, course_id):
-
-    exists = User_Course_Favorite.query.filter_by(
-        user_id=user_id,
-        course_favorite_id=course_id
-    ).first()
-
-    if exists:
-        return jsonify({"error": "Already favorite"}), 400
-
-    fav = User_Course_Favorite(
-        user_id=user_id,
-        course_favorite_id=course_id
-    )
-
-    db.session.add(fav)
-    db.session.commit()
-
-    return jsonify(fav.serialize()), 201
-
-
-@app.route("/users/<int:user_id>/favorites", methods=["GET"])
-def get_user_favorites(user_id):
-
-    favorites = User_Course_Favorite.query.filter_by(user_id=user_id).all()
-
-    results = []
-    for fav in favorites:
-        course = Course.query.get(fav.course_favorite_id)
-        results.append({
-            "id": fav.id,
-            "course": course.serialize()
-        })
-
-    return jsonify({"favorites": results}), 200
-
-
-@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["DELETE"])
-def remove_favorite(user_id, course_id):
-
-    fav = User_Course_Favorite.query.filter_by(
-        user_id=user_id,
-        course_favorite_id=course_id
-    ).first()
-
-    if not fav:
-        return jsonify({"error": "Favorite not found"}), 404
-
-    db.session.delete(fav)
-    db.session.commit()
-
-    return jsonify({"msg": "Favorite removed"}), 200
-
-@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["PUT"])
-def modificar_favorite(user_id, course_id):
-    favorite = User_Course_Favorite.query.filter_by(
-        user_id=user_id,
-        course_favorite_id=course_id
-    ).first()
-
-    if favorite:
-        return jsonify({
-            "msg": "Already in favorites",
-            "favorite": favorite.serialize()
-        }), 200
-
-    new_favorite = User_Course_Favorite(
-        user_id=user_id,
-        course_favorite_id=course_id
-    )
-
-    db.session.add(new_favorite)
-    db.session.commit()
-
-    return jsonify({
-        "msg": "Favorite added",
-        "favorite": new_favorite.serialize()
-    }), 201
-
 
 
 # this only runs if `$ python src/main.py` is executed
