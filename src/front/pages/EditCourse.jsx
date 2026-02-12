@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 
 export const EditCourse = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const { store } = useGlobalReducer();
+  const token = store.token || localStorage.getItem("jwt-token");
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -37,22 +40,31 @@ export const EditCourse = () => {
   };
 
   useEffect(() => {
+    if (!token) {
+      navigate("/coaches/login");
+      return;
+    }
     fetchCourse();
   }, [id]);
 
   const updateCourse = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       const res = await fetch(`${BACKEND_URL}/course/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+         },
         body: JSON.stringify(form)
       });
 
+      const data = await res.json().catch(() => ({}));
+
       if (!res.ok) throw new Error("Error updating course");
 
-      navigate("/courses");
+      navigate("/coach/private");
     } catch (e) {
       setError(e.message);
     }

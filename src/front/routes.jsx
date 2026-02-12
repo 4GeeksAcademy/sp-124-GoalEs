@@ -58,6 +58,7 @@ export const router = createBrowserRouter(
       <Route path="/coaches/login" element={<CoachLogin />} />
       <Route path="/coach/private" element={<CoachPrivate />} />
       <Route path="/coach/create-course" element={<CreateCourse /> } /> 
+      <Route path="/coach/edit-course/:id" element={<EditCourse />} />
 
       <Route path="/main" element={<MainSection />} />
 

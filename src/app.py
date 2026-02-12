@@ -373,13 +373,22 @@ def create_course():
 
 
 @app.route("/course/<int:id>", methods=["PUT"])
+@jwt_required()
 def update_course(id):
+    claims = get_jwt()
+    if claims.get("role") != "coach":
+        return jsonify({"msg": "Only coach allowed"}), 403
+    coach_id = int(get_jwt_identity())
+
     course = db.session.execute(
         select(Course).where(Course.id == id)
     ).scalar_one_or_none()
 
     if not course:
         return jsonify({"error": "Course not found"}), 404
+    
+    if course.coach_id != coach_id:
+        return jsonify({"msg": "Not your course"}), 403
 
     body = request.get_json()
     course.title = body["title"]
@@ -391,13 +400,23 @@ def update_course(id):
 
 
 @app.route("/course/<int:id>", methods=["DELETE"])
+@jwt_required()
 def delete_course(id):
+    claims = get_jwt()
+    if claims.get("role") != "coach":
+        return jsonify({"msg": "Only coach allowed"}), 403
+    
+    coach_id = int(get_jwt_identity())
+
     course = db.session.execute(
         select(Course).where(Course.id == id)
     ).scalar_one_or_none()
 
     if not course:
         return jsonify({"error": "Course not found"}), 404
+    
+    if course.coach_id != coach_id:
+        return jsonify({"msg": "Not your course"}), 403
 
     db.session.delete(course)
     db.session.commit()
