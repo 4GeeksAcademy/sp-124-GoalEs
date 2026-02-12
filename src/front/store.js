@@ -22,6 +22,7 @@ export default function storeReducer(store, action = {}) {
         ...store,
         token: action.payload.token,
         user: action.payload.user,
+        role: action.payload.role,
         isAuthenticated: true
       };
 
@@ -30,6 +31,7 @@ export default function storeReducer(store, action = {}) {
         ...store,
         token: null,
         user: null,
+        role: null,
         isAuthenticated: false
       };
 

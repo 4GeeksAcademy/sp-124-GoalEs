@@ -11,6 +11,8 @@ export const LoginUser = () => {
 
   const { dispatch, store } = useGlobalReducer();
 
+  const [welcome, setWelcome] = useState(false)
+
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -38,25 +40,38 @@ export const LoginUser = () => {
         type: "login",
         payload: {
           token: data.token,
-          user: data.user
+          user: data.user,
+          role: "User"
         }
       });
+
+      setWelcome(true)
+
+      setTimeout(() => {
+        navigate("/users/home")
+      }, 3000)
 
     } catch (error) {
       setError(error.message);
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(store.token)
-  },[store.token])
+  }, [store.token])
 
   return (
     <>
       <div className="container py-4">
         <h1>Login User</h1>
 
-        {error && <div className="text-danger mb-3">{error}</div>}
+        {error && <div className="alert alert-danger" role="alert">{error}</div>}
+
+        {welcome && (
+          <div className="alert alert-success" role="alert">
+            Bienvenido {store.user.name}
+          </div>
+        )}
 
         <form onSubmit={login} className="mt-3">
 
@@ -64,7 +79,7 @@ export const LoginUser = () => {
             className="form-control mb-2"
             placeholder="email"
             value={form.email}
-            onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+            onChange={(e) => setForm((form) => ({ ...form, email: e.target.value }))}
           />
 
           <input
@@ -72,7 +87,7 @@ export const LoginUser = () => {
             type="password"
             placeholder="password"
             value={form.password}
-            onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
+            onChange={(e) => setForm((form) => ({ ...form, password: e.target.value }))}
           />
 
           <button type="submit" className="btn btn-success">Login</button>
