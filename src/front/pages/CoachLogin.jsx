@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export default function CoachLogin() {
 const navigate = useNavigate();
+const { dispatch } = useGlobalReducer();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,42 +33,22 @@ const navigate = useNavigate();
 
       localStorage.setItem("jwt-token", data.token);
 
+      dispatch({
+        type: "login", 
+        payload: {
+          token: data.token,
+          coach: { id: data.coach_id }
+        }
+      });
+      navigate("/coach/private");
+
     
     } catch (err) {
       setMsg("Error to login (fetch failed)");
     }
   };
 
-  const handlePrivate = async () => {
-    setMsg("");
-
-    const token = localStorage.getItem("jwt-token");
-    if (!token) {
-      setMsg("You have no saved tokens. Log in first");
-      return;
-    }
-
-    try {
-      const resp = await fetch(`${backendURL}/coach/private`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token
-        }
-      });
-
-      const data = await resp.json();
-
-      if (!resp.ok) {
-  setMsg(data.error || data.Attention || data.msg || JSON.stringify(data));
-  return;
-}
-
-      setMsg("Private ok: " + JSON.stringify(data));
-    } catch (err) {
-      setMsg("Error in private (fetch failed)");
-    }
-  };
+ 
 
   return (
 <>
@@ -95,12 +77,7 @@ const navigate = useNavigate();
         />
         <br />
         <button className="btn btn-primary">Login</button>
-        <button className="btn btn-outline-primary mt-2" type="button" onClick={handlePrivate}>
-  Test Private
-</button>
-        
-
-        
+    
       </form>
       {msg && <p>{msg}</p>}
     </div>

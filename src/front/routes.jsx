@@ -21,6 +21,7 @@ import { CoachDetails } from "./pages/CoachDetails";
 import { CoachEdit } from "./pages/CoachEdit";
 import { CreateCoach } from "./pages/CreateCoach";
 import CoachLogin from "./pages/CoachLogin";
+import CoachPrivate from "./pages/CoachPrivate";
 
 import { MainSection } from "./pages/MainSection";
 
@@ -55,6 +56,7 @@ export const router = createBrowserRouter(
       <Route path="/coaches" element={<Coaches />} />
       <Route path="/coaches/singup" element={<CreateCoach />} />
       <Route path="/coaches/login" element={<CoachLogin />} />
+      <Route path="/coach/private" element={<CoachPrivate />} />
 
       <Route path="/main" element={<MainSection />} />
 
