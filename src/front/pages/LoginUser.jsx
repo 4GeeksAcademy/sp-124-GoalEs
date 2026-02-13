@@ -46,6 +46,7 @@ export const LoginUser = () => {
       });
 
       setWelcome(true)
+      setError("")
 
       setTimeout(() => {
         navigate("/users/home")
