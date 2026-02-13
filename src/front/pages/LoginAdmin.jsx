@@ -26,7 +26,7 @@ export const LoginAdmin = () => {
       if (!resp.ok) throw new Error(data.error || "Invalid credentials");
 
       dispatch({
-        type: "login",
+        type: "login_admin",
         payload: {
           token: data.token,
           user: data.admin,
