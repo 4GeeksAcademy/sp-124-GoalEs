@@ -46,9 +46,7 @@ export const LoginUser = () => {
           user: data.user,
         }
       });
-
-
-
+      
       setWelcome(true)
       setError("")
 
