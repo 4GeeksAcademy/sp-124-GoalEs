@@ -52,34 +52,42 @@ const { dispatch } = useGlobalReducer();
 
   return (
 <>
-    <button
-              className="btn btn-secondary"
-              onClick={() => navigate("/")}
-            >
-              Back to home
-            </button>
+   <div className="container py-4" style={{ maxWidth: 720 }}>
+      <h1 className="mb-4">Coach Login</h1>
 
-    <div style={{ padding: 20 }}>
-      <h2>Coach Login</h2>
+      {msg && <div className="alert alert-danger">{msg}</div>}
 
       <form onSubmit={handleLogin}>
         <input
+          className="form-control mb-3"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="email"
+          placeholder="Email"
+          type="email"
         />
-        <br />
+
         <input
+          className="form-control mb-3"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="password"
+          placeholder="Password"
           type="password"
         />
-        <br />
-        <button className="btn btn-primary">Login</button>
-    
+
+        <div className="d-flex gap-2">
+          <button className="btn btn-primary" type="submit">
+            Login
+          </button>
+
+          <button
+            className="btn btn-secondary"
+            type="button"
+            onClick={() => navigate("/")}
+          >
+            Back to home
+          </button>
+        </div>
       </form>
-      {msg && <p>{msg}</p>}
     </div>
     </>
   );
