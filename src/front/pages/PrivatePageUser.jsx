@@ -9,8 +9,8 @@ export const PrivateUser = () => {
     const { store, dispatch } = useGlobalReducer();
     const navigate = useNavigate();
 
-    const token = store.token || localStorage.getItem("token");
-    const isUnauthorized = !store.isAuthenticated || store.role !== "User";
+    const token = store.token || localStorage.getItem("token-user");
+    const isUnauthorized = !store.isAuthenticated;
 
     useEffect(() => {
         if (isUnauthorized) {
@@ -21,6 +21,13 @@ export const PrivateUser = () => {
             return () => clearTimeout(timer);
         }
     }, [isUnauthorized, navigate]);
+
+    const logout = () => {
+        dispatch({ type: "logout-user" });
+        localStorage.removeItem("token-user");
+        localStorage.removeItem("user");
+        navigate("/users/login");
+    };
 
     if (isUnauthorized) {
         return (
@@ -35,9 +42,9 @@ export const PrivateUser = () => {
     return (
         <div className="container py-4">
             <h1>User Dashboard</h1>
-            <p>Welcome {store.user.name}</p>
+            <p>Welcome {store.user?.name}</p>
             <button className="btn btn-secondary" onClick={() => navigate("/")}>Back to home</button>
-            <button className="btn btn-outline-secondary" onClick={() => navigate("/users/login")}>Back to login</button>
+            <button className="btn btn-outline-secondary" onClick={() => logout()}>logout</button>
         </div>
     );
 };

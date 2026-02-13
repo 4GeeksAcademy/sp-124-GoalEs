@@ -38,16 +38,16 @@ export const SignupUser = () => {
         throw new Error("Signup failed");
       }
 
+      localStorage.setItem("token-user", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       dispatch({
-        type: "login",
+        type: "login-user",
         payload: {
           token: data.token,
           user: data.user,
-          role: "User"
         }
       });
-
-      localStorage.setItem("token", data.token)
 
       setWelcome(true);
 

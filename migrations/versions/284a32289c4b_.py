@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: dce8459b1456
+Revision ID: 284a32289c4b
 Revises: 
-Create Date: 2026-02-11 09:32:38.350082
+Create Date: 2026-02-13 10:58:49.580478
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'dce8459b1456'
+revision = '284a32289c4b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,13 +28,6 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
-    op.create_table('course',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(length=120), nullable=False),
-    sa.Column('description', sa.String(length=300), nullable=False),
-    sa.Column('cost', sa.Integer(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=120), nullable=False),
@@ -44,6 +37,15 @@ def upgrade():
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
+    )
+    op.create_table('course',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=120), nullable=False),
+    sa.Column('description', sa.String(length=300), nullable=False),
+    sa.Column('cost', sa.Integer(), nullable=False),
+    sa.Column('coach_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['coach_id'], ['coach.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('message',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -79,7 +81,7 @@ def downgrade():
     op.drop_table('user_course_favorite')
     op.drop_table('user_course')
     op.drop_table('message')
-    op.drop_table('user')
     op.drop_table('course')
+    op.drop_table('user')
     op.drop_table('coach')
     # ### end Alembic commands ###
