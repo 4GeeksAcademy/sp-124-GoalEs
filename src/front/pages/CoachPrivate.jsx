@@ -24,7 +24,7 @@ export default function CoachPrivate() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + (store.token || localStorage.getItem("jwt-token"))
+          Authorization: "Bearer " + (store.token || localStorage.getItem("token-coach"))
         }
       });
 
@@ -93,7 +93,7 @@ export default function CoachPrivate() {
 
 
   const handleLogout = () => {
-    localStorage.removeItem("jwt-token");
+    localStorage.removeItem("token-coach");
 
     dispatch({ type: "logout-coach" });
 

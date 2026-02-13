@@ -25,9 +25,21 @@ class User(db.Model):
 
 
     #relationships
-    favorites: Mapped[List["User_Course_Favorite"]] = relationship(back_populates="user")
-    messages: Mapped[List["Message"]] = relationship(back_populates="user")
-    courses: Mapped[List["User_course"]] = relationship(back_populates="user")
+    #relationships
+    favorites: Mapped[List["User_Course_Favorite"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    messages: Mapped[List["Message"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    courses: Mapped[List["User_course"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
 
 
     def serialize(self):
@@ -54,11 +66,11 @@ class Course(db.Model):
 
     #relationship
     favorited_course: Mapped[List["User_Course_Favorite"]] = relationship(back_populates="course", cascade="all, delete")
-    user_course: Mapped[List["User_course"]] = relationship(back_populates="course")
+    user_course: Mapped[List["User_course"]] = relationship(back_populates="course", cascade="all, delete")
+    coach: Mapped["Coach"] = relationship(back_populates="courses", cascade="all, delete")
 
     #foreign key
-    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable=False)
-    coach: Mapped["Coach"] = relationship(backref="courses")
+    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable=True)
 
     def serialize(self):
         return {
@@ -76,16 +88,16 @@ class Course(db.Model):
 class Coach(db.Model):
     __tablename__ = "coach"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement= True)
-    email: Mapped[str] = mapped_column(
-        String(120), unique=True, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-    messages: Mapped[List["Message"]] = relationship(back_populates="coach")
+    messages: Mapped[List["Message"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
 
+    courses: Mapped[List["Course"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
 
     def serialize(self):
         return {
