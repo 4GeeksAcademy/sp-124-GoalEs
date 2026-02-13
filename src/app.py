@@ -649,8 +649,7 @@ def admin_signup():
     db.session.add(new_admin)
     db.session.commit()
 
-    # if you're not using JWT yet, just return admin for now
-    # if using JWT: token = create_access_token(identity=new_admin.id)
+
     return jsonify({
         "msg": "Signup admin successful",
         "admin": new_admin.serialize()
