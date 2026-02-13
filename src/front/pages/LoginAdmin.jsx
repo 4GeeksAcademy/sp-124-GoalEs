@@ -29,7 +29,7 @@ export const LoginAdmin = () => {
         type: "login",
         payload: {
           token: data.token,
-          user: data.admin,   // یا data.user اگر همون اسم رو برگردوندی
+          user: data.admin,
           role: "Admin"
         }
       });
@@ -43,14 +43,15 @@ export const LoginAdmin = () => {
   };
 
   return (
-    <div className="container py-4">
+    <div className="container py-4" style={{ maxWidth: 520 }}>
       <h1>Login Admin</h1>
 
       {error && <div className="alert alert-danger">{error}</div>}
       {welcome && <div className="alert alert-success">Welcome!</div>}
 
       <form onSubmit={loginAdmin} className="mt-3">
-        <input className="form-control mb-2" placeholder="email"
+        <input className="form-control mb-2"
+          placeholder="email"
           value={form.email}
           onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} />
 
@@ -59,6 +60,17 @@ export const LoginAdmin = () => {
           onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))} />
 
         <button className="btn btn-success" type="submit">Login</button>
+
+        <div className="mt-3">
+          <p>Don't have an admin account?</p>
+          <button className="btn btn-outline-primary"onClick={() => navigate("/admin/signup")}>
+            Create Admin Account
+          </button>
+          <button className="m-2 btn btn-outline-secondary" onClick={() => navigate("/")}>
+            Back Home
+          </button>
+
+        </div>
       </form>
     </div>
   );

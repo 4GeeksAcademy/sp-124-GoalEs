@@ -6,6 +6,7 @@ import {
 
 import { LoginAdmin } from "./pages/LoginAdmin.jsx";
 import { PrivateAdmin } from "./pages/PrivateAdmin.jsx"; 
+import SignupAdmin from "./pages/SignupAdmin";
 
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
@@ -42,6 +43,8 @@ export const router = createBrowserRouter(
 
       {/* Home */}
       <Route path="/" element={<Home />} />
+
+      <Route path="/admin/signup" element={<SignupAdmin />} />
 
       <Route path="/admin/login" element={<LoginAdmin />} />
       <Route path="/admin/home" element={<PrivateAdmin />} />

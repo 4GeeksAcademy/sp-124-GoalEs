@@ -25,8 +25,8 @@ export const PrivateAdmin = () => {
 
   return (
     <div className="container py-4">
-      <h1>Admin Dashboard</h1>
-      <p>Welcome {store.user?.name}</p>
+      <h1>Admin's Dashboard</h1>
+      <p>Welcome {store.user?.name}{" "}{store.user?.last_name}</p>
       <button className="btn btn-secondary" onClick={() => navigate("/")}>Back to home</button>
     </div>
   );

@@ -621,6 +621,42 @@ def login_admin():
         "admin": admin.serialize()
     }), 200
 
+@app.route("/admin/signup", methods=["POST"])
+def admin_signup():
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing request body"}), 400
+
+    name = body.get("name")
+    last_name = body.get("last_name")
+    email = body.get("email")
+    password = body.get("password")
+
+    if not name or not last_name or not email or not password:
+        return jsonify({"error": "All fields are required"}), 400
+
+    existing = db.session.execute(select(Admin).where(Admin.email == email)).scalar_one_or_none()
+    if existing:
+        return jsonify({"error": "Admin already exists"}), 409
+
+    new_admin = Admin(
+        name=name,
+        last_name=last_name,
+        email=email,
+        password=password,
+        is_active=True
+    )
+    db.session.add(new_admin)
+    db.session.commit()
+
+    # if you're not using JWT yet, just return admin for now
+    # if using JWT: token = create_access_token(identity=new_admin.id)
+    return jsonify({
+        "msg": "Signup admin successful",
+        "admin": new_admin.serialize()
+        # "token": token
+    }), 201
+
 
 
 # this only runs if `$ python src/main.py` is executed
