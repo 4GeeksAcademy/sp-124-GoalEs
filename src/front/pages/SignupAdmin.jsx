@@ -42,15 +42,15 @@ const SignupAdmin = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data?.error || "Signup failed");
-        return;
+        setError(data.error)
+        throw new Error("Signup failed");
       }
 
       dispatch({
         type: "login",
         payload: {
           token: data.token,
-          user: data.admin || data.user || data,
+          user: data.admin,
           role: "Admin"
         }
       });
@@ -76,7 +76,7 @@ const SignupAdmin = () => {
 
       {welcome && store?.user && (
         <div className="alert alert-success" role="alert">
-          Welcome {store.user.name} {store.user.last_name}
+          Account Created {store.user.name} {store.user.last_name}
         </div>
       )}
 
