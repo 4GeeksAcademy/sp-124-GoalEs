@@ -45,6 +45,8 @@ export const LoginUser = () => {
         }
       });
 
+      localStorage.setItem("token", data.token)
+
       setWelcome(true)
       setError("")
 

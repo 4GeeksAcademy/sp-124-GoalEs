@@ -1,12 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const PrivateUser = () => {
 
-    const { store } = useGlobalReducer();
+    const backendURL = import.meta.env.VITE_BACKEND_URL
+
+    const { store, dispatch } = useGlobalReducer();
     const navigate = useNavigate();
 
+    const token = store.token || localStorage.getItem("token");
     const isUnauthorized = !store.isAuthenticated || store.role !== "User";
 
     useEffect(() => {

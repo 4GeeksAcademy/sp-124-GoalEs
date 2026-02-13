@@ -382,7 +382,7 @@ def delete_coach(id):
 @app.route("/course", methods=["GET"])
 @jwt_required()
 def get_courses():
-    print("hola desde get course")
+    print("JWT identity:", get_jwt_identity())
     courses = db.session.execute(select(Course)).scalars().all()
     return jsonify(courses=[c.serialize() for c in courses]), 200
 

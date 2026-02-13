@@ -47,6 +47,8 @@ export const SignupUser = () => {
         }
       });
 
+      localStorage.setItem("token", data.token)
+
       setWelcome(true);
 
       setTimeout(() => {
