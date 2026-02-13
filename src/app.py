@@ -13,7 +13,7 @@ from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
 from sqlalchemy import select
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
 
 # from models import Person
@@ -83,7 +83,6 @@ def serve_any_other_file(path):
 
 @app.route('/users', methods=['GET'])
 def get_users():
-
     all_user = db.session.execute(select(User)).scalars().all()
     result = [u.serialize() for u in all_user]
 
@@ -220,6 +219,7 @@ def signup():
 
 
 @app.route('/users/<int:user_id>', methods=['PUT'])
+@jwt_required()
 def update_user(user_id):
     user_update = db.session.execute(select(User).where(
         User.id == user_id)).scalar_one_or_none()
@@ -255,6 +255,7 @@ def update_user(user_id):
 
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])
+@jwt_required()
 def delete_user(user_id):
     deleted = db.session.execute(select(User).where(
         User.id == user_id)).scalar_one_or_none()
@@ -338,6 +339,7 @@ def post_coach():
 
 
 @app.route('/coach/<int:id>', methods=['PUT'])
+@jwt_required()
 def put_coach(id):
     coach = Coach.query.get(id)
 
@@ -364,6 +366,7 @@ def put_coach(id):
 
 
 @app.route('/coach/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_coach(id):
     coach = Coach.query.get(id)
 
@@ -377,6 +380,7 @@ def delete_coach(id):
 
 
 @app.route("/course", methods=["GET"])
+@jwt_required()
 def get_courses():
     print("hola desde get course")
     courses = db.session.execute(select(Course)).scalars().all()
@@ -384,6 +388,7 @@ def get_courses():
 
 
 @app.route("/course/<int:id>", methods=["GET"])
+@jwt_required()
 def get_course(id):
     course = db.session.execute(
         select(Course).where(Course.id == id)
@@ -396,6 +401,7 @@ def get_course(id):
 
 
 @app.route("/course", methods=["POST"])
+@jwt_required()
 def create_course():
     body = request.get_json()
 
@@ -412,6 +418,7 @@ def create_course():
 
 
 @app.route("/course/<int:id>", methods=["PUT"])
+@jwt_required()
 def update_course(id):
     course = db.session.execute(
         select(Course).where(Course.id == id)
@@ -430,6 +437,7 @@ def update_course(id):
 
 
 @app.route("/course/<int:id>", methods=["DELETE"])
+@jwt_required()
 def delete_course(id):
     course = db.session.execute(
         select(Course).where(Course.id == id)
@@ -444,6 +452,7 @@ def delete_course(id):
 
 
 @app.route('/messages', methods=['GET'])
+@jwt_required()
 def get_messages():
     all_messages = db.session.execute(select(Message)).scalars().all()
     result = [m.serialize() for m in all_messages]
@@ -455,6 +464,7 @@ def get_messages():
 
 
 @app.route('/messages/<int:message_id>', methods=['GET'])
+@jwt_required()
 def get_message(message_id):
     message = db.session.execute(
         select(Message).where(Message.id == message_id)
@@ -467,6 +477,7 @@ def get_message(message_id):
 
 
 @app.route('/messages', methods=['POST'])
+@jwt_required()
 def create_message():
     body = request.get_json()
 
@@ -483,6 +494,7 @@ def create_message():
 
 
 @app.route('/messages/<int:message_id>', methods=['PUT'])
+@jwt_required()
 def update_message(message_id):
     message = db.session.execute(
         select(Message).where(Message.id == message_id)
@@ -499,6 +511,7 @@ def update_message(message_id):
 
 
 @app.route('/messages/<int:message_id>', methods=['DELETE'])
+@jwt_required()
 def delete_message(message_id):
     message = db.session.execute(
         select(Message).where(Message.id == message_id)
@@ -514,6 +527,7 @@ def delete_message(message_id):
 
 
 @app.route('/user_course', methods=['GET'])
+@jwt_required()
 def get_user_courses():
     all_user_courses = User_course.query.all()
 
@@ -534,6 +548,7 @@ def get_user_courses():
 
 
 @app.route('/user_course/<int:id>', methods=['GET'])
+@jwt_required()
 def get_user_course(id):
     user_course = User_course.query.get(id)
 
@@ -549,6 +564,7 @@ def get_user_course(id):
 
 
 @app.route('/user_course', methods=['POST'])
+@jwt_required()
 def post_user_course():
     body = request.get_json()
 
@@ -581,6 +597,7 @@ def post_user_course():
 
 
 @app.route('/user_course/<int:id>', methods=['PUT'])
+@jwt_required()
 def put_user_course(id):
     user_course = User_course.query.get(id)
 
@@ -607,6 +624,7 @@ def put_user_course(id):
 
 
 @app.route('/user_course/<int:id>', methods=['DELETE'])
+@jwt_required()
 def delete_user_course(id):
     user_course = User_course.query.get(id)
 
@@ -620,6 +638,7 @@ def delete_user_course(id):
 
 
 @app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["POST"])
+@jwt_required()
 def add_favorite(user_id, course_id):
 
     exists = User_Course_Favorite.query.filter_by(
@@ -642,6 +661,7 @@ def add_favorite(user_id, course_id):
 
 
 @app.route("/users/<int:user_id>/favorites", methods=["GET"])
+@jwt_required()
 def get_user_favorites(user_id):
 
     favorites = User_Course_Favorite.query.filter_by(user_id=user_id).all()
@@ -658,6 +678,7 @@ def get_user_favorites(user_id):
 
 
 @app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["DELETE"])
+@jwt_required()
 def remove_favorite(user_id, course_id):
 
     fav = User_Course_Favorite.query.filter_by(
@@ -675,6 +696,7 @@ def remove_favorite(user_id, course_id):
 
 
 @app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["PUT"])
+@jwt_required()
 def modificar_favorite(user_id, course_id):
     favorite = User_Course_Favorite.query.filter_by(
         user_id=user_id,
