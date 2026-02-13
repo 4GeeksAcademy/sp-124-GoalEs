@@ -43,12 +43,13 @@ export const Home = () => {
 				<img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
 				
 			</p>
-			<button className="btn btn-primary" onClick={() => navigate ("/users")}>Go to Users</button> 
-			<button className="btn btn-primary" onClick={() => navigate ("/messages")}>Go to Message</button>
+			<button className="btn btn-primary ms-3" onClick={() => navigate ("/users")}>Go to Users</button> 
+			<button className="btn btn-primary ms-3" onClick={() => navigate ("/messages")}>Go to Message</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/login")}>Go to Login/coaches</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
+			<button className="btn btn-primary ms-3" onClick={() => navigate("/users/login")}>Go to Login User</button>
 
 
 			

@@ -23,23 +23,25 @@ const { dispatch } = useGlobalReducer();
         body: JSON.stringify({ email, password })
       });
 
-      const data = await resp.json();
-
       if (!resp.ok) {
         
         setMsg(data.error || "Login failed");
         return;
       }
 
-      localStorage.setItem("jwt-token", data.token);
+      const data = await resp.json();
+
+      console.log(data.token)
+      localStorage.setItem("token-coach", data.token);
 
       dispatch({
-        type: "login", 
+        type: "login-coach", 
         payload: {
-          token: data.token,
+          token: localStorage.getItem("token-coach"),
           coach: { id: data.coach_id }
         }
       });
+
       navigate("/coach/private");
 
     

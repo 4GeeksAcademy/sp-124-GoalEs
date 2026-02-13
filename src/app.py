@@ -6,14 +6,13 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, Message, User_course
+from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
 from sqlalchemy import select
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
-import hashlib
 from datetime import timedelta
 
 
@@ -25,7 +24,6 @@ static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "anything that is very difficult to read54321"
-jwt = JWTManager(app)
 app.url_map.strict_slashes = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
@@ -55,6 +53,9 @@ setup_commands(app)
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
 
+app.config["JWT_SECRET_KEY"] = "super-secret-key-change-this"
+jwt = JWTManager(app)
+
 # Handle/serialize errors like a JSON object
 
 
@@ -63,9 +64,6 @@ def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
 # generate sitemap with all your endpoints
-
-def hash_password(password: str) -> str:
- return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
 @app.route('/')
@@ -88,7 +86,6 @@ def serve_any_other_file(path):
 
 @app.route('/users', methods=['GET'])
 def get_users():
-
     all_user = db.session.execute(select(User)).scalars().all()
     result = [u.serialize() for u in all_user]
 
@@ -102,24 +99,27 @@ def get_users():
 
     return jsonify(response_body), 200
 
+
 @app.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
-    user = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+    user = db.session.execute(select(User).where(
+        User.id == user_id)).scalar_one_or_none()
 
     if user is None:
         return jsonify("User not found"), 404
     return jsonify(user.serialize()), 200
 
-## ===========================
-## now Post 
+# ===========================
+# now Post
+
 
 @app.route('/users', methods=['POST'])
 def created_user():
     body = request.get_json()
 
-    if body is None: 
+    if body is None:
         return jsonify({"error": "Request body is missing"}), 400
-    
+
     name = body.get("name")
     surname = body.get("surname")
     email = body.get("email")
@@ -127,40 +127,119 @@ def created_user():
 
     if not name or not surname or not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
-    
-    ## if already exists:
-    existing_user = db.session.execute(select(User).where(User.email == email)).scalar_one_or_none()
+
+    # if already exists:
+    existing_user = db.session.execute(select(User).where(
+        User.email == email)).scalar_one_or_none()
 
     if existing_user:
         return jsonify({"error": "User already exists"}), 409
-    
-    new_user = User(name=name, surname=surname,email=email, password=password, is_active=True)
+
+    new_user = User(name=name, surname=surname, email=email,
+                    password=password, is_active=True)
 
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify(new_user.serialize()), 201
+    access_token = create_access_token(identity=new_user.id)
 
-## follow -CRUD, now it's time to do PUT
+    response_body = {
+        "msg": "User created successfully",
+        "user": new_user.serialize(),
+        "token": access_token
+    }
+
+    return jsonify(response_body), 201
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"error": "Missing credentials"}), 400
+
+    email = body.get("email")
+    password = body.get("password")
+
+    user = db.session.execute(
+        select(User).where(User.email == email)
+    ).scalar_one_or_none()
+
+    if not user or user.password != password:
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    access_token = create_access_token(identity=user.id)
+
+    return jsonify({
+        "msg": "Login successful",
+        "token": access_token,
+        "user": user.serialize()
+    }), 200
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"error": "Missing request body"}), 400
+
+    name = body.get("name")
+    surname = body.get("surname")
+    email = body.get("email")
+    password = body.get("password")
+
+    if not name or not surname or not email or not password:
+        return jsonify({"error": "All fields are required"}), 400
+
+    existing_user = db.session.execute(
+        select(User).where(User.email == email)
+    ).scalar_one_or_none()
+
+    if existing_user:
+        return jsonify({"error": "User already exists"}), 409
+
+    new_user = User(
+        name=name,
+        surname=surname,
+        email=email,
+        password=password,
+        is_active=True
+    )
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    access_token = create_access_token(identity=new_user.id)
+
+    return jsonify({
+        "msg": "Signup successful",
+        "token": access_token,
+        "user": new_user.serialize()
+    }), 201
+
+# follow -CRUD, now it's time to do PUT
+
 
 @app.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
-    user_update = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+    user_update = db.session.execute(select(User).where(
+        User.id == user_id)).scalar_one_or_none()
 
     if update_user is None:
         return jsonify({"error": "User not found"}), 404
-    
+
     body = request.get_json()
-    
+
     if not body:
         return jsonify({"error": "No data provided to update"}), 400
-    
+
     if "name" in body:
         user_update.name = body["name"]
 
     if "surname" in body:
-        user_update.surname = body["surname"]    
-    
+        user_update.surname = body["surname"]
+
     if "email" in body:
         user_update.email = body["email"]
 
@@ -168,25 +247,28 @@ def update_user(user_id):
         user_update.password = body["password"]
 
     if "is_active" in body:
-        user_update.is_active = body["is_active"] 
+        user_update.is_active = body["is_active"]
 
-    db.session.commit()      
+    db.session.commit()
 
-    return jsonify(user_update.serialize()), 200 
+    return jsonify(user_update.serialize()), 200
 
-## The last one -  CRUD - DELETE
+# The last one -  CRUD - DELETE
+
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
-    deleted = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+    deleted = db.session.execute(select(User).where(
+        User.id == user_id)).scalar_one_or_none()
 
     if deleted is None:
-        return jsonify({"error": "User not found to delete"}), 404 
-    
+        return jsonify({"error": "User not found to delete"}), 404
+
     db.session.delete(deleted)
     db.session.commit()
 
     return jsonify({"message": "User deleted successfully"}), 200
+
 
 @app.route('/coach', methods=['GET'])
 def get_coaches():
@@ -206,6 +288,7 @@ def get_coaches():
 
     return jsonify(response_body), 200
 
+
 @app.route('/coach/<int:id>', methods=['GET'])
 def get_coach(id):
     coach = Coach.query.get(id)
@@ -219,6 +302,7 @@ def get_coach(id):
     }
 
     return jsonify(response_body), 200
+
 
 @app.route('/coach', methods=['POST'])
 def post_coach():
@@ -239,17 +323,17 @@ def post_coach():
         name = name,
         last_name = last_name,
         email = email,
-        password =hash_password(password),
+        password =password,
         is_active = True
     )
     print("print anted de print new coach")
-    print (new_coach)
+    print(new_coach)
     db.session.add(new_coach)
     db.session.commit()
 
     response_body = {
         "msg": "Coach created successfully"
-        #"new_coach": new_coach.serialize()
+        # "new_coach": new_coach.serialize()
     }
 
     return jsonify(response_body), 201
@@ -264,25 +348,25 @@ def coach_token():
     if not email or not password:
         return jsonify({"error": "Missing email or password"}), 400
     
-    coach = db.session.execute(select(Coach).where(Coach.email == email)).scalar_one_or_none()
+    coach = db.session.execute(
+        select(Coach).where(Coach.email == email)
+    ).scalar_one_or_none()
 
     if coach is None:
         return jsonify({"error": "Wrong email or password"}), 401
     
-    if coach.password != hash_password(password):
+    if coach.password != password:
         return jsonify({"error": "Wrong email or password"}), 401
     
-    access_token = create_access_token(
-        identity=str(coach.id),
-        additional_claims={"role": "coach"} )
+    access_token = create_access_token(identity=str(coach.id))
     
     return jsonify({
         "token": access_token,
         "coach_id": coach.id
     }), 200
 
+
 @app.route("/coach/private", methods=["GET"])
-@jwt_required()
 def coach_private():
     claims = get_jwt()
     if claims.get("role") != "coach":
@@ -299,11 +383,11 @@ def put_coach(id):
 
     if coach is None:
         return jsonify({"error": "Coach not found"}), 404
-    
+
     body = request.get_json()
     if body is None:
         return jsonify({"error": "Missing JSON body"}), 400
-    
+
     coach.name = body.get("name", coach.name)
     coach.last_name = body.get("last_name", coach.last_name)
     coach.email = body.get("email", coach.email)
@@ -318,21 +402,22 @@ def put_coach(id):
 
     return jsonify(response_body), 200
 
+
 @app.route('/coach/<int:id>', methods=['DELETE'])
 def delete_coach(id):
     coach = Coach.query.get(id)
 
     if coach is None:
         return jsonify({"error": "Coach not found"}), 404
-    
+
     db.session.delete(coach)
     db.session.commit()
-    
+
     return jsonify({"msg": "Coach deleted"}), 200
+
 
 @app.route("/course", methods=["GET"])
 def get_courses():
-    print("hola desde get course")
     courses = db.session.execute(select(Course)).scalars().all()
     return jsonify(courses=[c.serialize() for c in courses]), 200
 
@@ -350,20 +435,16 @@ def get_course(id):
 
 
 @app.route("/course", methods=["POST"])
-@jwt_required()
 def create_course():
-    claims = get_jwt()
-    if claims.get("role") != "coach":
-        return jsonify({"msg": "Only coach allowed"}), 403
     body = request.get_json()
-    identity = get_jwt_identity()
-    coach_id = int(identity)
+
+    if body is None:
+        return jsonify({"error": "Missing JSON body"}), 400
 
     new_course = Course(
         title=body["title"],
         description=body["description"],
-        cost=int(body["cost"]),
-        coach_id=coach_id
+        cost=int(body["cost"])
     )
 
     db.session.add(new_course)
@@ -373,7 +454,6 @@ def create_course():
 
 
 @app.route("/course/<int:id>", methods=["PUT"])
-@jwt_required()
 def update_course(id):
     claims = get_jwt()
     if claims.get("role") != "coach":
@@ -400,7 +480,6 @@ def update_course(id):
 
 
 @app.route("/course/<int:id>", methods=["DELETE"])
-@jwt_required()
 def delete_course(id):
     claims = get_jwt()
     if claims.get("role") != "coach":
@@ -422,6 +501,7 @@ def delete_course(id):
     db.session.commit()
     return jsonify({"msg": "Course deleted"}), 200
 
+
 @app.route('/messages', methods=['GET'])
 def get_messages():
     all_messages = db.session.execute(select(Message)).scalars().all()
@@ -431,6 +511,7 @@ def get_messages():
         "msg": "We get messages",
         "messages": result
     }), 200
+
 
 @app.route('/messages/<int:message_id>', methods=['GET'])
 def get_message(message_id):
@@ -442,6 +523,7 @@ def get_message(message_id):
         return jsonify({"msg": "Message not found"}), 404
 
     return jsonify(message.serialize()), 200
+
 
 @app.route('/messages', methods=['POST'])
 def create_message():
@@ -458,6 +540,7 @@ def create_message():
 
     return jsonify(new_message.serialize()), 201
 
+
 @app.route('/messages/<int:message_id>', methods=['PUT'])
 def update_message(message_id):
     message = db.session.execute(
@@ -473,6 +556,7 @@ def update_message(message_id):
     db.session.commit()
     return jsonify(message.serialize()), 200
 
+
 @app.route('/messages/<int:message_id>', methods=['DELETE'])
 def delete_message(message_id):
     message = db.session.execute(
@@ -487,6 +571,7 @@ def delete_message(message_id):
 
     return jsonify({"msg": "Message deleted"}), 200
 
+
 @app.route('/user_course', methods=['GET'])
 def get_user_courses():
     all_user_courses = User_course.query.all()
@@ -496,7 +581,8 @@ def get_user_courses():
             "error": "No user-course records found"
         }), 404
 
-    results_user_courses = list(map(lambda user_course: user_course.serialize(), all_user_courses))
+    results_user_courses = list(
+        map(lambda user_course: user_course.serialize(), all_user_courses))
 
     response_body = {
         "msg": "This is your GET /user_course response",
@@ -504,6 +590,7 @@ def get_user_courses():
     }
 
     return jsonify(response_body), 200
+
 
 @app.route('/user_course/<int:id>', methods=['GET'])
 def get_user_course(id):
@@ -518,6 +605,7 @@ def get_user_course(id):
     }
 
     return jsonify(response_body), 200
+
 
 @app.route('/user_course', methods=['POST'])
 def post_user_course():
@@ -536,9 +624,9 @@ def post_user_course():
         }), 400
 
     new_user_course = User_course(
-        active = active,
-        course_id = course_id,
-        user_id = user_id
+        active=active,
+        course_id=course_id,
+        user_id=user_id
     )
 
     db.session.add(new_user_course)
@@ -549,6 +637,7 @@ def post_user_course():
     }
 
     return jsonify(response_body), 201
+
 
 @app.route('/user_course/<int:id>', methods=['PUT'])
 def put_user_course(id):
@@ -575,6 +664,7 @@ def put_user_course(id):
 
     return jsonify(response_body), 200
 
+
 @app.route('/user_course/<int:id>', methods=['DELETE'])
 def delete_user_course(id):
     user_course = User_course.query.get(id)
@@ -586,6 +676,86 @@ def delete_user_course(id):
     db.session.commit()
 
     return jsonify({"msg": "User-course deleted"}), 200
+
+@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["POST"])
+def add_favorite(user_id, course_id):
+
+    exists = User_Course_Favorite.query.filter_by(
+        user_id=user_id,
+        course_favorite_id=course_id
+    ).first()
+
+    if exists:
+        return jsonify({"error": "Already favorite"}), 400
+
+    fav = User_Course_Favorite(
+        user_id=user_id,
+        course_favorite_id=course_id
+    )   
+
+    db.session.add(fav)
+    db.session.commit()
+
+    return jsonify(fav.serialize()), 201
+
+
+@app.route("/users/<int:user_id>/favorites", methods=["GET"])
+def get_user_favorites(user_id):
+
+    favorites = User_Course_Favorite.query.filter_by(user_id=user_id).all()
+
+    results = []
+    for fav in favorites:
+        course = Course.query.get(fav.course_favorite_id)
+        results.append({
+            "id": fav.id,
+            "course": course.serialize()
+        })
+
+    return jsonify({"favorites": results}), 200
+
+
+@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["DELETE"])
+def remove_favorite(user_id, course_id):
+
+    fav = User_Course_Favorite.query.filter_by(
+        user_id=user_id,
+        course_favorite_id=course_id
+    ).first()
+
+    if not fav:
+        return jsonify({"error": "Favorite not found"}), 404
+
+    db.session.delete(fav)
+    db.session.commit()
+
+    return jsonify({"msg": "Favorite removed"}), 200
+
+@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["PUT"])
+def modificar_favorite(user_id, course_id):
+    favorite = User_Course_Favorite.query.filter_by(
+        user_id=user_id,
+        course_favorite_id=course_id
+    ).first()
+
+    if favorite:
+        return jsonify({
+            "msg": "Already in favorites",
+            "favorite": favorite.serialize()
+        }), 200
+
+    new_favorite = User_Course_Favorite(
+        user_id=user_id,
+        course_favorite_id=course_id
+    )
+
+    db.session.add(new_favorite)
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Favorite added",
+        "favorite": new_favorite.serialize()
+    }), 201
 
 
 # this only runs if `$ python src/main.py` is executed

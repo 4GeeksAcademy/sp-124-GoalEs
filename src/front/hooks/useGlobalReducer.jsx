@@ -2,24 +2,18 @@
 import { useContext, useReducer, createContext, useEffect } from "react";
 import storeReducer, { initialStore } from "../store"  // Import the reducer and the initial state.
 
-// Create a context to hold the global state of the application
-// We will call this global state the "store" to avoid confusion while using local states
 const StoreContext = createContext()
-
-// Define a provider component that encapsulates the store and warps it in a context provider to 
-// broadcast the information throught all the app pages and components.
 export function StoreProvider({ children }) {
-    // Initialize reducer with the initial state.
     const [store, dispatch] = useReducer(storeReducer, initialStore())
     useEffect(() => {
   const token = localStorage.getItem("jwt-token");
 
   if (token) {
     dispatch({
-      type: "login",
+      type: "login-coach",
       payload: {
         token: token,
-        coach: { id: "persisted" }
+        coach: null
       }
     });
   }

@@ -13,6 +13,9 @@ import { User } from "./pages/User";
 import { UserDetails } from "./pages/UserDetails";
 import { CreateUser } from "./pages/CreateUser";
 import { EditUser } from "./pages/EditUser";
+import { SignupUser } from "./pages/SingUpUser";
+import { LoginUser } from "./pages/LoginUser";
+import { PrivateUser } from "./pages/PrivatePageUser";
 
 import Message from "./pages/Message";
 
@@ -47,6 +50,10 @@ export const router = createBrowserRouter(
       <Route path="/users/new" element={<CreateUser />} />
       <Route path="/users/:id/edit" element={<EditUser />} />
 
+      <Route path="/users/singup" element={<SignupUser />} />
+      <Route path="/users/login" element={<LoginUser />} />
+      <Route path="/users/home" element={<PrivateUser />} />
+
       <Route path="/messages" element={<Message />} />
 
       <Route path="/demo" element={<Demo />} />
@@ -54,7 +61,7 @@ export const router = createBrowserRouter(
       <Route path="/coaches-edit/:id" element={<CoachEdit />} />
       <Route path="/coaches-details/:id" element={<CoachDetails />} />
       <Route path="/coaches" element={<Coaches />} />
-      <Route path="/coaches/singup" element={<CreateCoach />} />
+      <Route path="/coaches/new" element={<CreateCoach />} />
       <Route path="/coaches/login" element={<CoachLogin />} />
       <Route path="/coach/private" element={<CoachPrivate />} />
       <Route path="/coach/create-course" element={<CreateCourse /> } /> 
