@@ -6,13 +6,15 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, User_Course_Favorite
 from api.models import db, User, Coach, Course, Message, User_course
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
 from sqlalchemy import select
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
+import hashlib
+from datetime import timedelta
 
 
 
@@ -22,9 +24,12 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "anything that is very difficult to read54321"
+jwt = JWTManager(app)
 app.url_map.strict_slashes = False
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, allow_headers=["Content-Type", "Authorization"])
 
 
 app.url_map.strict_slashes = False
@@ -58,6 +63,9 @@ def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
 # generate sitemap with all your endpoints
+
+def hash_password(password: str) -> str:
+ return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
 @app.route('/')
@@ -139,7 +147,7 @@ def created_user():
 def update_user(user_id):
     user_update = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
 
-    if user_update is None:
+    if update_user is None:
         return jsonify({"error": "User not found"}), 404
     
     body = request.get_json()
@@ -231,7 +239,7 @@ def post_coach():
         name = name,
         last_name = last_name,
         email = email,
-        password = password,
+        password =hash_password(password),
         is_active = True
     )
     print("print anted de print new coach")
@@ -245,6 +253,45 @@ def post_coach():
     }
 
     return jsonify(response_body), 201
+
+
+
+@app.route("/coach/token", methods=["POST"])
+def coach_token():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+
+    if not email or not password:
+        return jsonify({"error": "Missing email or password"}), 400
+    
+    coach = db.session.execute(select(Coach).where(Coach.email == email)).scalar_one_or_none()
+
+    if coach is None:
+        return jsonify({"error": "Wrong email or password"}), 401
+    
+    if coach.password != hash_password(password):
+        return jsonify({"error": "Wrong email or password"}), 401
+    
+    access_token = create_access_token(
+        identity=str(coach.id),
+        additional_claims={"role": "coach"} )
+    
+    return jsonify({
+        "token": access_token,
+        "coach_id": coach.id
+    }), 200
+
+@app.route("/coach/private", methods=["GET"])
+@jwt_required()
+def coach_private():
+    claims = get_jwt()
+    if claims.get("role") != "coach":
+     return jsonify({"Attention": "Only coach allowed"}), 403
+    
+    coach_id = int(get_jwt_identity())
+    coach = Coach.query.get(coach_id)
+
+    return jsonify({"coach": coach.serialize()}), 200
 
 @app.route('/coach/<int:id>', methods=['PUT'])
 def put_coach(id):
@@ -303,13 +350,20 @@ def get_course(id):
 
 
 @app.route("/course", methods=["POST"])
+@jwt_required()
 def create_course():
+    claims = get_jwt()
+    if claims.get("role") != "coach":
+        return jsonify({"msg": "Only coach allowed"}), 403
     body = request.get_json()
+    identity = get_jwt_identity()
+    coach_id = int(identity)
 
     new_course = Course(
         title=body["title"],
         description=body["description"],
-        cost=int(body["cost"])
+        cost=int(body["cost"]),
+        coach_id=coach_id
     )
 
     db.session.add(new_course)
@@ -319,13 +373,22 @@ def create_course():
 
 
 @app.route("/course/<int:id>", methods=["PUT"])
+@jwt_required()
 def update_course(id):
+    claims = get_jwt()
+    if claims.get("role") != "coach":
+        return jsonify({"msg": "Only coach allowed"}), 403
+    coach_id = int(get_jwt_identity())
+
     course = db.session.execute(
         select(Course).where(Course.id == id)
     ).scalar_one_or_none()
 
     if not course:
         return jsonify({"error": "Course not found"}), 404
+    
+    if course.coach_id != coach_id:
+        return jsonify({"msg": "Not your course"}), 403
 
     body = request.get_json()
     course.title = body["title"]
@@ -337,13 +400,23 @@ def update_course(id):
 
 
 @app.route("/course/<int:id>", methods=["DELETE"])
+@jwt_required()
 def delete_course(id):
+    claims = get_jwt()
+    if claims.get("role") != "coach":
+        return jsonify({"msg": "Only coach allowed"}), 403
+    
+    coach_id = int(get_jwt_identity())
+
     course = db.session.execute(
         select(Course).where(Course.id == id)
     ).scalar_one_or_none()
 
     if not course:
         return jsonify({"error": "Course not found"}), 404
+    
+    if course.coach_id != coach_id:
+        return jsonify({"msg": "Not your course"}), 403
 
     db.session.delete(course)
     db.session.commit()
@@ -513,87 +586,6 @@ def delete_user_course(id):
     db.session.commit()
 
     return jsonify({"msg": "User-course deleted"}), 200
-
-@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["POST"])
-def add_favorite(user_id, course_id):
-
-    exists = User_Course_Favorite.query.filter_by(
-        user_id=user_id,
-        course_favorite_id=course_id
-    ).first()
-
-    if exists:
-        return jsonify({"error": "Already favorite"}), 400
-
-    fav = User_Course_Favorite(
-        user_id=user_id,
-        course_favorite_id=course_id
-    )
-
-    db.session.add(fav)
-    db.session.commit()
-
-    return jsonify(fav.serialize()), 201
-
-
-@app.route("/users/<int:user_id>/favorites", methods=["GET"])
-def get_user_favorites(user_id):
-
-    favorites = User_Course_Favorite.query.filter_by(user_id=user_id).all()
-
-    results = []
-    for fav in favorites:
-        course = Course.query.get(fav.course_favorite_id)
-        results.append({
-            "id": fav.id,
-            "course": course.serialize()
-        })
-
-    return jsonify({"favorites": results}), 200
-
-
-@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["DELETE"])
-def remove_favorite(user_id, course_id):
-
-    fav = User_Course_Favorite.query.filter_by(
-        user_id=user_id,
-        course_favorite_id=course_id
-    ).first()
-
-    if not fav:
-        return jsonify({"error": "Favorite not found"}), 404
-
-    db.session.delete(fav)
-    db.session.commit()
-
-    return jsonify({"msg": "Favorite removed"}), 200
-
-@app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["PUT"])
-def modificar_favorite(user_id, course_id):
-    favorite = User_Course_Favorite.query.filter_by(
-        user_id=user_id,
-        course_favorite_id=course_id
-    ).first()
-
-    if favorite:
-        return jsonify({
-            "msg": "Already in favorites",
-            "favorite": favorite.serialize()
-        }), 200
-
-    new_favorite = User_Course_Favorite(
-        user_id=user_id,
-        course_favorite_id=course_id
-    )
-
-    db.session.add(new_favorite)
-    db.session.commit()
-
-    return jsonify({
-        "msg": "Favorite added",
-        "favorite": new_favorite.serialize()
-    }), 201
-
 
 
 # this only runs if `$ python src/main.py` is executed

@@ -54,13 +54,15 @@ class Course(db.Model):
 
     favorited_course: Mapped[List["User_Course_Favorite"]] = relationship(back_populates="course", cascade="all, delete")
     user_course: Mapped[List["User_course"]] = relationship(back_populates="course")
-
+    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable=False)
+    coach: Mapped["Coach"] = relationship(backref="courses")
     def serialize(self):
         return {
             "id": self.id,
             "title": self.title,
             "description": self.description,
             "cost": self.cost,
+            "coach_id": self.coach_id
         }
 
 

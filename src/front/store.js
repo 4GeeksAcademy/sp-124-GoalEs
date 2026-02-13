@@ -1,18 +1,10 @@
-export const initialStore=()=>{
-  return{
+export const initialStore = () => {
+  return {
     message: null,
-    todos: [
-      {
-        id: 1,
-        title: "Make the bed",
-        background: null,
-      },
-      {
-        id: 2,
-        title: "Do my homework",
-        background: null,
-      }
-    ]
+
+    token: null,
+    coach: null,
+    isAuthenticated: false
   }
 }
 
@@ -23,6 +15,22 @@ export default function storeReducer(store, action = {}) {
         ...store,
         message: action.payload
       };
+
+      case "login":
+  return {
+    ...store,
+    token: action.payload.token,
+    coach: action.payload.coach,
+    isAuthenticated: true
+  };
+
+case "logout":
+  return {
+    ...store,
+    token: null,
+    coach: null,
+    isAuthenticated: false
+  };
       
     case 'add_task':
 
