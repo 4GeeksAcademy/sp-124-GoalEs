@@ -47,7 +47,7 @@ const SignupAdmin = () => {
       }
 
       dispatch({
-        type: "login",
+        type: "login_admin",
         payload: {
           token: data.token,
           user: data.admin,

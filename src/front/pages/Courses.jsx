@@ -6,14 +6,10 @@ export const Courses = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   const navigate = useNavigate();
+  
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
-  const addFavorite = async (courseId) => {
-  await fetch(
-    `${BACKEND_URL}/users/1/favorites/${courseId}`,
-    { method: "POST" }
-  );
-};
+
   const fetchCourses = async () => {
     try {
       setError("");
