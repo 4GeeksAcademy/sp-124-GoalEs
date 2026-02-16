@@ -48,6 +48,31 @@ export const AvailableCoursesUser = () => {
         }
     };
 
+    const addCourse = async (courseId) => {
+        try {
+            const res = await fetch(`${backendURL}/user_course`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    active: true,
+                    course_id: courseId,
+                    user_id: store.user.id
+                })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) throw new Error("Something was wrong")
+
+            alert("Course started successfully!");
+
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
 
     useEffect(() => {
         getCourses();
@@ -63,7 +88,7 @@ export const AvailableCoursesUser = () => {
                         <div key={course.id} className="col-md-4 mb-4">
                             <div className="card h-100 shadow-sm">
                                 <img
-                                    src="https://via.placeholder.com/400x200"
+                                    src="https://picsum.photos/400/200"
                                     className="card-img-top"
                                     alt="course"
                                 />
@@ -73,7 +98,7 @@ export const AvailableCoursesUser = () => {
                                     <p className="fw-bold">${course.cost}</p>
                                     <div className="mt-auto d-flex gap-2">
                                         <button className="btn btn-outline-primary w-100" onClick={() => addFavorite(course.id)}>Add to Favorites</button>
-                                        <button className="btn btn-success w-100">Start</button>
+                                        <button className="btn btn-success w-100" onClick={() => addCourse(course.id)}>Start</button>
                                     </div>
                                 </div>
                             </div>

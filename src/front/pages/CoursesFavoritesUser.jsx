@@ -64,7 +64,7 @@ export const CoursesFavoritesUser = () => {
                     <div key={favorites.id} className="col-md-4 mb-4">
                         <div className="card h-100 shadow-sm">
                             <img
-                                src="https://via.placeholder.com/400x200"
+                                src="https://picsum.photos/400/200"
                                 className="card-img-top"
                                 alt="course"
                             />
