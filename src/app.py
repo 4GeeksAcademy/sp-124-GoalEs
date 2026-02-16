@@ -680,7 +680,7 @@ def add_favorite(user_id, course_id):
     ).first()
 
     if exists:
-        return jsonify({"error": "Already favorite"}), 400
+        return jsonify({"error": "Already favorite"}), 409
 
     fav = User_Course_Favorite(
         user_id=user_id,

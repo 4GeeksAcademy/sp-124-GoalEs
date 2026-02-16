@@ -1,0 +1,92 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+
+export const CoursesFavoritesUser = () => {
+
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
+    const { store } = useGlobalReducer();
+    const navigate = useNavigate();
+
+    const [favorites, setFavorites] = useState([]);
+    const [error, setError] = useState("");
+
+
+    const userId = store.user?.id;
+
+    const loadFavorites = async () => {
+        try {
+            const res = await fetch(`${backendURL}/users/${userId}/favorites`);
+
+            if (!res.ok) throw new Error("Error loading favorites");
+
+            const data = await res.json();
+
+            setFavorites(data.favorites);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const removeFavorite = async (courseId) => {
+        try {
+            const res = await fetch(
+                `${backendURL}/users/${userId}/favorites/${courseId}`,
+                { method: "DELETE" }
+            );
+
+            if (!res.ok) throw new Error("Error removing favorite");
+
+            loadFavorites();
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    useEffect(() => {
+        if (userId) {
+            loadFavorites();
+        }
+    }, [favorites]);
+
+    return (
+        <div className="container py-4">
+            <h1 className="mb-4">My Favorite Courses</h1>
+
+            {error && <div className="alert alert-danger">{error}</div>}
+
+            {favorites.length === 0 && (
+                <p>No favorite courses yet.</p>
+            )}
+
+            <div className="row">
+                {favorites.map(favorites => (
+                    <div key={favorites.id} className="col-md-4 mb-4">
+                        <div className="card h-100 shadow-sm">
+                            <img
+                                src="https://via.placeholder.com/400x200"
+                                className="card-img-top"
+                                alt="course"
+                            />
+                            <div className="card-body d-flex flex-column">
+                                <h5 className="card-title">{favorites.course.title}</h5>
+                                <p className="card-text">{favorites.course.description}</p>
+                                <p className="fw-bold">${favorites.course.cost}</p>
+                                <div className="mt-auto">
+                                    <button
+                                        className="btn btn-danger w-100"
+                                        onClick={() =>
+                                            removeFavorite(favorites.course.id)
+                                        }>
+                                        Remove from Favorites
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};

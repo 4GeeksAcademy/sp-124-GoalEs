@@ -8,6 +8,7 @@ export const AvailableCoursesUser = () => {
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
     const navigate = useNavigate();
+    const { store } = useGlobalReducer();
 
     const [courses, setCourses] = useState([])
 
@@ -25,6 +26,28 @@ export const AvailableCoursesUser = () => {
             console.error(err);
         }
     }
+
+    const addFavorite = async (courseId) => {
+        try {
+            const res = await fetch(
+                `${backendURL}/users/${store.user.id}/favorites/${courseId}`,
+                { method: "POST" }
+            );
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                const data = await res.json();
+                alert(data.error || "Error adding favorite");
+                return;
+            }
+
+            alert("Added to favorites");
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
 
     useEffect(() => {
         getCourses();
@@ -49,7 +72,7 @@ export const AvailableCoursesUser = () => {
                                     <p className="card-text">{course.description}</p>
                                     <p className="fw-bold">${course.cost}</p>
                                     <div className="mt-auto d-flex gap-2">
-                                        <button className="btn btn-outline-primary w-100">Add to Favorites</button>
+                                        <button className="btn btn-outline-primary w-100" onClick={() => addFavorite(course.id)}>Add to Favorites</button>
                                         <button className="btn btn-success w-100">Start</button>
                                     </div>
                                 </div>

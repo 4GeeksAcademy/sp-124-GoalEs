@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { AvailableCoursesUser } from "./AvailableCouresUser";
+import { AvailableCoursesUser } from "./AvailableCoursesUser";
+import { CoursesFavoritesUser } from "./CoursesFavoritesUser";
 
 export const PrivateUser = () => {
 
@@ -53,6 +54,7 @@ export const PrivateUser = () => {
             <h1>{store.user?.name} Dashboard</h1>
             <p>Welcome {store.user?.name}</p>
             <AvailableCoursesUser />
+            <CoursesFavoritesUser />
             <button className="btn btn-secondary" onClick={() => navigate("/")}>Back to home</button>
             <button className="btn btn-outline-secondary" onClick={() => logout()}>logout</button>
         </div>
