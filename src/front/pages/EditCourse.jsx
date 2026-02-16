@@ -57,7 +57,7 @@ export const EditCourse = () => {
 
       if (!res.ok) throw new Error("Error updating course");
 
-      navigate("/courses");
+      navigate("/coach/private");
     } catch (e) {
       setError(e.message);
     }

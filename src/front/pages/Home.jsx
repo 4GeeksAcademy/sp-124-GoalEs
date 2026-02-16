@@ -41,21 +41,37 @@ export const Home = () => {
 			<h1 className="display-4">Hello Rigo!!</h1>
 			<p className="lead">
 				<img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
-				
+
 			</p>
-			<button className="btn btn-primary ms-3" onClick={() => navigate ("/users")}>Go to Users</button> 
-			<button className="btn btn-primary ms-3" onClick={() => navigate ("/messages")}>Go to Message</button>
-			<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
-			<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/login")}>Go to Login/coaches</button>
-			<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
-			<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
-			<button className="btn btn-primary ms-3" onClick={() => navigate("/users/singup")}>Go to Singup User</button>
-			<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/login")} >Go to Login Admin </button>
-			
+
+			{/* Publico */}
+			{localStorage.length == 0 &&
+				<>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/login")} >Go to Login Admin </button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/login")}>Go to Login/coaches</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/users/singup")}>Go to Singup User</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
+				</>
+			}
+
+			{/* Exclusivo Admin */}
+			{localStorage.getItem("admin-token") &&
+				<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
+			}
+
+			{/* Exclusivo cualquier usuario logeado */}
+			{localStorage.getItem("admin-token") || localStorage.getItem("token-user") || localStorage.getItem("token-coach") &&
+				<>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/messages")}>Go to Message</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/users")}>Go to Users</button>
+				</>
+			}
+
 			<div className="alert alert-info">
 				{store.message ? (
 					<div>
-					<span>{store.message}</span>
+						<span>{store.message}</span>
 					</div>
 				) : (
 					<span className="text-danger">

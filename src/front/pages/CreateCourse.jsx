@@ -11,7 +11,8 @@ export const CreateCourse = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    cost: ""
+    cost: "",
+    coach_id: localStorage.getItem("coach_id")
   });
   const [error, setError] = useState("");
 
@@ -32,7 +33,7 @@ export const CreateCourse = () => {
 
       if (!res.ok) throw new Error("Error creating course");
 
-      navigate("/courses");
+      navigate("/coach/private");
     } catch (e) {
       setError(e.message);
     }
