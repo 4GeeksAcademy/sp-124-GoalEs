@@ -7,7 +7,7 @@ export const CompleteProfileUser = () => {
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
-    const { store } = useGlobalReducer();
+    const { store, dispatch } = useGlobalReducer();
 
     const [form, setForm] = useState({
         name: "",
@@ -30,11 +30,6 @@ export const CompleteProfileUser = () => {
             }));
         }
     }, [store.user]);
-
-    if (form.password.trim() !== "") {
-        form.password = form.password;
-    }
-
 
     const [error, setError] = useState("");
 
