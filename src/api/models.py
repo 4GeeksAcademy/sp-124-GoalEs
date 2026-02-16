@@ -21,10 +21,10 @@ class User(db.Model):
     surname: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(200), nullable=False)
+    age: Mapped[int] = mapped_column(Integer, nullable=True)
+    gender: Mapped[str] = mapped_column(String(50), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-
-    #relationships
     #relationships
     favorites: Mapped[List["User_Course_Favorite"]] = relationship(
         back_populates="user",
@@ -48,6 +48,8 @@ class User(db.Model):
             "name": self.name,
             "surname": self.surname,
             "email": self.email,
+            "gender": self.gender,
+            "age": self.age
         }
     def __str__(self):
         return f"{self.name} {self.surname}"

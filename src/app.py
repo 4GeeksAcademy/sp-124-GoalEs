@@ -248,6 +248,13 @@ def update_user(user_id):
 
     if "is_active" in body:
         user_update.is_active = body["is_active"]
+    
+    if "age" in body:
+        user_update.age = body["age"]
+
+    if "gender" in body:
+        user_update.gender = body["gender"]
+
 
     db.session.commit()
 

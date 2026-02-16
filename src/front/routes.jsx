@@ -20,6 +20,7 @@ import { EditUser } from "./pages/EditUser";
 import { SignupUser } from "./pages/SingUpUser";
 import { LoginUser } from "./pages/LoginUser";
 import { PrivateUser } from "./pages/PrivatePageUser";
+import { CompleteProfileUser } from "./pages/CompleteProfile.jsx";
 
 import Message from "./pages/Message";
 
@@ -62,6 +63,7 @@ export const router = createBrowserRouter(
       <Route path="/users/singup" element={<SignupUser />} />
       <Route path="/users/login" element={<LoginUser />} />
       <Route path="/users/home" element={<PrivateUser />} />
+      <Route path="/users/profile" element={<CompleteProfileUser />} />
 
       <Route path="/messages" element={<Message />} />
 
