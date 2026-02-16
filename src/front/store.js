@@ -44,6 +44,12 @@ export default function storeReducer(store, action = {}) {
         isAuthenticated: true,
       };
 
+      case "is-authenticated":
+        return {
+          ...store,
+          isAuthenticated: true
+        }
+
     case "logout-coach":
       return {
         ...store,
