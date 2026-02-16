@@ -367,11 +367,8 @@ def coach_token():
 
 
 @app.route("/coach/private", methods=["GET"])
+@jwt_required()
 def coach_private():
-    claims = get_jwt()
-    if claims.get("role") != "coach":
-     return jsonify({"Attention": "Only coach allowed"}), 403
-    
     coach_id = int(get_jwt_identity())
     coach = Coach.query.get(coach_id)
 
@@ -440,18 +437,19 @@ def create_course():
 
     if body is None:
         return jsonify({"error": "Missing JSON body"}), 400
-
+    print("___________________________________________ antes de crear course")
     new_course = Course(
         title=body["title"],
         description=body["description"],
-        cost=int(body["cost"])
+        cost=int(body["cost"]),
+        coach_id=body["coach_id"]
     )
 
     db.session.add(new_course)
     db.session.commit()
 
-    return jsonify(course=new_course.serialize()), 201
-
+    # return jsonify(course=new_course.serialize()), 201
+    return "Hola"
 
 @app.route("/course/<int:id>", methods=["PUT"])
 def update_course(id):
