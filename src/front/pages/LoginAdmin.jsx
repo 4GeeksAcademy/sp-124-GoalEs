@@ -37,6 +37,8 @@ export const LoginAdmin = () => {
         }
       });
 
+      localStorage.setItem("admin-token", data.token)
+
       setWelcome(true);
       setTimeout(() => navigate("/admin/home"), 1500);
 

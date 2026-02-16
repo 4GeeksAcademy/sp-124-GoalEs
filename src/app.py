@@ -248,6 +248,13 @@ def update_user(user_id):
 
     if "is_active" in body:
         user_update.is_active = body["is_active"]
+    
+    if "age" in body:
+        user_update.age = body["age"]
+
+    if "gender" in body:
+        user_update.gender = body["gender"]
+
 
     db.session.commit()
 
@@ -563,8 +570,9 @@ def get_user_courses():
 
     if not all_user_courses:
         return jsonify({
-            "error": "No user-course records found"
-        }), 404
+            "msg": "No user-course records found",
+            "user_courses": []
+        }), 200
 
     results_user_courses = list(
         map(lambda user_course: user_course.serialize(), all_user_courses))
@@ -671,7 +679,7 @@ def add_favorite(user_id, course_id):
     ).first()
 
     if exists:
-        return jsonify({"error": "Already favorite"}), 400
+        return jsonify({"error": "Already favorite"}), 409
 
     fav = User_Course_Favorite(
         user_id=user_id,
