@@ -455,11 +455,6 @@ def create_course():
 
 @app.route("/course/<int:id>", methods=["PUT"])
 def update_course(id):
-    claims = get_jwt()
-    if claims.get("role") != "coach":
-        return jsonify({"msg": "Only coach allowed"}), 403
-    coach_id = int(get_jwt_identity())
-
     course = db.session.execute(
         select(Course).where(Course.id == id)
     ).scalar_one_or_none()
@@ -467,10 +462,11 @@ def update_course(id):
     if not course:
         return jsonify({"error": "Course not found"}), 404
     
-    if course.coach_id != coach_id:
-        return jsonify({"msg": "Not your course"}), 403
-
     body = request.get_json()
+
+    if body is None:
+        return jsonify({"error": "Missing JSON body"}), 400
+
     course.title = body["title"]
     course.description = body["description"]
     course.cost = int(body["cost"])
@@ -481,21 +477,12 @@ def update_course(id):
 
 @app.route("/course/<int:id>", methods=["DELETE"])
 def delete_course(id):
-    claims = get_jwt()
-    if claims.get("role") != "coach":
-        return jsonify({"msg": "Only coach allowed"}), 403
-    
-    coach_id = int(get_jwt_identity())
-
     course = db.session.execute(
         select(Course).where(Course.id == id)
     ).scalar_one_or_none()
 
     if not course:
         return jsonify({"error": "Course not found"}), 404
-    
-    if course.coach_id != coach_id:
-        return jsonify({"msg": "Not your course"}), 403
 
     db.session.delete(course)
     db.session.commit()
