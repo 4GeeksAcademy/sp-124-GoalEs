@@ -1,0 +1,64 @@
+import React from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+
+export const AvailableCoursesUser = () => {
+
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
+
+    const navigate = useNavigate();
+
+    const [courses, setCourses] = useState([])
+
+    const getCourses = async () => {
+        try {
+            const res = await fetch(`${backendURL}/course`)
+
+            if (!res.ok) throw new Error("We can not get the courses")
+
+            const data = await res.json();
+
+            setCourses(data.courses)
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    useEffect(() => {
+        getCourses();
+    }, [])
+
+    return (
+        <>
+            <div className="container py-4">
+                <h1 className="mb-4">Available Courses</h1>
+
+                <div className="row">
+                    {courses.map(course => (
+                        <div key={course.id} className="col-md-4 mb-4">
+                            <div className="card h-100 shadow-sm">
+                                <img
+                                    src="https://via.placeholder.com/400x200"
+                                    className="card-img-top"
+                                    alt="course"
+                                />
+                                <div className="card-body d-flex flex-column">
+                                    <h5 className="card-title">{course.title}</h5>
+                                    <p className="card-text">{course.description}</p>
+                                    <p className="fw-bold">${course.cost}</p>
+                                    <div className="mt-auto d-flex gap-2">
+                                        <button className="btn btn-outline-primary w-100">Add to Favorites</button>
+                                        <button className="btn btn-success w-100">Start</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+        </>
+    )
+}
