@@ -43,15 +43,16 @@ export const Home = () => {
 				<img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
 				
 			</p>
-			<button className="btn btn-primary ms-3" onClick={() => navigate ("/users")}>Go to Users</button> 
-			<button className="btn btn-primary ms-3" onClick={() => navigate ("/messages")}>Go to Message</button>
-			<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
+			<button className="btn btn-primary ms-3" onClick={() => navigate ("/admin/users")}>Go to Users</button> 
+			<button className="btn btn-primary ms-3" onClick={() => navigate ("/admin/messages")}>Go to Message</button>
+			<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/coaches")}>Go to Coaches</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/login")}>Go to Login/coaches</button>
-			<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
+			<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/courses")}>Go to courses</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/users/login")}>Go to Login User</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/login")} >Go to Login Admin </button>
-			
+			{store.isAuthenticated && store.role === "Admin" && (<button className="btn btn-warning ms-3" onClick={() => navigate("/admin/home")} > Admin Dashboard </button>)}
+
 			<div className="alert alert-info">
 				{store.message ? (
 					<div>

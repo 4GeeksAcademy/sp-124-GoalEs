@@ -4,14 +4,15 @@ import {
   Route
 } from "react-router-dom";
 
-import { LoginAdmin } from "./pages/LoginAdmin.jsx";
-import { PrivateAdmin } from "./pages/PrivateAdmin.jsx"; 
-import SignupAdmin from "./pages/SignupAdmin";
-
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
 import { Demo } from "./pages/Demo";
 import { Single } from "./pages/Single";
+
+import { LoginAdmin } from "./pages/LoginAdmin.jsx";
+import { PrivateAdmin } from "./pages/PrivateAdmin.jsx";
+import SignupAdmin from "./pages/SignupAdmin";
+import AdminGuard from "./pages/AdminGuard.jsx";
 
 import { User } from "./pages/User";
 import { UserDetails } from "./pages/UserDetails";
@@ -50,9 +51,13 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Home />} />
 
       <Route path="/admin/signup" element={<SignupAdmin />} />
-
       <Route path="/admin/login" element={<LoginAdmin />} />
-      <Route path="/admin/home" element={<PrivateAdmin />} />
+      <Route path="/admin/home" element={ <AdminGuard> <PrivateAdmin /> </AdminGuard> } />
+      <Route path="/admin/users" element={ <AdminGuard> <User /> </AdminGuard>}/>
+      <Route path="/admin/coaches" element={ <AdminGuard> <Coaches /> </AdminGuard>}/>
+      <Route path="/admin/courses" element={ <AdminGuard> <Courses /> </AdminGuard>}/>
+      <Route path="/admin/messages" element={ <AdminGuard> <Message /> </AdminGuard>}/>
+
 
       <Route path="/users" element={<User />} />
       <Route path="/users/:id" element={<UserDetails />} />
@@ -73,7 +78,7 @@ export const router = createBrowserRouter(
       <Route path="/coaches/new" element={<CreateCoach />} />
       <Route path="/coaches/login" element={<CoachLogin />} />
       <Route path="/coach/private" element={<CoachPrivate />} />
-      <Route path="/coach/create-course" element={<CreateCourse /> } /> 
+      <Route path="/coach/create-course" element={<CreateCourse />} />
       <Route path="/coach/edit-course/:id" element={<EditCourse />} />
 
       <Route path="/main" element={<MainSection />} />

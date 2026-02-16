@@ -25,6 +25,9 @@ export const LoginAdmin = () => {
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.error || "Invalid credentials");
 
+      localStorage.setItem("token-admin", data.token);
+      localStorage.setItem("admin", JSON.stringify(data.admin));
+
       dispatch({
         type: "login_admin",
         payload: {
@@ -48,6 +51,7 @@ export const LoginAdmin = () => {
 
       {error && <div className="alert alert-danger">{error}</div>}
       {welcome && <div className="alert alert-success">Welcome!</div>}
+
 
       <form onSubmit={loginAdmin} className="mt-3">
         <input className="form-control mb-2"
