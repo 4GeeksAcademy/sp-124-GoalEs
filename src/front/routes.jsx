@@ -4,6 +4,10 @@ import {
   Route
 } from "react-router-dom";
 
+import { LoginAdmin } from "./pages/LoginAdmin.jsx";
+import { PrivateAdmin } from "./pages/PrivateAdmin.jsx"; 
+import SignupAdmin from "./pages/SignupAdmin";
+
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
 import { Demo } from "./pages/Demo";
@@ -16,6 +20,7 @@ import { EditUser } from "./pages/EditUser";
 import { SignupUser } from "./pages/SingUpUser";
 import { LoginUser } from "./pages/LoginUser";
 import { PrivateUser } from "./pages/PrivatePageUser";
+import { CompleteProfileUser } from "./pages/CompleteProfile.jsx";
 
 import Message from "./pages/Message";
 
@@ -45,6 +50,11 @@ export const router = createBrowserRouter(
       {/* Home */}
       <Route path="/" element={<Home />} />
 
+      <Route path="/admin/signup" element={<SignupAdmin />} />
+
+      <Route path="/admin/login" element={<LoginAdmin />} />
+      <Route path="/admin/home" element={<PrivateAdmin />} />
+
       <Route path="/users" element={<User />} />
       <Route path="/users/:id" element={<UserDetails />} />
       <Route path="/users/new" element={<CreateUser />} />
@@ -53,6 +63,7 @@ export const router = createBrowserRouter(
       <Route path="/users/singup" element={<SignupUser />} />
       <Route path="/users/login" element={<LoginUser />} />
       <Route path="/users/home" element={<PrivateUser />} />
+      <Route path="/users/profile" element={<CompleteProfileUser />} />
 
       <Route path="/messages" element={<Message />} />
 

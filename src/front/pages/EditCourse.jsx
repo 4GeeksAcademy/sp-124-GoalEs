@@ -40,12 +40,8 @@ export const EditCourse = () => {
   };
 
   useEffect(() => {
-    if (!token) {
-      navigate("/coaches/login");
-      return;
-    }
-    fetchCourse();
-  }, [id]);
+    fetchCourse()
+  }, [])
 
   const updateCourse = async (e) => {
     e.preventDefault();
@@ -54,13 +50,10 @@ export const EditCourse = () => {
     try {
       const res = await fetch(`${BACKEND_URL}/course/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+        headers: { "Content-Type": "application/json"
          },
         body: JSON.stringify(form)
       });
-
-      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) throw new Error("Error updating course");
 

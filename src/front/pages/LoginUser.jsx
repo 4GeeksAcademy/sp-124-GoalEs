@@ -53,7 +53,7 @@ export const LoginUser = () => {
       setError("")
 
       setTimeout(() => {
-        navigate("/users/home")
+        navigate("/users/profile")
       }, 3000)
 
     } catch (error) {

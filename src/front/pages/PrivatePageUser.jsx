@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { AvailableCoursesUser } from "./AvailableCoursesUser";
+import { CoursesFavoritesUser } from "./CoursesFavoritesUser";
+import { MyCoursesUser } from "./MyCoursesUser";
 
 export const PrivateUser = () => {
 
@@ -8,6 +11,8 @@ export const PrivateUser = () => {
 
     const { store, dispatch } = useGlobalReducer();
     const navigate = useNavigate();
+
+    const [goodbye, setGoodBye] = useState(false);
 
     const token = store.token || localStorage.getItem("token-user");
     const isUnauthorized = !store.isAuthenticated;
@@ -23,10 +28,15 @@ export const PrivateUser = () => {
     }, [isUnauthorized, navigate]);
 
     const logout = () => {
-        dispatch({ type: "logout-user" });
-        localStorage.removeItem("token-user");
-        localStorage.removeItem("user");
-        navigate("/users/login");
+
+        setGoodBye(true)
+
+        setTimeout(() => {
+            dispatch({ type: "logout-user" });
+            localStorage.removeItem("token-user");
+            localStorage.removeItem("user");
+            navigate("/users/login");
+        }, 3000)
     };
 
     if (isUnauthorized) {
@@ -41,9 +51,13 @@ export const PrivateUser = () => {
 
     return (
         <div className="container py-4">
-            <h1>User Dashboard</h1>
+            {goodbye && <div className="alert alert-success">We hope to see you back soon!</div>}
+            <h1>{store.user?.name} Dashboard</h1>
             <p>Welcome {store.user?.name}</p>
-            <button className="btn btn-secondary" onClick={() => navigate("/")}>Back to home</button>
+            <AvailableCoursesUser />
+            <CoursesFavoritesUser />
+            <MyCoursesUser />
+            <button className="btn btn-secondary me-2" onClick={() => navigate("/")}>Back to home</button>
             <button className="btn btn-outline-secondary" onClick={() => logout()}>logout</button>
         </div>
     );

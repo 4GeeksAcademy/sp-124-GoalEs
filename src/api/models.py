@@ -22,10 +22,10 @@ class User(db.Model):
     surname: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(200), nullable=False)
+    age: Mapped[int] = mapped_column(Integer, nullable=True)
+    gender: Mapped[str] = mapped_column(String(50), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-
-    #relationships
     #relationships
     favorites: Mapped[List["User_Course_Favorite"]] = relationship(
         back_populates="user",
@@ -49,6 +49,8 @@ class User(db.Model):
             "name": self.name,
             "surname": self.surname,
             "email": self.email,
+            "gender": self.gender,
+            "age": self.age
         }
     def __str__(self):
         return f"{self.name} {self.surname}"
@@ -66,12 +68,12 @@ class Course(db.Model):
     cost: Mapped[int] = mapped_column(Integer, nullable=False)
 
     #relationship
-    favorited_course: Mapped[List["User_Course_Favorite"]] = relationship(back_populates="course", cascade="all, delete")
-    user_course: Mapped[List["User_course"]] = relationship(back_populates="course", cascade="all, delete")
-    coach: Mapped["Coach"] = relationship(back_populates="courses", cascade="all, delete")
+    favorited_course: Mapped[List["User_Course_Favorite"]] = relationship(back_populates="course", cascade="all, delete-orphan")
+    user_course: Mapped[List["User_course"]] = relationship(back_populates="course")
+    coach: Mapped["Coach"] = relationship(back_populates="courses")
 
     #foreign key
-    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable=True)
+    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"))
 
     def serialize(self):
         return {
@@ -118,7 +120,28 @@ class Coach(db.Model):
             "profile_image": self.profile_image,
             "is_active": self.is_active
         }
+    
+#ADMIN
+class Admin(db.Model):
+    __tablename__ = "admin"
 
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String(200), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "last_name": self.last_name,
+            "email": self.email
+        }
+
+
+#USER COURSE FAVORITE
 class User_Course_Favorite (db.Model):
     __tablename__ = "user_course_favorite"
 
@@ -139,6 +162,8 @@ class User_Course_Favorite (db.Model):
             "user_id": self.user_id
         }
     
+
+#USER COURSE
 class User_course(db.Model):
     __tablename__ = "user_course"
 

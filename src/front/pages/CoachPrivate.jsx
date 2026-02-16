@@ -12,7 +12,7 @@ export default function CoachPrivate() {
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [coursesError, setCoursesError] = useState("");
 
-  const token = store.token || localStorage.getItem("jwt-token");
+  const token = localStorage.getItem("token-coach");
 
   const handleTestPrivate = async () => {
     setMsg("");
@@ -24,7 +24,7 @@ export default function CoachPrivate() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + (store.token || localStorage.getItem("token-coach"))
+          Authorization: "Bearer " + token
         }
       });
 
@@ -34,7 +34,11 @@ export default function CoachPrivate() {
         setMsg(JSON.stringify(data));
         return;
       }
-
+      
+      localStorage.setItem("coach_id", data.coach.id)
+      dispatch({
+        type: "is-authenticated"
+      })
       setMsg("OK: " + JSON.stringify(data));
     } catch (err) {
       setMsg("fetch failed");
@@ -42,6 +46,7 @@ export default function CoachPrivate() {
   }
 
   useEffect(() => {
+    handleTestPrivate();
     const fetchCourses = async () => {
       setLoadingCourses(true);
       setCoursesError("");
@@ -56,11 +61,11 @@ export default function CoachPrivate() {
           return;
         }
         const allCourses = data.courses || [];
-        const coachId = store.coach?.id;
+        const coachId = Number(localStorage.getItem("coach_id"))
         const myCourses = coachId
-          ? allCourses.filter(c => c.coach_id === coachId)
+          ? allCourses.filter(c => {
+            return c.coach_id === coachId})
           : allCourses;
-
         setCourses(myCourses);
       } catch (e) {
         setCoursesError("Falha ao buscar cursos");
@@ -68,11 +73,11 @@ export default function CoachPrivate() {
         setLoadingCourses(false);
       }
     };
+
     if (store.isAuthenticated || token) fetchCourses();
   }, [store.isAuthenticated, store.coach?.id]);
 
   const handleDelete = async (courseId) => {
-    const token = store.token || localStorage.getItem("jwt-token");
     const backendURL = import.meta.env.VITE_BACKEND_URL;
     if (!window.confirm("Are you sure?")) return;
 
@@ -93,7 +98,7 @@ export default function CoachPrivate() {
 
 
   const handleLogout = () => {
-    localStorage.removeItem("token-coach");
+    localStorage.clear()
 
     dispatch({ type: "logout-coach" });
 
@@ -104,8 +109,8 @@ export default function CoachPrivate() {
     <>
       <div style={{ padding: 40 }}>
         <h2>Coach Dashboard</h2>
-
-        <p>Coach ID: {store.coach?.id}</p>
+<button className="btn btn-primary" onClick={() => console.log(courses)}>Ver cursos en consola</button>
+        <p>Coach ID: {localStorage.getItem("coach_id")}</p>
 
         <h4>My courses:</h4>
         {loadingCourses && <p>Loading...</p>}

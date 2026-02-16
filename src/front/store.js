@@ -11,6 +11,7 @@ export const initialStore = () => {
   };
 };
 
+
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
     case "set_hello":
@@ -43,12 +44,36 @@ export default function storeReducer(store, action = {}) {
         isAuthenticated: true,
       };
 
+      case "is-authenticated":
+        return {
+          ...store,
+          isAuthenticated: true
+        }
+
     case "logout-coach":
       return {
         ...store,
         token: null,
         coach: null,
         isAuthenticated: false,
+      };
+
+      case 'login_admin':
+      return {
+        ...store,
+        token: action.payload.token,
+        user: action.payload.user,
+        role: action.payload.role,
+        isAuthenticated: true
+      };
+
+    case 'logout_admin':
+      return {
+        ...store,
+        token: null,
+        user: null,
+        role: null,
+        isAuthenticated: false
       };
 
     default:

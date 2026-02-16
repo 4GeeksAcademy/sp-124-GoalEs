@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite
+from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -248,6 +248,13 @@ def update_user(user_id):
 
     if "is_active" in body:
         user_update.is_active = body["is_active"]
+    
+    if "age" in body:
+        user_update.age = body["age"]
+
+    if "gender" in body:
+        user_update.gender = body["gender"]
+
 
     db.session.commit()
 
@@ -367,11 +374,8 @@ def coach_token():
 
 
 @app.route("/coach/private", methods=["GET"])
+@jwt_required()
 def coach_private():
-    claims = get_jwt()
-    if claims.get("role") != "coach":
-     return jsonify({"Attention": "Only coach allowed"}), 403
-    
     coach_id = int(get_jwt_identity())
     coach = Coach.query.get(coach_id)
 
@@ -440,26 +444,22 @@ def create_course():
 
     if body is None:
         return jsonify({"error": "Missing JSON body"}), 400
-
+    print("___________________________________________ antes de crear course")
     new_course = Course(
         title=body["title"],
         description=body["description"],
-        cost=int(body["cost"])
+        cost=int(body["cost"]),
+        coach_id=body["coach_id"]
     )
 
     db.session.add(new_course)
     db.session.commit()
 
-    return jsonify(course=new_course.serialize()), 201
-
+    # return jsonify(course=new_course.serialize()), 201
+    return "Hola"
 
 @app.route("/course/<int:id>", methods=["PUT"])
 def update_course(id):
-    claims = get_jwt()
-    if claims.get("role") != "coach":
-        return jsonify({"msg": "Only coach allowed"}), 403
-    coach_id = int(get_jwt_identity())
-
     course = db.session.execute(
         select(Course).where(Course.id == id)
     ).scalar_one_or_none()
@@ -467,10 +467,11 @@ def update_course(id):
     if not course:
         return jsonify({"error": "Course not found"}), 404
     
-    if course.coach_id != coach_id:
-        return jsonify({"msg": "Not your course"}), 403
-
     body = request.get_json()
+
+    if body is None:
+        return jsonify({"error": "Missing JSON body"}), 400
+
     course.title = body["title"]
     course.description = body["description"]
     course.cost = int(body["cost"])
@@ -481,21 +482,12 @@ def update_course(id):
 
 @app.route("/course/<int:id>", methods=["DELETE"])
 def delete_course(id):
-    claims = get_jwt()
-    if claims.get("role") != "coach":
-        return jsonify({"msg": "Only coach allowed"}), 403
-    
-    coach_id = int(get_jwt_identity())
-
     course = db.session.execute(
         select(Course).where(Course.id == id)
     ).scalar_one_or_none()
 
     if not course:
         return jsonify({"error": "Course not found"}), 404
-    
-    if course.coach_id != coach_id:
-        return jsonify({"msg": "Not your course"}), 403
 
     db.session.delete(course)
     db.session.commit()
@@ -611,8 +603,9 @@ def get_user_courses():
 
     if not all_user_courses:
         return jsonify({
-            "error": "No user-course records found"
-        }), 404
+            "msg": "No user-course records found",
+            "user_courses": []
+        }), 200
 
     results_user_courses = list(
         map(lambda user_course: user_course.serialize(), all_user_courses))
@@ -719,7 +712,7 @@ def add_favorite(user_id, course_id):
     ).first()
 
     if exists:
-        return jsonify({"error": "Already favorite"}), 400
+        return jsonify({"error": "Already favorite"}), 409
 
     fav = User_Course_Favorite(
         user_id=user_id,
@@ -789,6 +782,68 @@ def modificar_favorite(user_id, course_id):
         "msg": "Favorite added",
         "favorite": new_favorite.serialize()
     }), 201
+
+
+@app.route('/admin/login', methods=['POST'])
+def login_admin():
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"error": "Missing credentials"}), 400
+
+    email = body.get("email")
+    password = body.get("password")
+
+    admin = db.session.execute(
+        select(Admin).where(Admin.email == email)
+    ).scalar_one_or_none()
+
+    if not admin or admin.password != password:
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    access_token = create_access_token(identity=admin.id)
+
+    return jsonify({
+        "msg": "Admin login successful",
+        "token": access_token,
+        "admin": admin.serialize()
+    }), 200
+
+@app.route("/admin/signup", methods=["POST"])
+def admin_signup():
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing request body"}), 400
+
+    name = body.get("name")
+    last_name = body.get("last_name")
+    email = body.get("email")
+    password = body.get("password")
+
+    if not name or not last_name or not email or not password:
+        return jsonify({"error": "All fields are required"}), 400
+
+    existing = db.session.execute(select(Admin).where(Admin.email == email)).scalar_one_or_none()
+    if existing:
+        return jsonify({"error": "Admin already exists"}), 409
+
+    new_admin = Admin(
+        name=name,
+        last_name=last_name,
+        email=email,
+        password=password,
+        is_active=True
+    )
+    db.session.add(new_admin)
+    db.session.commit()
+
+
+    return jsonify({
+        "msg": "Signup admin successful",
+        "admin": new_admin.serialize()
+        # "token": token
+    }), 201
+
 
 
 # this only runs if `$ python src/main.py` is executed
