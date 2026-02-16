@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite
+from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -756,6 +756,68 @@ def modificar_favorite(user_id, course_id):
         "msg": "Favorite added",
         "favorite": new_favorite.serialize()
     }), 201
+
+
+@app.route('/admin/login', methods=['POST'])
+def login_admin():
+    body = request.get_json()
+
+    if not body:
+        return jsonify({"error": "Missing credentials"}), 400
+
+    email = body.get("email")
+    password = body.get("password")
+
+    admin = db.session.execute(
+        select(Admin).where(Admin.email == email)
+    ).scalar_one_or_none()
+
+    if not admin or admin.password != password:
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    access_token = create_access_token(identity=admin.id)
+
+    return jsonify({
+        "msg": "Admin login successful",
+        "token": access_token,
+        "admin": admin.serialize()
+    }), 200
+
+@app.route("/admin/signup", methods=["POST"])
+def admin_signup():
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing request body"}), 400
+
+    name = body.get("name")
+    last_name = body.get("last_name")
+    email = body.get("email")
+    password = body.get("password")
+
+    if not name or not last_name or not email or not password:
+        return jsonify({"error": "All fields are required"}), 400
+
+    existing = db.session.execute(select(Admin).where(Admin.email == email)).scalar_one_or_none()
+    if existing:
+        return jsonify({"error": "Admin already exists"}), 409
+
+    new_admin = Admin(
+        name=name,
+        last_name=last_name,
+        email=email,
+        password=password,
+        is_active=True
+    )
+    db.session.add(new_admin)
+    db.session.commit()
+
+
+    return jsonify({
+        "msg": "Signup admin successful",
+        "admin": new_admin.serialize()
+        # "token": token
+    }), 201
+
 
 
 # this only runs if `$ python src/main.py` is executed
