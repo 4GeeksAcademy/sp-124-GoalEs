@@ -5,6 +5,7 @@ from typing import List
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship
+from datetime import date
 
 
 db = SQLAlchemy()
@@ -93,6 +94,11 @@ class Coach(db.Model):
     password: Mapped[str] = mapped_column(nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    birthday: Mapped[date] = mapped_column(db.Date, nullable=True)
+    city: Mapped[str] = mapped_column(String(120), nullable=True)
+    country: Mapped[str] = mapped_column(String(120), nullable=True)
+    phone: Mapped[str] = mapped_column(String(120), nullable=True)
+    profile_image: Mapped[str] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
     messages: Mapped[List["Message"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
@@ -105,6 +111,11 @@ class Coach(db.Model):
             "email": self.email,
             "name": self.name,
             "last_name": self.last_name,
+            "birthday": self.birthday,
+            "city": self.city,
+            "country": self.country,
+            "phone": self.phone,
+            "profile_image": self.profile_image,
             "is_active": self.is_active
         }
 

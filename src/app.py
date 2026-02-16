@@ -501,6 +501,39 @@ def delete_course(id):
     db.session.commit()
     return jsonify({"msg": "Course deleted"}), 200
 
+@app.route('/coach/token/profile', methods=["GET"])
+def coach_profile():
+    claims = get_jwt()
+    if claims.get("role") != "coach":
+        return jsonify({"Attention": "Only coach allowed"}), 403
+    
+    coach_id = int(get_jwt_identity())
+    coach = Coach.query.get(coach_id)
+
+    return jsonify({"coach": coach.serialize()}), 200
+
+@app.route('/coach/<int:id>/info', methods=['PUT'])
+def coach_info(id):
+    claims = get_jwt()
+    if claims.get.role("role") != "coach":
+        return jsonify({"msg": "Only coach allowed"}), 403
+    coach_id = int(get_jwt_identity())
+
+    coach = db.session.execute(select(Coach).where(Coach.id == id)).scalar_one_or_none()
+
+    if not coach:
+        return jsonify({"error": "Coach not found"}), 400
+    
+    body = request.get_json()
+    coach.birthday = body["birthday"]
+    coach.city = body["city"]
+    coach.country = body["country"]
+    coach.phone = body["phone"]
+    coach.profile_image = body["profile_image"]
+
+    db.session.commit()
+    return jsonify(coach=coach.serialize()), 200
+
 
 @app.route('/messages', methods=['GET'])
 def get_messages():
