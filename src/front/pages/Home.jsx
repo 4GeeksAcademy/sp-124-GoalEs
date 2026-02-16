@@ -49,7 +49,7 @@ export const Home = () => {
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/login")}>Go to Login/coaches</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
-			<button className="btn btn-primary ms-3" onClick={() => navigate("/users/login")}>Go to Login User</button>
+			<button className="btn btn-primary ms-3" onClick={() => navigate("/users/singup")}>Go to Singup User</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/login")} >Go to Login Admin </button>
 			
 			<div className="alert alert-info">
