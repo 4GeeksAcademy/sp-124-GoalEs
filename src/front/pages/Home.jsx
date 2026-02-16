@@ -45,22 +45,25 @@ export const Home = () => {
 			</p>
 
 			{/* Publico */}
-			{localStorage.length == 0 &&
+			{(localStorage.length == 0) && (
 				<>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/login")} >Go to Login Admin </button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/login")}>Go to Login/coaches</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/users/singup")}>Go to Singup User</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
 				</>
-			}
+			)}
 
 			{/* Exclusivo Admin */}
-			{localStorage.getItem("admin-token") &&
-				<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
+			{(localStorage.getItem("token-admin")) &&
+				<>
+					<button className="btn btn-success ms-3" onClick={() => navigate("/admin/home")}> Admin Dashboard</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
+				</>
 			}
 
 			{/* Exclusivo cualquier usuario logeado */}
-			{localStorage.getItem("admin-token") || localStorage.getItem("token-user") || localStorage.getItem("token-coach") &&
+			{(localStorage.getItem("token-admin") || localStorage.getItem("token-user") || localStorage.getItem("token-coach") )&&
 				<>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/messages")}>Go to Message</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
