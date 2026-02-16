@@ -51,7 +51,7 @@ export const Home = () => {
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/users/login")}>Go to Login User</button>
 			<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/login")} >Go to Login Admin </button>
-			{store.isAuthenticated && store.role === "Admin" && (<button className="btn btn-warning ms-3" onClick={() => navigate("/admin/home")} > Admin Dashboard </button>)}
+			{store.isAuthenticated && store.role === "Admin" && (<button className="btn btn-success ms-3" onClick={() => navigate("/admin/home")} > Admin Dashboard </button>)}
 
 			<div className="alert alert-info">
 				{store.message ? (
