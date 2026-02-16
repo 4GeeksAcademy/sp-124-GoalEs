@@ -52,7 +52,7 @@ export const SignupUser = () => {
       setWelcome(true);
 
       setTimeout(() => {
-        navigate("/users/home");
+        navigate("/users/login");
       }, 3000);
 
     } catch (error) {
@@ -115,18 +115,16 @@ export const SignupUser = () => {
 
         <div className="mt-4 d-flex gap-2">
           <button
-            className="btn btn-secondary"
-            onClick={() => navigate("/users/login")}
-          >
-            Back to Login
-          </button>
-
-          <button
             className="btn btn-outline-secondary"
             onClick={() => navigate("/")}
           >
             Back to Home
           </button>
+        </div>
+
+        <div>
+          <p className="mt-3">Do you have a account?</p>
+          <button className="btn btn-outline-primary" onClick={() => navigate("/users/login")}>Go to login</button>
         </div>
 
       </div>
