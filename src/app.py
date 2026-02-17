@@ -12,8 +12,9 @@ from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
 from sqlalchemy import select
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt, verify_jwt_in_request
 from datetime import timedelta
+from functools import wraps
 
 
 
@@ -23,7 +24,7 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "anything that is very difficult to read54321"
+#app.config["JWT_SECRET_KEY"] = "anything that is very difficult to read54321"
 app.url_map.strict_slashes = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
@@ -55,6 +56,57 @@ app.register_blueprint(api, url_prefix='/api')
 
 app.config["JWT_SECRET_KEY"] = "super-secret-key-change-this"
 jwt = JWTManager(app)
+
+#helper, because we don't repeat ourself and never forget the role
+def issue_token(identity: int, role: str):
+    return create_access_token(
+        identity=str(identity),
+        additional_claims={"role": role}
+    )
+
+
+#helper, do you have a valid token? are you allowed?
+def current_role():
+    claims = get_jwt() or {}
+    return claims.get("role")
+
+def role_required(*allowed_roles):
+    """
+    Usage:
+      @role_required("user", "admin")
+      def endpoint(): ...
+    It will:
+      - verify JWT is present
+      - check role in token claims
+    """
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            verify_jwt_in_request()
+            role = current_role()
+            if role not in allowed_roles:
+                return jsonify({"msg": "Forbidden: role not allowed"}), 403
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
+
+def owner_or_admin_required(owner_id: int):
+    role = current_role()
+    identity = get_jwt_identity()
+
+    if role == "admin":
+        return None
+
+    if identity is None:
+        return jsonify({"msg": "Missing identity in token"}), 401
+
+    if int(identity) != int(owner_id):
+        return jsonify({"msg": "Forbidden: not owner"}), 403
+
+    return None
+
+
+
 
 # Handle/serialize errors like a JSON object
 
@@ -141,7 +193,7 @@ def created_user():
     db.session.add(new_user)
     db.session.commit()
 
-    access_token = create_access_token(identity=new_user.id)
+    access_token = issue_token(new_user.id, "user") #changed
 
     response_body = {
         "msg": "User created successfully",
@@ -169,7 +221,7 @@ def login():
     if not user or user.password != password:
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity=user.id)
+    access_token = issue_token(user.id, "user") #changed
 
     return jsonify({
         "msg": "Login successful",
@@ -210,7 +262,7 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
 
-    access_token = create_access_token(identity=new_user.id)
+    access_token = issue_token(new_user.id, "user") #changed
 
     return jsonify({
         "msg": "Signup successful",
@@ -222,11 +274,16 @@ def signup():
 
 
 @app.route('/users/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
+@role_required("user", "admin")
+@jwt_required()
+def user_update(user_id): #changed because it's a function not a data base
+    forbidden = owner_or_admin_required(user_id) #new
+    if forbidden:
+        return forbidden
     user_update = db.session.execute(select(User).where(
         User.id == user_id)).scalar_one_or_none()
 
-    if update_user is None:
+    if user_update is None: #changed
         return jsonify({"error": "User not found"}), 404
 
     body = request.get_json()
@@ -365,7 +422,7 @@ def coach_token():
     if coach.password != password:
         return jsonify({"error": "Wrong email or password"}), 401
     
-    access_token = create_access_token(identity=str(coach.id))
+    access_token = issue_token(coach.id, "coach") #changed
     
     return jsonify({
         "token": access_token,
@@ -768,7 +825,7 @@ def login_admin():
     if not admin or admin.password != password:
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity=admin.id)
+    access_token = issue_token(admin.id, "admin") #changed
 
     return jsonify({
         "msg": "Admin login successful",
