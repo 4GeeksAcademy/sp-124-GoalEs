@@ -254,7 +254,9 @@ def update_user(user_id):
 
     if "gender" in body:
         user_update.gender = body["gender"]
-
+        
+    if "profile_picture" in body:
+        user_update.profile_picture = body["profile_picture"]
 
     db.session.commit()
 
