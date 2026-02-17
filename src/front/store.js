@@ -1,13 +1,15 @@
 export const initialStore = () => {
   const token = localStorage.getItem("token-user");
   const user = localStorage.getItem("user");
+  const tokenCoach = localStorage.getItem("token-coach");
+  const coach = localStorage.getItem("coach");
 
   return {
     message: null,
-    token: token || null,
+    token: token || tokenCoach || null,
     user: user ? JSON.parse(user) : null,
-    coach: null,
-    isAuthenticated: token ? true : false,
+    coach: coach ? JSON.parse(coach) : null,
+    isAuthenticated: token || tokenCoach ? true : false,
   };
 };
 

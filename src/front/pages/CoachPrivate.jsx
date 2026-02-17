@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 
 export default function CoachPrivate() {
-  const { store } = useGlobalReducer();
-  const { dispatch } = useGlobalReducer();
+  const { dispatch, store } = useGlobalReducer();
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
@@ -14,36 +13,7 @@ export default function CoachPrivate() {
 
   const token = localStorage.getItem("token-coach");
 
-  const handleTestPrivate = async () => {
-    setMsg("");
-
-    try {
-      const backendURL = import.meta.env.VITE_BACKEND_URL;
-
-      const resp = await fetch(`${backendURL}/coach/private`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token
-        }
-      });
-
-      const data = await resp.json();
-
-      if (!resp.ok) {
-        setMsg(JSON.stringify(data));
-        return;
-      }
-      
-      localStorage.setItem("coach_id", data.coach.id)
-      dispatch({
-        type: "is-authenticated"
-      })
-      setMsg("OK: " + JSON.stringify(data));
-    } catch (err) {
-      setMsg("fetch failed");
-    }
-  }
+ 
 
   useEffect(() => {
     handleTestPrivate();
@@ -108,7 +78,7 @@ export default function CoachPrivate() {
   return (
     <>
       <div style={{ padding: 40 }}>
-        <h2>Coach Dashboard</h2>
+        <h2>{store.coach.name} Dashboard</h2>
 <button className="btn btn-primary" onClick={() => console.log(courses)}>Ver cursos en consola</button>
         <p>Coach ID: {localStorage.getItem("coach_id")}</p>
 

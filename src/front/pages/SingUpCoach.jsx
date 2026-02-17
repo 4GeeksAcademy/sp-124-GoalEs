@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer"; 
 
 export const SingUpCoach = () => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
+  const { dispatch } = useGlobalReducer();
 
   const [form, setForm] = useState({
     name: "",
@@ -32,9 +34,23 @@ export const SingUpCoach = () => {
         body: JSON.stringify(form)
       });
 
-      if (!res.ok) throw new Error("Error creating coach");
+      const data = await res.json();
 
-      navigate("/coaches");
+      localStorage.setItem("token-coach", data.token);
+      localStorage.setItem("coach", JSON.stringify(data.coach));
+
+      dispatch({
+        type: "login-coach",
+        payload: {
+          token: data.token,
+          coach: data.coach,
+        }
+
+      });
+
+      if (!res.ok) throw new Error("Error to singup coach");
+
+      navigate("/coaches/login");
 
     } catch (err) {
       console.error(err);
@@ -83,7 +99,7 @@ export const SingUpCoach = () => {
           onChange={handleChange}
         />
 
-        <button className="btn btn-success">Create Coach</button>
+        <button type="submit" className="btn btn-success">Create Coach</button>
         <button
           type="button"
           className="btn btn-secondary ms-2"
@@ -91,6 +107,20 @@ export const SingUpCoach = () => {
         >
           Cancel
         </button>
+
+        <div className="mt-4 d-flex gap-2">
+          <button
+            className="btn btn-outline-secondary"
+            onClick={() => navigate("/")}
+          >
+            Back to Home
+          </button>
+        </div>
+
+        <div>
+          <p className="mt-3">Do you have an account?</p>
+          <button className="btn btn-outline-primary" onClick={() => navigate("/coaches/login")}>Go to login</button>
+        </div>
 
       </form>
     </div>

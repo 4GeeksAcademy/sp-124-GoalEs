@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
@@ -6,7 +6,7 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export default function CoachLogin() {
 const navigate = useNavigate();
-const { dispatch } = useGlobalReducer();
+const { dispatch, store } = useGlobalReducer();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,11 +17,13 @@ const { dispatch } = useGlobalReducer();
     setMsg("");
 
     try {
-      const resp = await fetch(`${backendURL}/coach/token`, {
+      const resp = await fetch(`${backendURL}/coach/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
+
+      const data = await resp.json();
 
       if (!resp.ok) {
         
@@ -29,16 +31,15 @@ const { dispatch } = useGlobalReducer();
         return;
       }
 
-      const data = await resp.json();
-
-      console.log(data.token)
+      
       localStorage.setItem("token-coach", data.token);
+      localStorage.setItem("coach", JSON.stringify(data.coach));
 
       dispatch({
         type: "login-coach", 
         payload: {
           token: localStorage.getItem("token-coach"),
-          coach: { id: data.coach_id }
+          coach: data.coach,
         }
       });
 
@@ -50,6 +51,9 @@ const { dispatch } = useGlobalReducer();
     }
   };
 
+  useEffect(() => {
+    console.log(store.tokenCoach)
+  },[store.tokenCoach])
  
 
   return (

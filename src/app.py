@@ -333,22 +333,23 @@ def post_coach():
         password =password,
         is_active = True
     )
-    print("print anted de print new coach")
-    print(new_coach)
+    
     db.session.add(new_coach)
     db.session.commit()
 
+    access_token = create_access_token(identity=new_coach.id)
+
     response_body = {
-        "msg": "Coach created successfully"
-        # "new_coach": new_coach.serialize()
+        "msg": "Coach created successfully",
+        "coach": new_coach.serialize(),
+        "token": access_token
     }
 
     return jsonify(response_body), 201
 
 
-
-@app.route("/coach/token", methods=["POST"])
-def coach_token():
+@app.route("/coach/login", methods=["POST"])
+def coach_login():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
 
@@ -368,8 +369,9 @@ def coach_token():
     access_token = create_access_token(identity=str(coach.id))
     
     return jsonify({
+        "msg": "Login successful",
         "token": access_token,
-        "coach_id": coach.id
+        "coach": coach.serialize()
     }), 200
 
 
@@ -493,7 +495,7 @@ def delete_course(id):
     db.session.commit()
     return jsonify({"msg": "Course deleted"}), 200
 
-@app.route('/coach/token/profile', methods=["GET"])
+@app.route('/coach/profile', methods=["GET"])
 def coach_profile():
     claims = get_jwt()
     if claims.get("role") != "coach":
@@ -521,6 +523,7 @@ def coach_info(id):
     coach.city = body["city"]
     coach.country = body["country"]
     coach.phone = body["phone"]
+    coach.gender = body["gender"]
     coach.profile_image = body["profile_image"]
 
     db.session.commit()

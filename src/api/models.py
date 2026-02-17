@@ -96,6 +96,7 @@ class Coach(db.Model):
     password: Mapped[str] = mapped_column(nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    gender: Mapped[str] = mapped_column(String(50), nullable=True)
     birthday: Mapped[date] = mapped_column(db.Date, nullable=True)
     city: Mapped[str] = mapped_column(String(120), nullable=True)
     country: Mapped[str] = mapped_column(String(120), nullable=True)
