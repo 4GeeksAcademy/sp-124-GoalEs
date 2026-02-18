@@ -43,7 +43,7 @@ const { dispatch, store } = useGlobalReducer();
         }
       });
 
-      navigate("/coach/private");
+      navigate("/coaches/profile");
 
     
     } catch (err) {
@@ -52,8 +52,8 @@ const { dispatch, store } = useGlobalReducer();
   };
 
   useEffect(() => {
-    console.log(store.tokenCoach)
-  },[store.tokenCoach])
+    console.log(store.token)
+  },[store.token])
  
 
   return (

@@ -12,15 +12,26 @@ export const CreateCourse = () => {
     title: "",
     description: "",
     cost: "",
-    coach_id: localStorage.getItem("coach_id")
+    coach_id: store.coach?.id || null
   });
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (store.coach?.id) {
+      setForm(prev => ({...prev, coach_id: store.coach.id}));
+    }
+  },[store.coach])
 
   const createCourse = async (e) => {
     e.preventDefault();
 
     if (!form.title || !form.description || !form.cost) {
       setError("All fields are required");
+      return;
+    }
+
+    if (!form.coach_id) {  
+      setError("Coach not found. Please login again.");
       return;
     }
 

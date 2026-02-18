@@ -3,6 +3,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useNavigate } from "react-router-dom";
 
 
+
 export default function CoachPrivate() {
   const { dispatch, store } = useGlobalReducer();
   const [msg, setMsg] = useState("");
@@ -16,7 +17,6 @@ export default function CoachPrivate() {
  
 
   useEffect(() => {
-    handleTestPrivate();
     const fetchCourses = async () => {
       setLoadingCourses(true);
       setCoursesError("");
@@ -115,10 +115,6 @@ export default function CoachPrivate() {
           </button>
 
           <button className="btn btn-primary" onClick={handleLogout}>Log out</button>
-          <button className="btn btn-outline-primary ms-2" onClick={handleTestPrivate}>
-            Test Private
-          </button>
-
           {msg && <p>{msg}</p>}
         </div>
       </div>

@@ -383,30 +383,41 @@ def coach_private():
 
     return jsonify({"coach": coach.serialize()}), 200
 
-@app.route('/coach/<int:id>', methods=['PUT'])
-def put_coach(id):
-    coach = Coach.query.get(id)
+@app.route('/coach/<int:coach_id>', methods=['PUT'])
+def put_coach(coach_id):
+    coach_update = db.session.execute(select(Coach).where(Coach.id == coach_id)).scalar_one_or_none()
 
-    if coach is None:
+    if coach_update is None:
         return jsonify({"error": "Coach not found"}), 404
 
     body = request.get_json()
-    if body is None:
-        return jsonify({"error": "Missing JSON body"}), 400
-
-    coach.name = body.get("name", coach.name)
-    coach.last_name = body.get("last_name", coach.last_name)
-    coach.email = body.get("email", coach.email)
-    coach.password = body.get("password", coach.password)
+    if not body:
+        return jsonify({"error": "No data provided to update"}), 400
+    
+    if "name" in body:
+        coach_update.name = body["name"]
+    if "last_name" in body:
+        coach_update.last_name = body["last_name"]
+    if "email" in body:
+        coach_update.email = body["email"]
+    if "password" in body:
+        coach_update.password = body["password"]
+    if "is_active" in body:
+        coach_update.is_active = body["is_active"]
+    if "gender" in body:
+        coach_update.gender = body["gender"]
+    if "city" in body:
+        coach_update.city = body["city"]
+    if "country" in body:
+        coach_update.country = body["country"]
+    if "phone" in body:
+        coach_update.phone = body["phone"]
+    if "birthday" in body:
+        coach_update.birthday = body["birthday"]
 
     db.session.commit()
 
-    response_body = {
-        "msg": "Coach updated",
-        "coach": coach.serialize()
-    }
-
-    return jsonify(response_body), 200
+    return jsonify(coach_update.serialize()), 200
 
 
 @app.route('/coach/<int:id>', methods=['DELETE'])
@@ -495,16 +506,13 @@ def delete_course(id):
     db.session.commit()
     return jsonify({"msg": "Course deleted"}), 200
 
-@app.route('/coach/profile', methods=["GET"])
+@app.route('/coaches/profile', methods=["GET"])
+@jwt_required()
 def coach_profile():
-    claims = get_jwt()
-    if claims.get("role") != "coach":
-        return jsonify({"Attention": "Only coach allowed"}), 403
-    
-    coach_id = int(get_jwt_identity())
-    coach = Coach.query.get(coach_id)
+  coach_id = int(get_jwt_identity())
+  coach = Coach.query.get(coach_id)
 
-    return jsonify({"coach": coach.serialize()}), 200
+  return jsonify({"coach": coach.serialize()}), 200
 
 @app.route('/coach/<int:id>/info', methods=['PUT'])
 def coach_info(id):
