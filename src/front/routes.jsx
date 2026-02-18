@@ -12,7 +12,6 @@ import { Single } from "./pages/Single";
 import { LoginAdmin } from "./pages/LoginAdmin.jsx";
 import { PrivateAdmin } from "./pages/PrivateAdmin.jsx";
 import SignupAdmin from "./pages/SignupAdmin";
-import AdminGuard from "./pages/AdminGuard.jsx";
 
 import { User } from "./pages/User";
 import { UserDetails } from "./pages/UserDetails";
@@ -44,6 +43,8 @@ import UserCourseFavorite from "./pages/UserFavorites";
 import { UserCourses } from "./pages/UserCoursers";
 import { UserCourseSelect } from "./pages/UserCourseSelect";
 
+import RoleGuard from "./pages/RoleGuard.jsx";
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found</h1>}>
@@ -53,47 +54,47 @@ export const router = createBrowserRouter(
 
       <Route path="/admin/signup" element={<SignupAdmin />} />
       <Route path="/admin/login" element={<LoginAdmin />} />
-      <Route path="/admin/home" element={ <AdminGuard> <PrivateAdmin /> </AdminGuard> } />
-      <Route path="/admin/users" element={ <AdminGuard> <User /> </AdminGuard>}/>
-      <Route path="/admin/coaches" element={ <AdminGuard> <Coaches /> </AdminGuard>}/>
-      <Route path="/admin/courses" element={ <AdminGuard> <Courses /> </AdminGuard>}/>
-      <Route path="/admin/messages" element={ <AdminGuard> <Message /> </AdminGuard>}/>
+      <Route path="/admin/home" element={ <RoleGuard roles={["admin"]}><PrivateAdmin /></RoleGuard>  } />
+      <Route path="/admin/users" element={ <RoleGuard roles={["admin"]}><User /></RoleGuard> }/>
+      <Route path="/admin/coaches" element={ <RoleGuard roles={["admin"]}><Coaches /></RoleGuard> }/>
+      <Route path="/admin/courses" element={  <RoleGuard roles={["admin"]}><Courses /></RoleGuard> }/>
+      <Route path="/admin/messages" element={ <RoleGuard roles={["admin"]}><Message /></RoleGuard> }/>
 
 
-      <Route path="/users" element={<User />} />
-      <Route path="/users/:id" element={<UserDetails />} />
-      <Route path="/users/new" element={<CreateUser />} />
-      <Route path="/users/:id/edit" element={<EditUser />} />
+      <Route path="/users" element={<RoleGuard roles={["admin"]}><User /></RoleGuard>} />
+      <Route path="/users/:id" element={<RoleGuard roles={["user","admin"]}><UserDetails /></RoleGuard>} />
+      <Route path="/users/new" element={<RoleGuard roles={["admin"]}><CreateUser /></RoleGuard>} />
+      <Route path="/users/:id/edit" element={<RoleGuard roles={["user","admin"]}><EditUser /></RoleGuard>} />
 
       <Route path="/users/singup" element={<SignupUser />} />
       <Route path="/users/login" element={<LoginUser />} />
-      <Route path="/users/home" element={<PrivateUser />} />
-      <Route path="/users/profile" element={<CompleteProfileUser />} />
+      <Route path="/users/home" element={<RoleGuard roles={["user","admin"]}><PrivateUser /></RoleGuard>} />
+      <Route path="/users/profile" element={<RoleGuard roles={["user","admin"]}><CompleteProfileUser /></RoleGuard>} />
 
       <Route path="/messages" element={<Message />} />
 
       <Route path="/demo" element={<Demo />} />
 
-      <Route path="/coaches-edit/:id" element={<CoachEdit />} />
+      <Route path="/coaches-edit/:id" element={<RoleGuard roles={["coach","admin"]}><CoachEdit /></RoleGuard>} />
       <Route path="/coaches-details/:id" element={<CoachDetails />} />
       <Route path="/coaches" element={<Coaches />} />
-      <Route path="/coaches/new" element={<CreateCoach />} />
+      <Route path="/coaches/new" element={<RoleGuard roles={["admin"]}><CreateCoach /></RoleGuard>} />
       <Route path="/coaches/login" element={<CoachLogin />} />
-      <Route path="/coach/private" element={<CoachPrivate />} />
-      <Route path="/coach/create-course" element={<CreateCourse />} />
-      <Route path="/coach/edit-course/:id" element={<EditCourse />} />
+      <Route path="/coach/private" element={<RoleGuard roles={["coach","admin"]}><CoachPrivate /></RoleGuard>} />
+      <Route path="/coach/create-course" element={<RoleGuard roles={["coach","admin"]}><CreateCourse /></RoleGuard>} />
+      <Route path="/coach/edit-course/:id" element={<RoleGuard roles={["coach","admin"]}><EditCourse /></RoleGuard>} />
 
       <Route path="/main" element={<MainSection />} />
 
       <Route path="/courses" element={<Courses />} />
       <Route path="/courses/:id" element={<CourseDetail />} />
-      <Route path="/courses/new" element={<CreateCourse />} />
-      <Route path="/courses/:id/edit" element={<EditCourse />} />
+      <Route path="/courses/new" element={<RoleGuard roles={["coach","admin"]}><CreateCourse /></RoleGuard>} />
+      <Route path="/courses/:id/edit" element={<RoleGuard roles={["coach","admin"]}><EditCourse /></RoleGuard>} />
 
-      <Route path="/UserCourseFavorite" element={<UserCourseFavorite />} />
+      <Route path="/UserCourseFavorite" element={<RoleGuard roles={["user","admin"]}><UserCourseFavorite /></RoleGuard>} />
 
-      <Route path="/users/:userId/courses/select" element={<UserCourseSelect />} />
-      <Route path="/users/:userId/courses" element={<UserCourses />} />
+      <Route path="/users/:userId/courses/select" element={<RoleGuard roles={["user","admin"]}><UserCourseSelect /></RoleGuard>} />
+      <Route path="/users/:userId/courses" element={<RoleGuard roles={["user","admin"]}><UserCourses /></RoleGuard>} />
       <Route path="/single/:theid" element={<Single />} />
       <Route path="/demo" element={<Demo />} />
 

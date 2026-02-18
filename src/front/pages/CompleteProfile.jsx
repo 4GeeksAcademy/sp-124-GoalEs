@@ -50,13 +50,11 @@ export const CompleteProfileUser = () => {
         }
 
         try {
-            const token = store.token || localStorage.getItem("token-user"); // added by arash,Get token from store or localStorage
-
             const res = await fetch(`${BACKEND_URL}/users/${store.user.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}` // added by arash,Include token in Authorization header
+                    Authorization: `Bearer ${store.token}` //added by arash, to send the token in the request header for authentication
                 },
                 body: JSON.stringify(body)
             });

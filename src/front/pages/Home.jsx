@@ -58,13 +58,23 @@ export const Home = () => {
 			{(localStorage.getItem("token-admin")) &&
 				<>
 					<button className="btn btn-success ms-3" onClick={() => navigate("/admin/home")}> Admin Dashboard</button>
-					<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
+					
 				</>
 			}
 
-			{/* Exclusivo cualquier usuario logeado */}
-			{(localStorage.getItem("token-admin") || localStorage.getItem("token-user") || localStorage.getItem("token-coach") )&&
+			{/* Exclusivo user */}
+			{(localStorage.getItem("token-user")) &&
 				<>
+					<button className="btn btn-success ms-3" onClick={() => navigate("/users/home")}> User Dashboard</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/users/profile")}>Edit Profile</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
+				</>
+			}
+
+			{/* Exclusivo coache */}
+			{(localStorage.getItem("token-coach") )&&
+				<>
+					<button className="btn btn-success ms-3" onClick={() => navigate("/coach/private")}> Coach Dashboard</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/messages")}>Go to Message</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/users")}>Go to Users</button>

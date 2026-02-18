@@ -13,7 +13,10 @@ export const User = () => {
 
   const userFetch = async () => {
     try {
-      const res = await fetch(`${back_url}/users`);
+      const res = await fetch(`${back_url}/users`, {
+        //added by arash
+        headers: { Authorization: `Bearer ${localStorage.getItem("token-user") || localStorage.getItem("token-admin")}` },
+      });
       if (!res.ok) throw new Error("Error to search users");
       const data = await res.json();
       setUsers(data.users);
@@ -34,6 +37,8 @@ export const User = () => {
 
       const res = await fetch(`${back_url}/users/${id}`, {
         method: "DELETE",
+        //added by arash
+        headers: { Authorization: `Bearer ${localStorage.getItem("token-user") || localStorage.getItem("token-admin")}` },
       });
 
       if (!res.ok) throw new Error("Error to delete user");

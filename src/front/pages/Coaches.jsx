@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const Coaches = () => {
 
@@ -10,10 +11,16 @@ export const Coaches = () => {
 
   const [cargando, setCargando] = useState(false)
 
+  const { store } = useGlobalReducer(); //added by arash
+  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); //added by arash
+
+
   const getAllCoaches = async () => {
     try {
-      setCargando(true)
-      const res = await fetch(backendURL + "/coach");
+      setCargando(true);
+
+         const res = await fetch(backendURL + "/coach"); //added by arash (GET /coach is public, no token needed)
+
 
       if (!res.ok) throw new Error("We can’t get coaches right now");
 
@@ -29,8 +36,10 @@ export const Coaches = () => {
 
   const deletedCoach = async (id) => {
     try {
+       if (!token) throw new Error("Missing token, login as admin/coach"); //added by arash
       const res = await fetch(`${backendURL}/coach/${id}`, {
         method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` } //added by arash, to send the token in the request header for authentication
       });
 
       if (!res.ok) throw new Error("Not deleted the coach");
