@@ -333,22 +333,23 @@ def post_coach():
         password =password,
         is_active = True
     )
-    print("print anted de print new coach")
-    print(new_coach)
+    
     db.session.add(new_coach)
     db.session.commit()
 
+    access_token = create_access_token(identity=new_coach.id)
+
     response_body = {
-        "msg": "Coach created successfully"
-        # "new_coach": new_coach.serialize()
+        "msg": "Coach created successfully",
+        "coach": new_coach.serialize(),
+        "token": access_token
     }
 
     return jsonify(response_body), 201
 
 
-
-@app.route("/coach/token", methods=["POST"])
-def coach_token():
+@app.route("/coach/login", methods=["POST"])
+def coach_login():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
 
@@ -368,8 +369,9 @@ def coach_token():
     access_token = create_access_token(identity=str(coach.id))
     
     return jsonify({
+        "msg": "Login successful",
         "token": access_token,
-        "coach_id": coach.id
+        "coach": coach.serialize()
     }), 200
 
 
@@ -381,30 +383,58 @@ def coach_private():
 
     return jsonify({"coach": coach.serialize()}), 200
 
-@app.route('/coach/<int:id>', methods=['PUT'])
-def put_coach(id):
-    coach = Coach.query.get(id)
+@app.route("/coach/<int:coach_id>/courses-students", methods=["GET"])
+def coach_students(coach_id):
+    courses = Course.query.filter_by(coach_id=coach_id).all()
 
-    if coach is None:
+    result = []
+    for course in courses:
+        enrolled_count = User_course.query.filter_by(
+            course_id = course.id,
+            active=True
+        ).count()
+
+        course_data = course.serialize()
+        course_data['enrolled_students'] = enrolled_count
+        result.append(course_data)
+
+    return jsonify(result), 200
+
+@app.route('/coach/<int:coach_id>', methods=['PUT'])
+def put_coach(coach_id):
+    coach_update = db.session.execute(select(Coach).where(Coach.id == coach_id)).scalar_one_or_none()
+
+    if coach_update is None:
         return jsonify({"error": "Coach not found"}), 404
 
     body = request.get_json()
-    if body is None:
-        return jsonify({"error": "Missing JSON body"}), 400
-
-    coach.name = body.get("name", coach.name)
-    coach.last_name = body.get("last_name", coach.last_name)
-    coach.email = body.get("email", coach.email)
-    coach.password = body.get("password", coach.password)
+    if not body:
+        return jsonify({"error": "No data provided to update"}), 400
+    
+    if "name" in body:
+        coach_update.name = body["name"]
+    if "last_name" in body:
+        coach_update.last_name = body["last_name"]
+    if "email" in body:
+        coach_update.email = body["email"]
+    if "password" in body:
+        coach_update.password = body["password"]
+    if "is_active" in body:
+        coach_update.is_active = body["is_active"]
+    if "gender" in body:
+        coach_update.gender = body["gender"]
+    if "city" in body:
+        coach_update.city = body["city"]
+    if "country" in body:
+        coach_update.country = body["country"]
+    if "phone" in body:
+        coach_update.phone = body["phone"]
+    if "birthday" in body:
+        coach_update.birthday = body["birthday"]
 
     db.session.commit()
 
-    response_body = {
-        "msg": "Coach updated",
-        "coach": coach.serialize()
-    }
-
-    return jsonify(response_body), 200
+    return jsonify(coach_update.serialize()), 200
 
 
 @app.route('/coach/<int:id>', methods=['DELETE'])
@@ -436,6 +466,33 @@ def get_course(id):
         return jsonify({"error": "Course not found"}), 404
 
     return jsonify(course=course.serialize()), 200
+
+
+@app.route('/course/<int:course_id>/enrolled-students', methods=['GET'])
+def get_enrolled_students(course_id):
+    course = Course.query.get(course_id)
+    if not course:
+        return jsonify({"error": "Course not found"}), 404
+    enrollments = User_course.query.filter_by(
+        course_id=course_id,
+        active=True
+    ).all()
+    
+    students = []
+    for enrollment in enrollments:
+        user = User.query.get(enrollment.user_id)
+        if user:
+            students.append({
+                "id": user.id,
+                "name": user.name,
+                "surname": user.surname,
+                "email": user.email
+            })
+    
+    return jsonify({
+        "course_title": course.title,
+        "students": students
+    }), 200
 
 
 @app.route("/course", methods=["POST"])
@@ -492,6 +549,37 @@ def delete_course(id):
     db.session.delete(course)
     db.session.commit()
     return jsonify({"msg": "Course deleted"}), 200
+
+@app.route('/coaches/profile', methods=["GET"])
+@jwt_required()
+def coach_profile():
+  coach_id = int(get_jwt_identity())
+  coach = Coach.query.get(coach_id)
+
+  return jsonify({"coach": coach.serialize()}), 200
+
+@app.route('/coach/<int:id>/info', methods=['PUT'])
+def coach_info(id):
+    claims = get_jwt()
+    if claims.get.role("role") != "coach":
+        return jsonify({"msg": "Only coach allowed"}), 403
+    coach_id = int(get_jwt_identity())
+
+    coach = db.session.execute(select(Coach).where(Coach.id == id)).scalar_one_or_none()
+
+    if not coach:
+        return jsonify({"error": "Coach not found"}), 400
+    
+    body = request.get_json()
+    coach.birthday = body["birthday"]
+    coach.city = body["city"]
+    coach.country = body["country"]
+    coach.phone = body["phone"]
+    coach.gender = body["gender"]
+    coach.profile_image = body["profile_image"]
+
+    db.session.commit()
+    return jsonify(coach=coach.serialize()), 200
 
 
 @app.route('/messages', methods=['GET'])

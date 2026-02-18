@@ -95,8 +95,8 @@ export const EditCourse = () => {
       </form>
 
       <div className="mt-4 d-flex gap-2">
-        <button className="btn btn-secondary" onClick={() => navigate("/courses")}>
-          Back
+        <button className="btn btn-secondary" onClick={() => navigate("/coach/private")}>
+          Back to Dashboard
         </button>
         <button className="btn btn-outline-secondary" onClick={() => navigate("/")}>
           Home
