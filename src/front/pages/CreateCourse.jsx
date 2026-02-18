@@ -11,7 +11,7 @@ export const CreateCourse = () => {
     title: "",
     description: "",
     cost: "",
-    coach_id:"" //new  arash
+    coach_id: store.coach?.id || null
   });
   const [error, setError] = useState("");
   const [coaches, setCoaches] = useState([]); //new  arash
@@ -27,6 +27,12 @@ export const CreateCourse = () => {
       .then(data => setCoaches(data.coaches || []));
   }, [isAdmin]);
 
+  useEffect(() => {
+    if (store.coach?.id) {
+      setForm(prev => ({...prev, coach_id: store.coach.id}));
+    }
+  },[store.coach])
+
   const createCourse = async (e) => {
     e.preventDefault();
 
@@ -36,7 +42,7 @@ export const CreateCourse = () => {
     }
 
     if (isAdmin && !form.coach_id) { //new arash
-      setError("Coach is required for admin");
+      setError("Coach not found. Please login again.");
       return;
     }
 

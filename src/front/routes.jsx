@@ -27,9 +27,11 @@ import Message from "./pages/Message";
 import { Coaches } from "./pages/Coaches";
 import { CoachDetails } from "./pages/CoachDetails";
 import { CoachEdit } from "./pages/CoachEdit";
-import { CreateCoach } from "./pages/CreateCoach";
+import { SingUpCoach } from "./pages/SingUpCoach.jsx";
 import CoachLogin from "./pages/CoachLogin";
 import CoachPrivate from "./pages/CoachPrivate";
+import { CoachProfile } from "./pages/CoachProfile.jsx";
+import { CreateCoach } from "./pages/CreateCoach";
 
 import { MainSection } from "./pages/MainSection";
 
@@ -98,6 +100,8 @@ export const router = createBrowserRouter(
       <Route path="/single/:theid" element={<Single />} />
       <Route path="/demo" element={<Demo />} />
 
+      <Route path="/coaches/profile" element={<RoleGuard roles={["coach","admin"]}><CoachProfile /></RoleGuard>} /> 
+      <Route path="/coaches/new" element={<SingUpCoach />} />
     </Route>
   )
 );

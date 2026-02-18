@@ -48,7 +48,7 @@ export const Home = () => {
 			{(localStorage.length == 0) && (
 				<>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/login")} >Go to Login Admin </button>
-					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/login")}>Go to Login/coaches</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/new")}>Go to Singup Coach</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/users/singup")}>Go to Singup User</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
 				</>

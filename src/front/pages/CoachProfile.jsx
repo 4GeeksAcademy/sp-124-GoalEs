@@ -2,53 +2,57 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { UploadImagesUser } from "./UploadImagesUser";
 
-export const CompleteProfileUser = () => {
-
+export const CoachProfile = () => {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
     const { store, dispatch } = useGlobalReducer();
 
     const [form, setForm] = useState({
         name: "",
-        surname: "",
+        last_name: "",
         email: "",
         password: "",
-        age: "",
-        gender: "",
-        profile_picture: ""
-    });
+        birthday: "",
+        city: "",
+        country: "",
+        phone: "",
+        gender: ""
 
+    });
+  
     useEffect(() => {
-        if (store.user) {
+        if (store.coach) {
             setForm(prev => ({
                 ...prev,
-                name: store.user.name || "",
-                surname: store.user.surname || "",
-                email: store.user.email || "",
-                age: store.user.age || "",
-                gender: store.user.gender || "",
-                profile_picture: store.user.profile_picture || ""
+                name: store.coach.name || "",
+                last_name: store.coach.last_name || "",
+                email: store.coach.email || "",
+                birthday: store.coach.birthday || "",
+                city: store.coach.city || "",
+                country: store.coach.country || "",
+                phone: store.coach.phone || "",
+                gender: store.coach.gender || ""
             }));
-
-            console.log(form)
         }
-    }, [store.user]);
+    }, [store.coach]);
 
-    const [error, setError] = useState("");
 
-    const updateProfileUser = async (e) => {
+const [error, setError] = useState("");
+
+    const updateCoachProfile = async (e) => {
         e.preventDefault();
         setError("");
 
         const body = {
             name: form.name,
-            surname: form.surname,
+            last_name: form.last_name,
             email: form.email,
-            age: form.age,
-            gender: form.gender,
-            profile_picture: form.profile_picture
+            birthday: form.birthday,
+            city: form.city,
+            country: form.country,
+            phone: form.phone,
+            gender: form.gender
         };
 
         if (form.password.trim() !== "") {
@@ -56,11 +60,10 @@ export const CompleteProfileUser = () => {
         }
 
         try {
-            const res = await fetch(`${BACKEND_URL}/users/${store.user.id}`, {
+            const res = await fetch(`${BACKEND_URL}/coach/${store.coach.id}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${store.token}` //added by arash, to send the token in the request header for authentication
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(body)
             });
@@ -69,39 +72,31 @@ export const CompleteProfileUser = () => {
 
             const data = await res.json();
 
-            localStorage.setItem("user", JSON.stringify({
-                ...form,
-                data
-            }));
+            localStorage.setItem("coach", JSON.stringify(data));
 
             dispatch({
-                type: "login-user",
+                type: "login-coach",
                 payload: {
                     token: store.token,
-                    user: data
+                    coach: data
                 }
             });
 
-            navigate("/users/home");
+            navigate("/coach/private");
 
         } catch (err) {
             setError(err.message);
         }
     };
 
+
     return (
         <div className="container py-4">
-            <h1>Your Profile</h1>
+            <h1>Complete Your Profile</h1>
 
             {error && <div className="alert alert-danger">{error}</div>}
 
-            <UploadImagesUser
-                onUpload={(url) =>
-                    setForm(prev => ({ ...prev, profile_picture: url }))
-                }
-            />
-
-            <form onSubmit={updateProfileUser}>
+            <form onSubmit={updateCoachProfile}>
 
                 <input
                     className="form-control mb-2"
@@ -114,10 +109,10 @@ export const CompleteProfileUser = () => {
 
                 <input
                     className="form-control mb-2"
-                    placeholder="Surname"
-                    value={form.surname}
+                    placeholder="Last Name"
+                    value={form.last_name}
                     onChange={(event) =>
-                        setForm(prev => ({ ...prev, surname: event.target.value }))
+                        setForm(prev => ({ ...prev, last_name: event.target.value }))
                     }
                 />
 
@@ -129,6 +124,40 @@ export const CompleteProfileUser = () => {
                         setForm(prev => ({ ...prev, email: event.target.value }))
                     }
                 />
+                <input
+                    className="form-control mb-2"
+                    type="date"
+                    placeholder="YYYY/MM/DD"
+                    value={form.birthday}
+                    onChange={(event) =>
+                        setForm(prev => ({ ...prev, birthday: event.target.value }))
+                    }
+                />
+                <input
+                    className="form-control mb-2"
+                    placeholder="City"
+                    value={form.city}
+                    onChange={(event) =>
+                        setForm(prev => ({ ...prev, city: event.target.value }))
+                    }
+                />
+                <input
+                    className="form-control mb-2"
+                    placeholder="Country"
+                    value={form.country}
+                    onChange={(event) =>
+                        setForm(prev => ({ ...prev, country: event.target.value }))
+                    }
+                />
+                <input
+                    className="form-control mb-2"
+                    placeholder="Phone"
+                    value={form.phone}
+                    onChange={(event) =>
+                        setForm(prev => ({ ...prev, phone: event.target.value }))
+                    }
+                />
+
 
                 <input
                     className="form-control mb-3"
@@ -137,16 +166,6 @@ export const CompleteProfileUser = () => {
                     value={form.password}
                     onChange={(event) =>
                         setForm(prev => ({ ...prev, password: event.target.value }))
-                    }
-                />
-
-                <input
-                    className="form-control mb-3"
-                    type="number"
-                    placeholder="Age"
-                    value={form.age}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, age: event.target.value }))
                     }
                 />
 
