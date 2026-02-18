@@ -13,7 +13,6 @@ export const initialStore = () => {
   };
 };
 
-
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
     case "set_hello":
@@ -38,6 +37,14 @@ export default function storeReducer(store, action = {}) {
         isAuthenticated: false,
       };
 
+    case "update-user":
+      localStorage.setItem("user", JSON.stringify(action.payload));
+
+      return {
+        ...store,
+        user: action.payload,
+      };
+
     case "login-coach":
       return {
         ...store,
@@ -46,11 +53,11 @@ export default function storeReducer(store, action = {}) {
         isAuthenticated: true,
       };
 
-      case "is-authenticated":
-        return {
-          ...store,
-          isAuthenticated: true
-        }
+    case "is-authenticated":
+      return {
+        ...store,
+        isAuthenticated: true,
+      };
 
     case "logout-coach":
       return {
@@ -60,22 +67,22 @@ export default function storeReducer(store, action = {}) {
         isAuthenticated: false,
       };
 
-      case 'login_admin':
+    case "login_admin":
       return {
         ...store,
         token: action.payload.token,
         user: action.payload.user,
         role: action.payload.role,
-        isAuthenticated: true
+        isAuthenticated: true,
       };
 
-    case 'logout_admin':
+    case "logout_admin":
       return {
         ...store,
         token: null,
         user: null,
         role: null,
-        isAuthenticated: false
+        isAuthenticated: false,
       };
 
     default:

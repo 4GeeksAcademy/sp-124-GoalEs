@@ -24,6 +24,7 @@ class User(db.Model):
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     age: Mapped[int] = mapped_column(Integer, nullable=True)
     gender: Mapped[str] = mapped_column(String(50), nullable=True)
+    profile_picture = db.Column(db.String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
     #relationships
@@ -50,7 +51,8 @@ class User(db.Model):
             "surname": self.surname,
             "email": self.email,
             "gender": self.gender,
-            "age": self.age
+            "age": self.age,
+            "profile_picture": self.profile_picture
         }
     def __str__(self):
         return f"{self.name} {self.surname}"
