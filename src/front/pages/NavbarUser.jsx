@@ -8,8 +8,6 @@ export const NavbarUser = ({ logout }) => {
     const { store, dispatch } = useGlobalReducer();
     const navigate = useNavigate();
 
-    console.log(store.user)
-
     return (
         <>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -44,6 +42,7 @@ export const NavbarUser = ({ logout }) => {
                                     <li><a className="dropdown-item" href="https://www.youtube.com/watch?v=-4GC_zrxDCk">More</a></li>
                                 </ul>
                             </li>
+                            <li className="nav-item"><button className="btn btn-success" onClick={() => navigate("/users/faceanalyzer")}>Read Your Face</button></li>
                         </ul>
                     </div>
                 </div>
