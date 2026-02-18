@@ -4,6 +4,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import { AvailableCoursesUser } from "./AvailableCoursesUser";
 import { CoursesFavoritesUser } from "./CoursesFavoritesUser";
 import { MyCoursesUser } from "./MyCoursesUser";
+import { NavbarUser } from "./NavbarUser";
 
 export const PrivateUser = () => {
 
@@ -50,15 +51,15 @@ export const PrivateUser = () => {
     }
 
     return (
-        <div className="container py-4">
-            {goodbye && <div className="alert alert-success">We hope to see you back soon!</div>}
-            <h1>{store.user?.name} Dashboard</h1>
-            <p>Welcome {store.user?.name}</p>
-            <AvailableCoursesUser />
-            <CoursesFavoritesUser />
-            <MyCoursesUser />
-            <button className="btn btn-secondary me-2" onClick={() => navigate("/")}>Back to home</button>
-            <button className="btn btn-outline-secondary" onClick={() => logout()}>logout</button>
-        </div>
+        <>
+        <NavbarUser logout={logout}/>
+            <div className="container py-4">
+                {goodbye && <div className="alert alert-success">We hope to see you back soon!</div>}
+                <h1>Dashboard</h1>
+                <AvailableCoursesUser />
+                <CoursesFavoritesUser />
+                <MyCoursesUser />
+            </div>
+        </>
     );
 };

@@ -90,7 +90,7 @@ export const CompleteProfileUser = () => {
 
     return (
         <div className="container py-4">
-            <h1>Complete Your Profile</h1>
+            <h1>Your Profile</h1>
 
             {error && <div className="alert alert-danger">{error}</div>}
 

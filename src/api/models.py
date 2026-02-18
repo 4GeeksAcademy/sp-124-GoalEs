@@ -50,7 +50,8 @@ class User(db.Model):
             "surname": self.surname,
             "email": self.email,
             "gender": self.gender,
-            "age": self.age
+            "age": self.age,
+            "profile_picture": self.profile_picture
         }
     def __str__(self):
         return f"{self.name} {self.surname}"

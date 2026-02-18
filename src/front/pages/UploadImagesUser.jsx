@@ -75,7 +75,7 @@ export const UploadImagesUser = ({ onUpload }) => {
                 <img
                     src={imageUrl}
                     alt="Profile"
-                    style={{ width: "200px", borderRadius: "30%", marginTop: "10px" }}
+                    style={{ width: "200px", borderRadius: "30%", margin: "10px" }}
                 />
             )}
             <input
