@@ -383,6 +383,23 @@ def coach_private():
 
     return jsonify({"coach": coach.serialize()}), 200
 
+@app.route("/coach/<int:coach_id>/courses-students", methods=["GET"])
+def coach_students(coach_id):
+    courses = Course.query.filter_by(coach_id=coach_id).all()
+
+    result = []
+    for course in courses:
+        enrolled_count = User_course.query.filter_by(
+            course_id = course.id,
+            active=True
+        ).count()
+
+        course_data = course.serialize()
+        course_data['enrolled_students'] = enrolled_count
+        result.append(course_data)
+
+    return jsonify(result), 200
+
 @app.route('/coach/<int:coach_id>', methods=['PUT'])
 def put_coach(coach_id):
     coach_update = db.session.execute(select(Coach).where(Coach.id == coach_id)).scalar_one_or_none()
@@ -449,6 +466,33 @@ def get_course(id):
         return jsonify({"error": "Course not found"}), 404
 
     return jsonify(course=course.serialize()), 200
+
+
+@app.route('/course/<int:course_id>/enrolled-students', methods=['GET'])
+def get_enrolled_students(course_id):
+    course = Course.query.get(course_id)
+    if not course:
+        return jsonify({"error": "Course not found"}), 404
+    enrollments = User_course.query.filter_by(
+        course_id=course_id,
+        active=True
+    ).all()
+    
+    students = []
+    for enrollment in enrollments:
+        user = User.query.get(enrollment.user_id)
+        if user:
+            students.append({
+                "id": user.id,
+                "name": user.name,
+                "surname": user.surname,
+                "email": user.email
+            })
+    
+    return jsonify({
+        "course_title": course.title,
+        "students": students
+    }), 200
 
 
 @app.route("/course", methods=["POST"])
