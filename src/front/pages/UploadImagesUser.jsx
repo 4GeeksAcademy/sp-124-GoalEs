@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import storeReducer from "../store";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const UploadImagesUser = ({ onUpload }) => {
 
-    const [imageUrl, setImageUrl] = useState("");
+    const { dispatch, store } = useGlobalReducer();
+
+    const [imageUrl, setImageUrl] = useState(store.user.profile_picture || "");
     const [loading, setLoading] = useState(false);
 
-    const { dispatch, store } = useGlobalReducer();
 
     const uploadImage = async (file) => {
         if (!file) return;
@@ -51,12 +51,13 @@ export const UploadImagesUser = ({ onUpload }) => {
             }
 
             dispatch({
-                type: "login-user",
+                type: "update-user",
                 payload: {
                     ...store.user,
                     profile_picture: data.secure_url
                 }
-            })
+            });
+
 
         } catch (err) {
             console.error(err);

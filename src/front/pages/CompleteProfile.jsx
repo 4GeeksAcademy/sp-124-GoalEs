@@ -68,7 +68,10 @@ export const CompleteProfileUser = () => {
 
             const data = await res.json();
 
-            localStorage.setItem("user", JSON.stringify(data));
+            localStorage.setItem("user", JSON.stringify({
+                ...form,
+                data
+            }));
 
             dispatch({
                 type: "login-user",
