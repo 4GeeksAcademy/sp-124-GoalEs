@@ -431,6 +431,8 @@ def put_coach(coach_id):
         coach_update.phone = body["phone"]
     if "birthday" in body:
         coach_update.birthday = body["birthday"]
+    if "profile_image" in body:
+        coach_update.profile_image = body["profile_image"]    
 
     db.session.commit()
 

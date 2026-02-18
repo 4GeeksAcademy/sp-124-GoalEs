@@ -107,44 +107,60 @@ export default function CoachPrivate() {
   };
 
   const openStudentsModal = async (course) => {
-  setSelectedCourse(course);
-  setShowModal(true);
-  setLoadingStudents(true);
-  setStudentsError("");
-  setStudents([]);
+    setSelectedCourse(course);
+    setShowModal(true);
+    setLoadingStudents(true);
+    setStudentsError("");
+    setStudents([]);
 
-  try {
-    const res = await fetch(`${backendURL}/course/${course.id}/enrolled-students`, {
-      headers: {
-        "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`
-      }
-    });
+    try {
+      const res = await fetch(`${backendURL}/course/${course.id}/enrolled-students`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) throw new Error(data?.error || "Error loading students");
+      if (!res.ok) throw new Error(data?.error || "Error loading students");
 
-    setStudents(data.students || []);
-  } catch (e) {
-    setStudentsError(e.message);
-  } finally {
+      setStudents(data.students || []);
+    } catch (e) {
+      setStudentsError(e.message);
+    } finally {
+      setLoadingStudents(false);
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedCourse(null);
+    setStudents([]);
+    setStudentsError("");
     setLoadingStudents(false);
-  }
-};
-
-const closeModal = () => {
-  setShowModal(false);
-  setSelectedCourse(null);
-  setStudents([]);
-  setStudentsError("");
-  setLoadingStudents(false);
-};
+  };
 
   return (
     <div style={{ padding: 40 }}>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>{store.coach.name} Dashboard</h2>
+        <div className="d-flex align-items-center gap-3">
+          <img
+            src={store.coach.profile_image || "https://via.placeholder.com/60"}
+            alt="Profile"
+            style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover" }}
+          />
+          <div>
+            <h2 className="mb-0">{store.coach.name} Dashboard</h2>
+            <button
+              className="btn btn-link p-0 text-decoration-none"
+              onClick={() => navigate("/coaches/profile")}
+            >
+              Edit Profile
+            </button>
+          </div>
+        </div>
+
         <div className="d-flex gap-2">
           <button className="btn btn-danger" onClick={deleteAccount}>
             Delete Account
@@ -153,6 +169,7 @@ const closeModal = () => {
             Log out
           </button>
         </div>
+
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -213,7 +230,7 @@ const closeModal = () => {
         ))}
       </div>
 
-      
+
       {showModal && (
         <div
           className="modal show d-block"

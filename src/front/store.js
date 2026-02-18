@@ -46,11 +46,11 @@ export default function storeReducer(store, action = {}) {
         isAuthenticated: true,
       };
 
-      case "is-authenticated":
-        return {
-          ...store,
-          isAuthenticated: true
-        }
+    case "is-authenticated":
+      return {
+        ...store,
+        isAuthenticated: true,
+      };
 
     case "logout-coach":
       return {
@@ -60,22 +60,29 @@ export default function storeReducer(store, action = {}) {
         isAuthenticated: false,
       };
 
-      case 'login_admin':
+    case "upload-coach":
+      localStorage.setItem("coach", JSON.stringify(action.payload));
+      return {
+        ...store,
+        coach: action.payload
+      };
+
+    case "login_admin":
       return {
         ...store,
         token: action.payload.token,
         user: action.payload.user,
         role: action.payload.role,
-        isAuthenticated: true
+        isAuthenticated: true,
       };
 
-    case 'logout_admin':
+    case "logout_admin":
       return {
         ...store,
         token: null,
         user: null,
         role: null,
-        isAuthenticated: false
+        isAuthenticated: false,
       };
 
     default:
