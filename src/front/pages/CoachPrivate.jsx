@@ -167,11 +167,12 @@ export default function CoachPrivate() {
       const res = await fetch(`${backendURL}/course/${course.id}/enrolled-students`, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       });
 
       const data = await res.json();
+
       if (!res.ok) throw new Error(data?.error || "Error loading students");
 
       setStudents(data.students || []);
@@ -193,7 +194,23 @@ export default function CoachPrivate() {
   return (
     <div style={{ padding: 40 }}>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>{store?.coach?.name ? `${store.coach.name} Dashboard` : "Coach Dashboard"}</h2>
+        <div className="d-flex align-items-center gap-3">
+          <img
+            src={store.coach.profile_image || "https://via.placeholder.com/60"}
+            alt="Profile"
+            style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover" }}
+          />
+          <div>
+            <h2 className="mb-0">{store.coach.name} Dashboard</h2>
+            <button
+              className="btn btn-link p-0 text-decoration-none"
+              onClick={() => navigate("/coaches/profile")}
+            >
+              Edit Profile
+            </button>
+          </div>
+        </div>
+
         <div className="d-flex gap-2">
           <button className="btn btn-danger" onClick={deleteAccount}>
             Delete Account
@@ -202,6 +219,7 @@ export default function CoachPrivate() {
             Log out
           </button>
         </div>
+
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-3">

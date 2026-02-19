@@ -67,6 +67,13 @@ export default function storeReducer(store, action = {}) {
         isAuthenticated: false,
       };
 
+    case "upload-coach":
+      localStorage.setItem("coach", JSON.stringify(action.payload));
+      return {
+        ...store,
+        coach: action.payload
+      };
+
     case "login_admin":
       return {
         ...store,
