@@ -13,7 +13,6 @@ export const initialStore = () => {
   };
 };
 
-
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
     case "set_hello":
@@ -36,6 +35,14 @@ export default function storeReducer(store, action = {}) {
         token: null,
         user: null,
         isAuthenticated: false,
+      };
+
+    case "update-user":
+      localStorage.setItem("user", JSON.stringify(action.payload));
+
+      return {
+        ...store,
+        user: action.payload,
       };
 
     case "login-coach":

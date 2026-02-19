@@ -9,16 +9,27 @@ const UserCourseFavorite = () => {
   const [courses, setCourses] = useState([]);
   const [favoritesByUser, setFavoritesByUser] = useState({});
 
+  //added by arash
+  const token =
+    localStorage.getItem("token-user") ||
+    localStorage.getItem("token-admin");
+
   //  Load users
   useEffect(() => {
-    fetch(`${BACKEND_URL}/users`)
+    fetch(`${BACKEND_URL}/users`, {
+      //added by arash
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then(res => res.json())
       .then(data => setUsers(data.users || []));
   }, []);
 
   useEffect(() => {
     users.forEach(user => {
-      fetch(`${BACKEND_URL}/users/${user.id}/favorites`)
+      fetch(`${BACKEND_URL}/users/${user.id}/favorites`, {
+        //added by arash
+        headers: { Authorization: `Bearer ${token}` },
+      })
         .then(res => res.json())
         .then(data => {
           setFavoritesByUser(prev => ({
@@ -38,7 +49,10 @@ const UserCourseFavorite = () => {
 
   // Load favorites for a user
   const loadFavorites = (userId) => {
-    fetch(`${BACKEND_URL}/users/${userId}/favorites`)
+    fetch(`${BACKEND_URL}/users/${userId}/favorites`, {
+      //added by arash
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then(res => res.json())
       .then(data => {
         setFavoritesByUser(prev => ({
@@ -51,14 +65,18 @@ const UserCourseFavorite = () => {
   //Delete favorite
   const deleteFavorite = (userId, courseId) => {
     fetch(`${BACKEND_URL}/users/${userId}/favorites/${courseId}`, {
-      method: "DELETE"
+      method: "DELETE",
+      //added by arash
+      headers: { Authorization: `Bearer ${token}` },
     }).then(() => loadFavorites(userId));
   };
 
   //  Add favorite
   const addFavorite = (userId, courseId) => {
     fetch(`${BACKEND_URL}/users/${userId}/favorites/${courseId}`, {
-      method: "POST"
+      method: "POST",
+      //added by arash
+      headers: { Authorization: `Bearer ${token}` },
     }).then(() => loadFavorites(userId));
   };
 
@@ -77,8 +95,6 @@ const UserCourseFavorite = () => {
             <h4>
               {user.name} {user.surname}
             </h4>
-
-            
 
             {/* Favorites list */}
             <div className="d-flex flex-wrap gap-2 mb-3">

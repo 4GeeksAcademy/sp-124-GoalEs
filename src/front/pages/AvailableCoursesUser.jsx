@@ -12,6 +12,9 @@ export const AvailableCoursesUser = () => {
 
     const [courses, setCourses] = useState([])
 
+    // added by arash
+    const token = store.token || localStorage.getItem("token-user") || localStorage.getItem("token-admin");
+
     const getCourses = async () => {
         try {
             const res = await fetch(`${backendURL}/course`)
@@ -31,7 +34,9 @@ export const AvailableCoursesUser = () => {
         try {
             const res = await fetch(
                 `${backendURL}/users/${store.user.id}/favorites/${courseId}`,
-                { method: "POST" }
+                { method: "POST",
+                  headers: { Authorization: `Bearer ${token}` } // added by arash
+                 }
             );
 
             const data = await res.json();
@@ -53,7 +58,8 @@ export const AvailableCoursesUser = () => {
             const res = await fetch(`${backendURL}/user_course`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}` // added by arash (safe even if backend doesn't require yet)
                 },
                 body: JSON.stringify({
                     active: true,

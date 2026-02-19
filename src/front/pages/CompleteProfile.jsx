@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { UploadImagesUser } from "./UploadImagesUser";
 
 export const CompleteProfileUser = () => {
 
@@ -15,7 +16,8 @@ export const CompleteProfileUser = () => {
         email: "",
         password: "",
         age: "",
-        gender: ""
+        gender: "",
+        profile_picture: ""
     });
 
     useEffect(() => {
@@ -26,8 +28,11 @@ export const CompleteProfileUser = () => {
                 surname: store.user.surname || "",
                 email: store.user.email || "",
                 age: store.user.age || "",
-                gender: store.user.gender || ""
+                gender: store.user.gender || "",
+                profile_picture: store.user.profile_picture || ""
             }));
+
+            console.log(form)
         }
     }, [store.user]);
 
@@ -42,7 +47,8 @@ export const CompleteProfileUser = () => {
             surname: form.surname,
             email: form.email,
             age: form.age,
-            gender: form.gender
+            gender: form.gender,
+            profile_picture: form.profile_picture
         };
 
         if (form.password.trim() !== "") {
@@ -53,7 +59,8 @@ export const CompleteProfileUser = () => {
             const res = await fetch(`${BACKEND_URL}/users/${store.user.id}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${store.token}` //added by arash, to send the token in the request header for authentication
                 },
                 body: JSON.stringify(body)
             });
@@ -62,7 +69,10 @@ export const CompleteProfileUser = () => {
 
             const data = await res.json();
 
-            localStorage.setItem("user", JSON.stringify(data));
+            localStorage.setItem("user", JSON.stringify({
+                ...form,
+                data
+            }));
 
             dispatch({
                 type: "login-user",
@@ -79,12 +89,17 @@ export const CompleteProfileUser = () => {
         }
     };
 
-
     return (
         <div className="container py-4">
-            <h1>Complete Your Profile</h1>
+            <h1>Your Profile</h1>
 
             {error && <div className="alert alert-danger">{error}</div>}
+
+            <UploadImagesUser
+                onUpload={(url) =>
+                    setForm(prev => ({ ...prev, profile_picture: url }))
+                }
+            />
 
             <form onSubmit={updateProfileUser}>
 
