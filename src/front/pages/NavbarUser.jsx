@@ -42,7 +42,7 @@ export const NavbarUser = ({ logout }) => {
                                     <li><a className="dropdown-item" href="https://www.youtube.com/watch?v=-4GC_zrxDCk">More</a></li>
                                 </ul>
                             </li>
-                            <li className="nav-item"><button className="btn btn-success" onClick={() => navigate("/users/faceanalyzer")}>Read Your Face</button></li>
+                            <li className="nav-item"><button className="btn btn-success" onClick={() => navigate("/users/faceanalyzer")}>Read Your Emotions By Your Face!</button></li>
                         </ul>
                     </div>
                 </div>

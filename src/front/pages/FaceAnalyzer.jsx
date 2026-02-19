@@ -7,13 +7,8 @@ export const FaceAnalyzer = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const navigate = useNavigate();
 
-    const base64 = (file) =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = error => reject(error);
-        });
+    const API_LUXAND = import.meta.env.VITE_LUXAND_API
+    const API_TOKEN = import.meta.env.VITE_LUXAND_TOKEN
 
     const analyzeFace = async (file) => {
 
@@ -25,37 +20,44 @@ export const FaceAnalyzer = () => {
         };
         reader.readAsDataURL(file);
 
-        const formData = new FormData();
-        formData.append("image", file);
-
-        const options = {
-            method: "POST",
-            headers: {
-                "x-rapidapi-key": "1f25046d98msh8487c466e02ac7dp1710ccjsnbd11d3fb1d06",
-                "x-rapidapi-host": "faceanalyzer-ai.p.rapidapi.com"
-            },
-            body: formData
-        };
-
         try {
+
+            const formData = new FormData();
+            formData.append("photo", file);
+
             const response = await fetch(
-                "https://faceanalyzer-ai.p.rapidapi.com/faceanalysis",
-                options
+                API_LUXAND,
+                {
+                    method: "POST",
+                    headers: {
+                        "token": API_TOKEN
+                    },
+                    body: formData
+                }
             );
 
             const result = await response.json();
-            const face = result.body.faces[0];
+            console.log("Luxand FULL result:", result);
+
+            const face = result?.faces?.[0];
+
+            if (!face) {
+                console.log("No face detected");
+                return;
+            }
 
             setAnalysis({
-                emotion: face.facialFeatures.Emotions[0],
-                gender: face.facialFeatures.Gender,
-                ageRange: `${face.facialFeatures.AgeRange.Low}-${face.facialFeatures.AgeRange.High}`
+                dominantEmotion: face.dominant_emotion,
+                emotions: face.emotion,
+                gender: face.gender || "unknown",
+                ageRange: face.age ? `${face.age}` : "unknown"
             });
 
         } catch (error) {
-            console.error(error);
+            console.error("Error analyzing face:", error);
         }
     };
+
 
     return (
         <>
@@ -83,12 +85,28 @@ export const FaceAnalyzer = () => {
 
             {analysis && (
                 <div className="alert alert-info mt-3">
-                    <p><strong>Emotion:</strong> {analysis.emotion}</p>
-                    <p><strong>Gender detected:</strong> {analysis.gender}</p>
-                    <p><strong>Estimated age:</strong> {analysis.ageRange}</p>
-                    <button className="btn btn-primary" onClick={() => navigate("/users/home")}>Dashboard</button>
+                    <p><strong>Dominant Emotion:</strong> {analysis.dominantEmotion}</p>
+
+                    {analysis.emotions && (
+                        <div className="mt-3">
+                            <h5>Emotion breakdown:</h5>
+                            {Object.entries(analysis.emotions)
+                                .sort((a, b) => b[1] - a[1])
+                                .map(([key, value]) => (
+                                    <p key={key}>
+                                        <strong>{key}:</strong> {value.toFixed(2)}%
+                                    </p>
+                                ))}
+                        </div>
+                    )}
+
+                    <button
+                        className="btn btn-primary mt-2"
+                        onClick={() => navigate("/users/home")}
+                    >
+                        Dashboard
+                    </button>
                 </div>
-                
             )}
         </>
     );
