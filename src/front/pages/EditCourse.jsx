@@ -18,6 +18,7 @@ export const EditCourse = () => {
   const [loading, setLoading] = useState(true);
 
   const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); //added by arash
+  const isAdmin = !!localStorage.getItem("token-admin"); //new arash
 
   const fetchCourse = async () => {
     try {
@@ -59,7 +60,8 @@ export const EditCourse = () => {
 
       if (!res.ok) throw new Error("Error updating course");
 
-      navigate("/coach/private");
+      if (isAdmin) navigate ("/courses"); //new arash
+      else navigate("/coach/private");
     } catch (e) {
       setError(e.message);
     }

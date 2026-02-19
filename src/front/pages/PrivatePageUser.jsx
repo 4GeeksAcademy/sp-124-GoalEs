@@ -16,7 +16,7 @@ export const PrivateUser = () => {
     const [goodbye, setGoodBye] = useState(false);
 
     const token = store.token || localStorage.getItem("token-user");
-    const isUnauthorized = !store.isAuthenticated;
+    const isUnauthorized = !token; // added by arash
 
     useEffect(() => {
         if (isUnauthorized) {

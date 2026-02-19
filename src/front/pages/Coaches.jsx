@@ -47,6 +47,7 @@ export const Coaches = () => {
       setCoach(prev => prev.filter(coach => coach.id !== id));
 
     } catch (err) {
+      alert(err.message); 
       console.error(err);
     }
   };

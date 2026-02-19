@@ -51,6 +51,7 @@ export const Home = () => {
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/new")}>Go to Singup Coach</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/users/singup")}>Go to Singup User</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to Courses</button>
 				</>
 			)}
 
@@ -72,7 +73,7 @@ export const Home = () => {
 			}
 
 			{/* Exclusivo coache */}
-			{(localStorage.getItem("token-coach") )&&
+			{(localStorage.getItem("token-coach") || localStorage.getItem("coach")) &&
 				<>
 					<button className="btn btn-success ms-3" onClick={() => navigate("/coach/private")}> Coach Dashboard</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/messages")}>Go to Message</button>

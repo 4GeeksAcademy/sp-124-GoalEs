@@ -55,7 +55,7 @@ export const CreateCourse = () => {
 
       if (!res.ok) throw new Error("Error creating course");
 
-      if (isAdmin) navigate ("/admin/courses"); //new arash
+      if (isAdmin) navigate ("/courses"); //new arash
       else navigate("/coach/private");
     } catch (e) {
       setError(e.message);

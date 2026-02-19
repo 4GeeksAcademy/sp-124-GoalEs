@@ -61,25 +61,25 @@ export const PrivateAdmin = () => {
 
           <div className="row g-3">
             <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/admin/users")}>
+              <button className="btn btn-primary w-100" onClick={() => navigate("/users")}>
                 Users
               </button>
             </div>
 
             <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/admin/coaches")}>
+              <button className="btn btn-primary w-100" onClick={() => navigate("/coaches")}>
                 Coaches
               </button>
             </div>
 
             <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/admin/courses")}>
+              <button className="btn btn-primary w-100" onClick={() => navigate("/courses")}>
                 Courses
               </button>
             </div>
 
             <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/admin/messages")}>
+              <button className="btn btn-primary w-100" onClick={() => navigate("/messages")}>
                 Messages
               </button>
             </div>

@@ -12,12 +12,12 @@ export const AvailableCoursesUser = () => {
 
     const [courses, setCourses] = useState([])
 
+    // added by arash
+    const token = store.token || localStorage.getItem("token-user") || localStorage.getItem("token-admin");
+
     const getCourses = async () => {
         try {
-            const res = await fetch(`${backendURL}/course`, {
-                headers: { Authorization: `Bearer ${store.token}` } //added by arash, to send the token in the request header for authentication
-            }
-            )
+            const res = await fetch(`${backendURL}/course`)
 
             if (!res.ok) throw new Error("We can not get the courses")
 
@@ -35,8 +35,8 @@ export const AvailableCoursesUser = () => {
             const res = await fetch(
                 `${backendURL}/users/${store.user.id}/favorites/${courseId}`,
                 { method: "POST",
-                    headers: {Authorization: `Bearer ${store.token}`}, //added by arash, to send the token in the request header for authentication
-                }
+                  headers: { Authorization: `Bearer ${token}` } // added by arash
+                 }
             );
 
             const data = await res.json();
@@ -59,7 +59,7 @@ export const AvailableCoursesUser = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${store.token}` //added by arash, to send the token in the request header for authentication
+                    Authorization: `Bearer ${token}` // added by arash (safe even if backend doesn't require yet)
                 },
                 body: JSON.stringify({
                     active: true,
@@ -79,7 +79,7 @@ export const AvailableCoursesUser = () => {
         }
     };
 
-// 
+
     useEffect(() => {
         getCourses();
     }, [])
