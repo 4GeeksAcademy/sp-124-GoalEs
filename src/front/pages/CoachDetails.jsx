@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer"; //added by arash
 
 export const CoachDetails = () => {
 
@@ -10,11 +11,15 @@ export const CoachDetails = () => {
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
+    const { store } = useGlobalReducer(); //added by arash
+
     const [coach, setCoach] = useState();
 
     const getCoachDetails = async () => {
         try {
-            const res = await fetch(`${backendURL}/coach/${id}`)
+            const res = await fetch(`${backendURL}/coach/${id}`,{
+                headers: { Authorization: `Bearer ${store.token}` } //added by arash, to send the token in the request header for authentication
+            })
 
             if (!res.ok) throw new Error("Coach not found")
 

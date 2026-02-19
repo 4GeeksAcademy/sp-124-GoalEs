@@ -6,8 +6,6 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 export const EditCourse = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const { store } = useGlobalReducer();
-  const token = store.token || localStorage.getItem("jwt-token");
-
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -19,9 +17,14 @@ export const EditCourse = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); //added by arash
+  const isAdmin = !!localStorage.getItem("token-admin"); //new arash
+
   const fetchCourse = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/course/${id}`);
+      const res = await fetch(`${BACKEND_URL}/course/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }, //added by arash, to send the token in the request header for authentication
+      });
       if (!res.ok) throw new Error("Error loading course");
 
       const data = await res.json();
@@ -50,14 +53,15 @@ export const EditCourse = () => {
     try {
       const res = await fetch(`${BACKEND_URL}/course/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json"
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` //added by arash, to send the token in the request header for authentication
          },
         body: JSON.stringify(form)
       });
 
       if (!res.ok) throw new Error("Error updating course");
 
-      navigate("/coach/private");
+      if (isAdmin) navigate ("/courses"); //new arash
+      else navigate("/coach/private");
     } catch (e) {
       setError(e.message);
     }

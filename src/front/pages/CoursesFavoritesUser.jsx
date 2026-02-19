@@ -16,9 +16,13 @@ export const CoursesFavoritesUser = () => {
 
     const loadFavorites = async () => {
         try {
-            const res = await fetch(`${backendURL}/users/${userId}/favorites`);
+            const res = await fetch(`${backendURL}/users/${userId}/favorites`, {
+                headers: {Authorization: `Bearer ${store.token}`}, //added by arash, to send the token in the request header for authentication
+            });
+            
 
             if (!res.ok) throw new Error("Error loading favorites");
+            
 
             const data = await res.json();
 
@@ -32,8 +36,9 @@ export const CoursesFavoritesUser = () => {
         try {
             const res = await fetch(
                 `${backendURL}/users/${userId}/favorites/${courseId}`,
-                { method: "DELETE" }
-            );
+                { method: "DELETE" ,
+                    headers: {Authorization: `Bearer ${store.token}`}, //added by arash, to send the token in the request header for authentication
+        });
 
             if (!res.ok) throw new Error("Error removing favorite");
 

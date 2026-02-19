@@ -14,7 +14,10 @@ export const EditUser = () => {
   const fetchUser = async () => {
     try {
       setError("");
-      const res = await fetch(`${back_url}/users/${id}`);
+      const res = await fetch(`${back_url}/users/${id}`, {
+        //added by arash
+        headers: { Authorization: `Bearer ${localStorage.getItem("token-user") || localStorage.getItem("token-admin")}` },
+      });
       if (!res.ok) throw new Error("Error to fetch user");
 
       const data = await res.json();
@@ -24,7 +27,7 @@ export const EditUser = () => {
         name: user.name || "",
         surname: user.surname || "",
         email: user.email || "",
-        password: user.password || "", 
+        password: user.password || "",
       });
     } catch (e) {
       setError(e.message);
@@ -37,7 +40,7 @@ export const EditUser = () => {
     fetchUser();
   }, [id]);
 
-  // PUT 
+  //PUT
   const handleUpdate = async (e) => {
     e.preventDefault();
 
@@ -48,13 +51,29 @@ export const EditUser = () => {
 
     try {
       setError("");
+
+      const token = // adde by arash, try to get token from either user or admin
+        localStorage.getItem("token-user") ||
+        localStorage.getItem("token-admin");
+
+      if (!token) { // added by arash, if no token is found, set an error message and return
+        setError("Missing token. Please login again.");
+        return;
+      }
+
       const res = await fetch(`${back_url}/users/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // added by arash, include the token in the Authorization header
+        },
         body: JSON.stringify(form),
       });
 
-      if (!res.ok) throw new Error("Error to update user");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null); //added and edited by arash, try to parse the error response as JSON, if it fails, return null
+        throw new Error(errData?.msg || errData?.error || "Error to update user"); // added and edited by arash, use the msg or error property from the error response as the error message, if they exist, otherwise use a default error message
+      }
 
       navigate("/users");
     } catch (e) {

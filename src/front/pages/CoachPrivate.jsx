@@ -19,7 +19,39 @@ export default function CoachPrivate() {
 
   const token = localStorage.getItem("token-coach");
 
+  // added by arash: get coachId safely (store can be empty after refresh)
+  const coachId =
+    store?.coach?.id ||
+    Number(localStorage.getItem("coach_id")) ||
+    null; // added by arash
 
+  // added by arash: if refresh happened and coach_id is missing, fetch it once from private endpoint
+  useEffect(() => {
+    const restoreCoachId = async () => {
+      if (!token) return;
+      if (coachId) return;
+
+      try {
+        const res = await fetch(`${backendURL}/coach/private`, {
+          headers: { Authorization: `Bearer ${token}` }, // added by arash
+        });
+        const data = await res.json();
+
+        if (res.ok && data?.coach?.id) {
+          localStorage.setItem("coach_id", data.coach.id); // added by arash
+          dispatch({
+            type: "login-coach", // added by arash
+            payload: { token, coach: data.coach }, // added by arash
+          });
+        }
+      } catch (e) {
+        // ignore, UI will show error later if needed
+      }
+    };
+
+    restoreCoachId();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]); // added by arash
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -27,7 +59,18 @@ export default function CoachPrivate() {
       setCoursesError("");
 
       try {
-        const res = await fetch(`${backendURL}/coach/${store.coach.id}/courses-students`);
+        // added by arash: if coachId not ready yet, show a friendly message
+        if (!coachId) {
+          setCoursesError("Missing coach id. Please login again."); // added by arash
+          return; // added by arash
+        }
+
+        const res = await fetch(`${backendURL}/coach/${coachId}/courses-students`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // added by arash (safe even if endpoint is public)
+          },
+        });
+
         const data = await res.json();
 
         if (!res.ok) {
@@ -36,7 +79,6 @@ export default function CoachPrivate() {
         }
 
         setCourses(data);
-
       } catch (e) {
         setCoursesError("Failed to search course");
       } finally {
@@ -44,56 +86,64 @@ export default function CoachPrivate() {
       }
     };
 
-    if (store.isAuthenticated || token) fetchCourses();
-  }, [store.isAuthenticated, store.coach?.id]);
+    if (token) fetchCourses(); // added by arash: token is enough
+  }, [token, coachId, backendURL]); // added by arash
 
   const handleDelete = async (courseId) => {
-    const backendURL = import.meta.env.VITE_BACKEND_URL;
     if (!window.confirm("Are you sure?")) return;
 
     const res = await fetch(`${backendURL}/course/${courseId}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (res.ok) {
-      setCourses(prev => prev.filter(c => c.id !== courseId));
+      setCourses((prev) => prev.filter((c) => c.id !== courseId));
     } else {
       const data = await res.json();
       alert(data.msg || data.error || "Error to delete");
     }
   };
 
-
   const handleLogout = () => {
-    localStorage.clear()
+    // added by arash: minimal logout (don’t clear EVERYTHING)
+    localStorage.removeItem("token-coach"); // added by arash
+    localStorage.removeItem("coach_id"); // added by arash
 
     dispatch({ type: "logout-coach" });
-
     navigate("/");
   };
 
   const deleteAccount = async () => {
-    const confirmation = window.confirm("Are you sure? This action CANNOT be undone and will delete all your courses.")
-
+    const confirmation = window.confirm(
+      "Are you sure? This action CANNOT be undone and will delete all your courses."
+    );
     if (!confirmation) return;
 
-    const finalConfirmation = window.prompt(
-      'Type DELETE to confirm:'
-    );
+    const finalConfirmation = window.prompt("Type DELETE to confirm:");
     if (finalConfirmation !== "DELETE") {
       alert("Account deletion cancelled");
       return;
     }
 
     try {
-      const res = await fetch(`${backendURL}/coach/${store.coach.id}`, {
-        method: "DELETE"
+      // added by arash: use coachId safely + send Authorization
+      if (!coachId) {
+        alert("Missing coach id. Please login again."); // added by arash
+        return; // added by arash
+      }
+
+      const res = await fetch(`${backendURL}/coach/${coachId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }, // added by arash
       });
+
       if (res.ok) {
-        localStorage.clear();
+        // added by arash: minimal cleanup
+        localStorage.removeItem("token-coach");
+        localStorage.removeItem("coach_id");
         dispatch({ type: "logout-coach" });
         alert("Account deleted successfully");
         navigate("/");
@@ -107,44 +157,43 @@ export default function CoachPrivate() {
   };
 
   const openStudentsModal = async (course) => {
-  setSelectedCourse(course);
-  setShowModal(true);
-  setLoadingStudents(true);
-  setStudentsError("");
-  setStudents([]);
+    setSelectedCourse(course);
+    setShowModal(true);
+    setLoadingStudents(true);
+    setStudentsError("");
+    setStudents([]);
 
-  try {
-    const res = await fetch(`${backendURL}/course/${course.id}/enrolled-students`, {
-      headers: {
-        "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`
-      }
-    });
+    try {
+      const res = await fetch(`${backendURL}/course/${course.id}/enrolled-students`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const data = await res.json();
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Error loading students");
 
-    if (!res.ok) throw new Error(data?.error || "Error loading students");
+      setStudents(data.students || []);
+    } catch (e) {
+      setStudentsError(e.message);
+    } finally {
+      setLoadingStudents(false);
+    }
+  };
 
-    setStudents(data.students || []);
-  } catch (e) {
-    setStudentsError(e.message);
-  } finally {
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedCourse(null);
+    setStudents([]);
+    setStudentsError("");
     setLoadingStudents(false);
-  }
-};
-
-const closeModal = () => {
-  setShowModal(false);
-  setSelectedCourse(null);
-  setStudents([]);
-  setStudentsError("");
-  setLoadingStudents(false);
-};
+  };
 
   return (
     <div style={{ padding: 40 }}>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>{store.coach.name} Dashboard</h2>
+        <h2>{store?.coach?.name ? `${store.coach.name} Dashboard` : "Coach Dashboard"}</h2>
         <div className="d-flex gap-2">
           <button className="btn btn-danger" onClick={deleteAccount}>
             Delete Account
@@ -157,10 +206,7 @@ const closeModal = () => {
 
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4>My Courses</h4>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate("/coach/create-course")}
-        >
+        <button className="btn btn-primary" onClick={() => navigate("/coach/create-course")}>
           + Create Course
         </button>
       </div>
@@ -173,23 +219,16 @@ const closeModal = () => {
       )}
 
       <div className="row">
-        {courses.map(course => (
+        {courses.map((course) => (
           <div key={course.id} className="col-md-4 mb-4">
             <div className="card h-100 shadow-sm">
-              <img
-                src="https://picsum.photos/400/200"
-                className="card-img-top"
-                alt="course"
-              />
+              <img src="https://picsum.photos/400/200" className="card-img-top" alt="course" />
               <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{course.title}</h5>
                 <p className="card-text">{course.description}</p>
                 <p className="fw-bold">${course.cost}</p>
 
-                <button
-                  className="btn btn-info btn-sm w-100"
-                  onClick={() => openStudentsModal(course)}
-                >
+                <button className="btn btn-info btn-sm w-100" onClick={() => openStudentsModal(course)}>
                   👥 View {course.enrolled_students} Students
                 </button>
 
@@ -200,10 +239,7 @@ const closeModal = () => {
                   >
                     Edit
                   </button>
-                  <button
-                    className="btn btn-danger w-100"
-                    onClick={() => handleDelete(course.id)}
-                  >
+                  <button className="btn btn-danger w-100" onClick={() => handleDelete(course.id)}>
                     Delete
                   </button>
                 </div>
@@ -213,7 +249,6 @@ const closeModal = () => {
         ))}
       </div>
 
-      
       {showModal && (
         <div
           className="modal show d-block"
@@ -222,16 +257,10 @@ const closeModal = () => {
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
           onClick={closeModal}
         >
-          <div
-            className="modal-dialog modal-lg"
-            role="document"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="modal-dialog modal-lg" role="document" onClick={(e) => e.stopPropagation()}>
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">
-                  Students — {selectedCourse?.title}
-                </h5>
+                <h5 className="modal-title">Students — {selectedCourse?.title}</h5>
                 <button type="button" className="btn-close" onClick={closeModal} />
               </div>
 

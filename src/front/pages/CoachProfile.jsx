@@ -63,7 +63,8 @@ const [error, setError] = useState("");
             const res = await fetch(`${BACKEND_URL}/coach/${store.coach.id}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${store.token}`
                 },
                 body: JSON.stringify(body)
             });
