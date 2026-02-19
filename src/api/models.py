@@ -100,8 +100,11 @@ class Coach(db.Model):
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
     gender: Mapped[str] = mapped_column(String(50), nullable=True)
     birthday: Mapped[date] = mapped_column(db.Date, nullable=True)
-    city: Mapped[str] = mapped_column(String(120), nullable=True)
     country: Mapped[str] = mapped_column(String(120), nullable=True)
+    province: Mapped[str] = mapped_column(String(120), nullable=True)
+    city: Mapped[str] = mapped_column(String(120), nullable=True)
+    latitude: Mapped[float] = mapped_column(db.Float, nullable=True)
+    longitude: Mapped[float] = mapped_column(db.Float, nullable=True)
     phone: Mapped[str] = mapped_column(String(120), nullable=True)
     profile_image: Mapped[str] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
@@ -117,8 +120,11 @@ class Coach(db.Model):
             "name": self.name,
             "last_name": self.last_name,
             "birthday": self.birthday.isoformat() if self.birthday else None, 
-            "city": self.city,
             "country": self.country,
+            "province": self.province,
+            "city": self.city,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
             "phone": self.phone,
             "profile_image": self.profile_image,
             "gender": self.gender,
