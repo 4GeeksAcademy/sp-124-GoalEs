@@ -57,7 +57,7 @@ export const UploadCourseImage = ({ initialUrl = "", onUpload }) => {
         <img
           src={imageUrl}
           alt="Course"
-          style={{ width: "100%", maxWidth: "400px", borderRadius: "12px", margin: "10px 0" }}
+          style={{ height: "25rem", objectFit: "contain" }}
         />
       )}
 

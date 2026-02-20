@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { CoachMap } from "./CoachMap";
 
 export const Coaches = () => {
 
@@ -11,15 +12,15 @@ export const Coaches = () => {
 
   const [cargando, setCargando] = useState(false)
 
-  const { store } = useGlobalReducer(); //added by arash
-  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); //added by arash
+  const { store } = useGlobalReducer();
+  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); 
 
 
   const getAllCoaches = async () => {
     try {
       setCargando(true);
 
-         const res = await fetch(backendURL + "/coach"); //added by arash (GET /coach is public, no token needed)
+      const res = await fetch(backendURL + "/coach"); 
 
 
       if (!res.ok) throw new Error("We can’t get coaches right now");
@@ -36,10 +37,10 @@ export const Coaches = () => {
 
   const deletedCoach = async (id) => {
     try {
-       if (!token) throw new Error("Missing token, login as admin/coach"); //added by arash
+      if (!token) throw new Error("Missing token, login as admin/coach"); 
       const res = await fetch(`${backendURL}/coach/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` } //added by arash, to send the token in the request header for authentication
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (!res.ok) throw new Error("Not deleted the coach");
@@ -47,7 +48,7 @@ export const Coaches = () => {
       setCoach(prev => prev.filter(coach => coach.id !== id));
 
     } catch (err) {
-      alert(err.message); 
+      alert(err.message);
       console.error(err);
     }
   };
@@ -66,25 +67,43 @@ export const Coaches = () => {
               Loading...
             </div>
           </div>
-          }
+        }
         {!cargando && coach.map((coach) => (
-          <div className="col-md-4" key={coach.id}>
-            <div className="card mt-3">
-              <div className="card-body">
-                <h5 className="card-title">{coach.name} {coach.last_name}</h5>
-                <button className="btn btn-success me-2" onClick={() => navigate(`/coaches-edit/${coach.id}`)}>
-                  Edit
+          <div className="col-md-4 key={coach.id}">
+           <div className="card mt-3 shadow-sm">
+            <div className="card-body">
+                <div className="d-flex align-items-center gap-3 mb-2">
+                    <img
+                        src={coach.profile_image || `https://ui-avatars.com/api/?name=${coach.name}`}
+                        alt="Profile"
+                        style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover" }}
+                    />
+                    <div>
+                        <h5 className="card-title mb-0">{coach.name} {coach.last_name}</h5>
+                        {coach.city && (
+                            <p className="text-muted mb-0 small">
+                                📍 {coach.city}, {coach.province}, {coach.country}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <CoachMap
+                    latitude={coach.latitude}
+                    longitude={coach.longitude}
+                    name={`${coach.name} ${coach.last_name}`}
+                />
+
+                <button
+                    className="btn btn-primary btn-sm mt-2 w-100"
+                    onClick={() => navigate(`/coaches-details/${coach.id}`)}>
+                    show profile
                 </button>
-                <button className="btn btn-danger me-2" onClick={() => deletedCoach(coach.id)}>
-                  🗑️
-                </button>
-                <button className="btn btn-primary" onClick={() => navigate(`/coaches-details/${coach.id}`)}>
-                  Show details
-                </button>
-              </div>
             </div>
-          </div>
-        ))}
+        </div>
+        </div>
+))}
+
         <button className="btn btn-primary mt-3" onClick={() => navigate("/coaches/new")}>
           New Coach
         </button>

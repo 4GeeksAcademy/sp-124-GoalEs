@@ -11,8 +11,8 @@ export const UserCourses = () => {
 
     const [userCourses, setUserCourses] = useState([]);
     const [error, setError] = useState("");
+    const [coursesById, setCoursesById] = useState({});
 
-    // added by arash
     const token = localStorage.getItem("token-user") || localStorage.getItem("token-admin");
 
     const userCourse = async () => {
@@ -41,7 +41,7 @@ export const UserCourses = () => {
 
             const response = await fetch(`${BACKEND_URL}/user_course/${id}`, {
                 method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` } // added by arash
+                headers: { Authorization: `Bearer ${token}` }
             });
 
             if (!response.ok) throw new Error("Error deleting user course");
@@ -54,9 +54,25 @@ export const UserCourses = () => {
         }
     };
 
+        const fetchCourses = async () => {
+    try {
+        const res = await fetch(`${BACKEND_URL}/course`);
+        const data = await res.json();
+
+        const list = data.courses ?? [];
+        const map = {};
+        list.forEach(c => { map[c.id] = c; });
+
+        setCoursesById(map);
+    } catch (e) {
+        // optional: console.log(e)
+    }
+    };
+
 
     useEffect(() => {
         userCourse();
+        fetchCourses();
     }, []);
 
     return (
@@ -76,33 +92,46 @@ export const UserCourses = () => {
                 {userCourses.length === 0 ? (
                     <h2>Este usuario no tiene cursos</h2>
                 ) : (
-                    userCourses.map(userCourse => (
+                    userCourses.map(userCourse => {
+                    const course = coursesById[userCourse.course_id];
+
+                    return (
                         <div key={userCourse.id} className="col-md-4 mb-3">
-                            <div className="card h-100 shadow-sm">
-                                <div className="card-body d-flex flex-column">
-                                    <p>
-                                        <strong>Course ID:</strong> {userCourse.course_id}
-                                    </p>
+                        <div className="card h-100 shadow-sm">
 
-                                    <p>
-                                        <strong>Status:</strong>{" "}
-                                        {userCourse.active ? "Active" : "Inactive"}
-                                    </p>
+                            <img
+                            src={course?.image_url || "https://picsum.photos/400/200"}
+                            class="img-thumbnail"
+                            alt={course?.title || "course"}
+                            style={{ height: "25rem", objectFit: "contain" }}
+                            />
 
-                                    <div className="mt-auto">
-                                        <button
-                                            className="btn btn-danger btn-sm"
-                                            onClick={() => deleteUserCourse(userCourse.id)}
-                                        >
-                                            Remove course
-                                        </button>
-                                    </div>
+                            <div className="card-body d-flex flex-column">
+                            <h5 className="card-title mb-2">
+                                {course?.title || `Course #${userCourse.course_id}`}
+                            </h5>
 
+                            <p className="card-text text-muted">
+                                {course?.description || "Loading course details..."}
+                            </p>
 
-                                </div>
+                            <p>
+                                <strong>Status:</strong> {userCourse.active ? "Active" : "Inactive"}
+                            </p>
+
+                            <div className="mt-auto">
+                                <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => deleteUserCourse(userCourse.id)}
+                                >
+                                Remove course
+                                </button>
+                            </div>
                             </div>
                         </div>
-                    ))
+                        </div>
+                    );
+                    })
                 )}
             </div>
         </div>

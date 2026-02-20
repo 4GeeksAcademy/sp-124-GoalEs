@@ -49,10 +49,8 @@ export const CoursesFavoritesUser = () => {
     };
 
     useEffect(() => {
-        if (userId) {
-            loadFavorites();
-        }
-    }, [favorites]);
+        if (userId) loadFavorites();
+    }, [userId]);
 
     return (
         <div className="container py-4">
@@ -69,7 +67,7 @@ export const CoursesFavoritesUser = () => {
                     <div key={favorites.id} className="col-md-4 mb-4">
                         <div className="card h-100 shadow-sm">
                             <img
-                                src="https://picsum.photos/400/200"
+                                src={favorites.course?.image_url || "https://picsum.photos/400/200"}
                                 className="card-img-top"
                                 alt="course"
                             />

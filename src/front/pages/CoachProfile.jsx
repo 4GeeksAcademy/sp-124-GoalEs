@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { CoachUploadImage } from "./CoachUploadImage";
+import { LocationAutocomplete } from "../components/LocationAutocomplete";
 
 export const CoachProfile = () => {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -15,14 +16,17 @@ export const CoachProfile = () => {
         email: "",
         password: "",
         birthday: "",
-        city: "",
         country: "",
+        province: "",
+        city: "",
         phone: "",
         gender: "",
-        profile_image: ""
+        profile_image: "",
+        latitude: "",
+        longitude: "",
 
     });
-  
+
     useEffect(() => {
         if (store.coach) {
             setForm(prev => ({
@@ -31,17 +35,20 @@ export const CoachProfile = () => {
                 last_name: store.coach.last_name || "",
                 email: store.coach.email || "",
                 birthday: store.coach.birthday || "",
-                city: store.coach.city || "",
                 country: store.coach.country || "",
+                province: store.coach.province || "",
+                city: store.coach.city || "",
                 phone: store.coach.phone || "",
                 gender: store.coach.gender || "",
-                profile_image: store.coach.profile_image || ""
+                profile_image: store.coach.profile_image || "",
+                latitude: store.coach.latitude || "",
+                longitude: store.coach.longitude || ""
             }));
         }
     }, [store.coach]);
 
 
-const [error, setError] = useState("");
+    const [error, setError] = useState("");
 
     const updateCoachProfile = async (e) => {
         e.preventDefault();
@@ -52,11 +59,14 @@ const [error, setError] = useState("");
             last_name: form.last_name,
             email: form.email,
             birthday: form.birthday,
-            city: form.city,
             country: form.country,
+            province: form.province,
+            city: form.city,
             phone: form.phone,
             gender: form.gender,
-            profile_image: form.profile_image
+            profile_image: form.profile_image,
+            latitude: form.latitude,
+            longitude: form.longitude
         };
 
         if (form.password.trim() !== "") {
@@ -74,9 +84,9 @@ const [error, setError] = useState("");
             });
 
             if (!res.ok) throw new Error("Error updating profile");
-            
+
             const data = await res.json();
-            console.log("Backend return:", data)
+            console.log("Enviando para o backend:", body);
 
             localStorage.setItem("coach", JSON.stringify(data));
 
@@ -103,9 +113,9 @@ const [error, setError] = useState("");
             {error && <div className="alert alert-danger">{error}</div>}
 
             <CoachUploadImage
-            uploadPhoto={(photo) =>
-                setForm(prev => ({...prev, profile_image: photo}))
-            }
+                uploadPhoto={(photo) =>
+                    setForm(prev => ({ ...prev, profile_image: photo }))
+                }
             />
 
             <form onSubmit={updateCoachProfile}>
@@ -145,22 +155,25 @@ const [error, setError] = useState("");
                         setForm(prev => ({ ...prev, birthday: event.target.value }))
                     }
                 />
-                <input
-                    className="form-control mb-2"
-                    placeholder="City"
-                    value={form.city}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, city: event.target.value }))
+                <LocationAutocomplete
+                    onPlaceSelected={(place) =>
+                        setForm(prev => ({
+                            ...prev,
+                            city: place.city,
+                            province: place.province,
+                            country: place.country,
+                            latitude: place.latitude,
+                            longitude: place.longitude,
+                        }))
                     }
                 />
-                <input
-                    className="form-control mb-2"
-                    placeholder="Country"
-                    value={form.country}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, country: event.target.value }))
-                    }
-                />
+
+                {form.city && (
+                    <p className="text-muted mt-1">
+                        📍 {form.city}, {form.province}, {form.country}
+                    </p>
+                )}
+
                 <input
                     className="form-control mb-2"
                     placeholder="Phone"
@@ -169,7 +182,6 @@ const [error, setError] = useState("");
                         setForm(prev => ({ ...prev, phone: event.target.value }))
                     }
                 />
-
 
                 <input
                     className="form-control mb-3"
@@ -194,9 +206,16 @@ const [error, setError] = useState("");
                     <option value="Other">Other</option>
                 </select>
 
-                <button className="btn btn-primary">
-                    Save Profile
-                </button>
+
+                <div className="modal-footer">
+                    <button className="btn btn-primary">
+                        Save Profile
+                    </button>
+                    
+                    <button className="btn btn-secondary" onClick={() => navigate("/coach/private")}>
+                        Back to Dashboard
+                    </button>
+                </div>
             </form>
 
         </div>

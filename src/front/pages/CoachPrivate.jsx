@@ -19,13 +19,11 @@ export default function CoachPrivate() {
 
   const token = localStorage.getItem("token-coach");
 
-  // added by arash: get coachId safely (store can be empty after refresh)
   const coachId =
     store?.coach?.id ||
     Number(localStorage.getItem("coach_id")) ||
-    null; // added by arash
+    null; 
 
-  // added by arash: if refresh happened and coach_id is missing, fetch it once from private endpoint
   useEffect(() => {
     const restoreCoachId = async () => {
       if (!token) return;
@@ -33,25 +31,23 @@ export default function CoachPrivate() {
 
       try {
         const res = await fetch(`${backendURL}/coach/private`, {
-          headers: { Authorization: `Bearer ${token}` }, // added by arash
+          headers: { Authorization: `Bearer ${token}` }, 
         });
         const data = await res.json();
 
         if (res.ok && data?.coach?.id) {
-          localStorage.setItem("coach_id", data.coach.id); // added by arash
+          localStorage.setItem("coach_id", data.coach.id); 
           dispatch({
-            type: "login-coach", // added by arash
-            payload: { token, coach: data.coach }, // added by arash
+            type: "login-coach", 
+            payload: { token, coach: data.coach }, 
           });
         }
       } catch (e) {
-        // ignore, UI will show error later if needed
       }
     };
 
     restoreCoachId();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]); // added by arash
+  }, [token]); 
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -59,15 +55,14 @@ export default function CoachPrivate() {
       setCoursesError("");
 
       try {
-        // added by arash: if coachId not ready yet, show a friendly message
         if (!coachId) {
-          setCoursesError("Missing coach id. Please login again."); // added by arash
-          return; // added by arash
+          setCoursesError("Missing coach id. Please login again.");
+          return; 
         }
 
         const res = await fetch(`${backendURL}/coach/${coachId}/courses-students`, {
           headers: {
-            Authorization: `Bearer ${token}`, // added by arash (safe even if endpoint is public)
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -86,8 +81,8 @@ export default function CoachPrivate() {
       }
     };
 
-    if (token) fetchCourses(); // added by arash: token is enough
-  }, [token, coachId, backendURL]); // added by arash
+    if (token) fetchCourses(); 
+  }, [token, coachId, backendURL]); 
 
   const handleDelete = async (courseId) => {
     if (!window.confirm("Are you sure?")) return;
@@ -108,9 +103,9 @@ export default function CoachPrivate() {
   };
 
   const handleLogout = () => {
-    // added by arash: minimal logout (don’t clear EVERYTHING)
-    localStorage.removeItem("token-coach"); // added by arash
-    localStorage.removeItem("coach_id"); // added by arash
+    localStorage.removeItem("token-coach");
+    localStorage.removeItem("coach");  
+    localStorage.removeItem("coach_id"); 
 
     dispatch({ type: "logout-coach" });
     navigate("/");
@@ -129,19 +124,17 @@ export default function CoachPrivate() {
     }
 
     try {
-      // added by arash: use coachId safely + send Authorization
       if (!coachId) {
-        alert("Missing coach id. Please login again."); // added by arash
-        return; // added by arash
+        alert("Missing coach id. Please login again."); 
+        return; 
       }
 
       const res = await fetch(`${backendURL}/coach/${coachId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }, // added by arash
+        headers: { Authorization: `Bearer ${token}` }, 
       });
 
       if (res.ok) {
-        // added by arash: minimal cleanup
         localStorage.removeItem("token-coach");
         localStorage.removeItem("coach_id");
         dispatch({ type: "logout-coach" });
@@ -196,7 +189,7 @@ export default function CoachPrivate() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div className="d-flex align-items-center gap-3">
           <img
-            src={store.coach.profile_image || "https://via.placeholder.com/60"}
+            src={store.coach?.profile_image || `https://ui-avatars.com/api/?name=${store.coach?.name}`}
             alt="Profile"
             style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover" }}
           />
@@ -240,7 +233,7 @@ export default function CoachPrivate() {
         {courses.map((course) => (
           <div key={course.id} className="col-md-4 mb-4">
             <div className="card h-100 shadow-sm">
-              <img src={course.image_url || "https://picsum.photos/400/200"} className="card-img-top" alt="course" />
+              <img src={course.image_url || "https://picsum.photos/400/200"} className="card-img-top" alt="course" style={{ height: "25rem", objectFit: "contain" }} />
               <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{course.title}</h5>
                 <p className="card-text">{course.description}</p>

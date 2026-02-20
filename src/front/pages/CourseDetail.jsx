@@ -35,7 +35,9 @@ export const CourseDetail = () => {
   if (error) return <div className="text-danger">{error}</div>;
   if (!course) return <p>Loading...</p>;
 
+
   return (
+    
     <div className="container py-4">
       <h1>{course.title}</h1>
       
@@ -46,6 +48,7 @@ export const CourseDetail = () => {
         src={course.image_url || "https://picsum.photos/800/350"}
         class="img-thumbnail"
         alt="course"
+        style={{ height: "25rem", objectFit: "contain" }}
       />
           <p><strong>Description:</strong> {course.description}</p>
           <p><strong>Cost:</strong> € {course.cost}</p>
