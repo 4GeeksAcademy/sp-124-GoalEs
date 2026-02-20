@@ -15,10 +15,26 @@ export const CoachDetails = () => {
     const { store } = useGlobalReducer(); //added by arash
 
     const [coach, setCoach] = useState();
+    const [courses, setCourses] = useState([]);
+
+    const getCoachCourses = async () => {
+        try {
+            const res = await fetch(`${backendURL}/coach/${id}/courses`);
+            const data = await res.json();
+            setCourses(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        getCoachDetails();
+        getCoachCourses();
+    }, [id]);
 
     const getCoachDetails = async () => {
         try {
-            const res = await fetch(`${backendURL}/coach/${id}`,{
+            const res = await fetch(`${backendURL}/coach/${id}`, {
                 headers: { Authorization: `Bearer ${store.token}` } //added by arash, to send the token in the request header for authentication
             })
 
@@ -33,29 +49,48 @@ export const CoachDetails = () => {
             console.error(error)
         }
     }
-
-    useEffect(() => {
-        getCoachDetails();
-    }, [id])
-
     return (
         <>
             <div className="container">
                 <div className="row">
                     <div className="card">
                         <div className="card-body">
-                            {!coach && 
+                            {!coach &&
                                 <div className="form-flotating">
                                     <p>Loading...</p>
                                 </div>
                             }
                             {coach &&
-                                <div className="form-flotating">
-                                    <ul>
-                                        <li><strong>Name:</strong> {coach.name}</li>
-                                        <li><strong>Last Name:</strong> {coach.last_name}</li>
-                                        <li><strong>Email:</strong> {coach.email}</li>
-                                    </ul>
+                                <div>
+                                    <div className="d-flex align-items-center gap-3 mb-3">
+                                        <img
+                                            src={coach.profile_image || `https://ui-avatars.com/api/?name=${coach.name}`}
+                                            alt="Profile"
+                                            style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover" }}
+                                        />
+                                        <div>
+                                            <h2 className="mb-0">{coach.name} {coach.last_name}</h2>
+                                            <p className="text-muted mb-0">{coach.email}</p>
+                                            {coach.city && (
+                                                <p className="mb-0">📍 {coach.city}, {coach.province}, {coach.country}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <h5 className="mt-4">Available Courses</h5>
+                                    {courses.length === 0 && <p className="text-muted">No courses available.</p>}
+                                    <div className="row mt-2">
+                                        {courses.map(course => (
+                                            <div key={course.id} className="col-md-4 mb-3">
+                                                <div className="card h-100 shadow-sm">
+                                                    <div className="card-body">
+                                                        <h6 className="card-title">{course.title}</h6>
+                                                        <p className="card-text small">{course.description}</p>
+                                                        <p className="fw-bold">${course.cost}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                     <h5 className="mt-3">Where am I?</h5>
                                     <CoachMap
                                         latitude={coach.latitude}

@@ -521,6 +521,11 @@ def coach_students(coach_id):
 
     return jsonify(result), 200
 
+@app.route('/coach/<int:coach_id>/courses', methods=['GET'])
+def get_coach_courses(coach_id):
+    courses = Course.query.filter_by(coach_id=coach_id).all()
+    return jsonify([course.serialize() for course in courses]), 200    
+
 #private, only for coach and admin, but coach can only update himself
 @app.route('/coach/<int:id>', methods=['PUT'])
 @jwt_required()
