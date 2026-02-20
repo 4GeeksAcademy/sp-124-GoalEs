@@ -76,8 +76,7 @@ export const FaceAnalyzer = () => {
                         alt="Uploaded"
                         style={{
                             width: "250px",
-                            borderRadius: "10px",
-                            boxShadow: "0 4px 10px rgba(0,0,0,0.2)"
+                            borderRadius: "10px"
                         }}
                     />
                 </div>
