@@ -109,7 +109,8 @@ export default function CoachPrivate() {
 
   const handleLogout = () => {
     // added by arash: minimal logout (don’t clear EVERYTHING)
-    localStorage.removeItem("token-coach"); // added by arash
+    localStorage.removeItem("token-coach");  // added by arash
+    localStorage.removeItem("coach");  
     localStorage.removeItem("coach_id"); // added by arash
 
     dispatch({ type: "logout-coach" });
@@ -196,7 +197,7 @@ export default function CoachPrivate() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div className="d-flex align-items-center gap-3">
           <img
-            src={store.coach.profile_image || "https://via.placeholder.com/60"}
+            src={store.coach?.profile_image || `https://ui-avatars.com/api/?name=${store.coach?.name}`}
             alt="Profile"
             style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover" }}
           />

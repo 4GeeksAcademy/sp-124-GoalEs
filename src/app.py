@@ -521,6 +521,11 @@ def coach_students(coach_id):
 
     return jsonify(result), 200
 
+@app.route('/coach/<int:coach_id>/courses', methods=['GET'])
+def get_coach_courses(coach_id):
+    courses = Course.query.filter_by(coach_id=coach_id).all()
+    return jsonify([course.serialize() for course in courses]), 200    
+
 #private, only for coach and admin, but coach can only update himself
 @app.route('/coach/<int:id>', methods=['PUT'])
 @jwt_required()
@@ -542,6 +547,15 @@ def put_coach_put(id):
     coach.last_name = body.get("last_name", coach.last_name)
     coach.email = body.get("email", coach.email)
     coach.password = body.get("password", coach.password)
+    coach.gender = body.get("gender", coach.gender)
+    coach.birthday = body.get("birthday", coach.birthday)
+    coach.country = body.get("country", coach.country)
+    coach.province = body.get("province", coach.province)
+    coach.city = body.get("city", coach.city)
+    coach.latitude = body.get("latitude", coach.latitude)
+    coach.longitude = body.get("longitude", coach.longitude)
+    coach.phone = body.get("phone", coach.phone)
+    coach.profile_image = body.get("profile_image", coach.profile_image)
 
     db.session.commit()
 
@@ -575,10 +589,16 @@ def put_coach(coach_id):
         coach_update.is_active = body["is_active"]
     if "gender" in body:
         coach_update.gender = body["gender"]
-    if "city" in body:
-        coach_update.city = body["city"]
     if "country" in body:
         coach_update.country = body["country"]
+    if "province" in body:
+        coach_update.province = body["province"]
+    if "city" in body:
+        coach_update.city = body["city"]
+    if "latitude" in body:
+        coach_update.latitude = body["latitude"]
+    if "longitude" in body:
+        coach_update.longitude = body["longitude"]
     if "phone" in body:
         coach_update.phone = body["phone"]
     if "birthday" in body:
