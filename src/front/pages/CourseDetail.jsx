@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer"; //added by arash
+import useGlobalReducer from "../hooks/useGlobalReducer"; 
 
 export const CourseDetail = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -11,13 +11,13 @@ export const CourseDetail = () => {
   const [course, setCourse] = useState(null);
   const [error, setError] = useState("");
 
-  const { store } = useGlobalReducer(); //added by arash
-  const token = store.token || localStorage.getItem("token-user") || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); //added by arash
+  const { store } = useGlobalReducer();
+  const token = store.token || localStorage.getItem("token-user") || localStorage.getItem("token-admin") || localStorage.getItem("token-coach");
 
   const fetchCourse = async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/course/${id}`, {
-        headers: { Authorization: `Bearer ${token}` } //added by arash, to send the token in the request header for authentication
+        headers: { Authorization: `Bearer ${token}` } 
       });
       if (!res.ok) throw new Error("Error loading course");
 
@@ -38,9 +38,15 @@ export const CourseDetail = () => {
   return (
     <div className="container py-4">
       <h1>{course.title}</h1>
+      
 
       <div className="card shadow-sm">
         <div className="card-body">
+          <img
+        src={course.image_url || "https://picsum.photos/800/350"}
+        class="img-thumbnail"
+        alt="course"
+      />
           <p><strong>Description:</strong> {course.description}</p>
           <p><strong>Cost:</strong> € {course.cost}</p>
         </div>

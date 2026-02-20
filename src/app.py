@@ -684,7 +684,8 @@ def create_course():
         title=body["title"],
         description=body["description"],
         cost=int(body["cost"]),
-        coach_id=int(coach_id)
+        coach_id=int(coach_id),
+        image_url=body.get("image_url")
     )
 
     db.session.add(new_course)
@@ -717,6 +718,7 @@ def update_course(id):
     course.title = body["title"]
     course.description = body["description"]
     course.cost = int(body["cost"])
+    course.image_url = body.get("image_url", course.image_url)
 
     db.session.commit()
     return jsonify(course=course.serialize()), 200

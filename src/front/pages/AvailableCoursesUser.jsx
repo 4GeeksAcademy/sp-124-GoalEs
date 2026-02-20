@@ -12,7 +12,6 @@ export const AvailableCoursesUser = () => {
 
     const [courses, setCourses] = useState([])
 
-    // added by arash
     const token = store.token || localStorage.getItem("token-user") || localStorage.getItem("token-admin");
 
     const getCourses = async () => {
@@ -35,7 +34,7 @@ export const AvailableCoursesUser = () => {
             const res = await fetch(
                 `${backendURL}/users/${store.user.id}/favorites/${courseId}`,
                 { method: "POST",
-                  headers: { Authorization: `Bearer ${token}` } // added by arash
+                  headers: { Authorization: `Bearer ${token}` } 
                  }
             );
 
@@ -59,7 +58,7 @@ export const AvailableCoursesUser = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}` // added by arash (safe even if backend doesn't require yet)
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     active: true,
@@ -94,7 +93,7 @@ export const AvailableCoursesUser = () => {
                         <div key={course.id} className="col-md-4 mb-4">
                             <div className="card h-100 shadow-sm">
                                 <img
-                                    src="https://picsum.photos/400/200"
+                                    src={course.image_url || "https://picsum.photos/400/200"}
                                     className="card-img-top"
                                     alt="course"
                                 />

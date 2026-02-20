@@ -240,7 +240,7 @@ export default function CoachPrivate() {
         {courses.map((course) => (
           <div key={course.id} className="col-md-4 mb-4">
             <div className="card h-100 shadow-sm">
-              <img src="https://picsum.photos/400/200" className="card-img-top" alt="course" />
+              <img src={course.image_url || "https://picsum.photos/400/200"} className="card-img-top" alt="course" />
               <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{course.title}</h5>
                 <p className="card-text">{course.description}</p>
