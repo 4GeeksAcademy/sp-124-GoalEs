@@ -43,6 +43,8 @@ import UserLayout from "./pages/Layouts/UserLayout";
 import CoachLayout from "./pages/Layouts/CoachLayout";
 import PublicLayout from "./pages/Layouts/PublicLayout";
 
+import { FaceAnalyzer } from "./pages/FaceAnalyzer.jsx";
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found</h1>}>
@@ -82,6 +84,7 @@ export const router = createBrowserRouter(
       <Route element={<UserLayout />}>
         <Route path="users/home" element={<PrivateUser />} />
         <Route path="users/profile" element={<CompleteProfileUser />} />
+        <Route path="/users/faceanalyzer" element={<FaceAnalyzer />} />
 
         {/* CRUD USERS (shared for user/admin) */}
         <Route path="users" element={<User />} />

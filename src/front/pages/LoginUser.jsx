@@ -47,8 +47,6 @@ export const LoginUser = () => {
         }
       });
 
-
-
       setWelcome(true)
       setError("")
 
@@ -60,10 +58,6 @@ export const LoginUser = () => {
       setError(error.message);
     }
   };
-
-  useEffect(() => {
-    console.log(store.token)
-  }, [store.token])
 
   return (
     <>
