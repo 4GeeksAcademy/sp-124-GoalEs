@@ -59,7 +59,8 @@ export const CompleteProfileUser = () => {
             const res = await fetch(`${BACKEND_URL}/users/${store.user.id}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${store.token}` //added by arash, to send the token in the request header for authentication
                 },
                 body: JSON.stringify(body)
             });

@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer"; //added by arash
 
 export const CreateCoach = () => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
+
+  const { store } = useGlobalReducer(); //added by arash
+  const token = store.token || localStorage.getItem("token-admin"); //added by arash
 
   const [form, setForm] = useState({
     name: "",
@@ -27,7 +31,8 @@ export const CreateCoach = () => {
       const res = await fetch(`${backendURL}/coach`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}) //added by arash
         },
         body: JSON.stringify(form)
       });

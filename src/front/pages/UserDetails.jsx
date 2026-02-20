@@ -13,7 +13,10 @@ export const UserDetails = () => {
     const fetchUser = async () => {
     try {
       setError("");
-      const res = await fetch(`${back_url}/users/${id}`);
+      const res = await fetch(`${back_url}/users/${id}`, {
+        //added by arash
+        headers: { Authorization: `Bearer ${localStorage.getItem("token-user") || localStorage.getItem("token-admin")}` },
+      });
       if (!res.ok) throw new Error("Error fetching user details");
 
       const data = await res.json();

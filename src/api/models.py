@@ -116,11 +116,12 @@ class Coach(db.Model):
             "email": self.email,
             "name": self.name,
             "last_name": self.last_name,
-            "birthday": self.birthday,
+            "birthday": self.birthday.isoformat() if self.birthday else None, 
             "city": self.city,
             "country": self.country,
             "phone": self.phone,
             "profile_image": self.profile_image,
+            "gender": self.gender,
             "is_active": self.is_active
         }
     

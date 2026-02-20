@@ -103,7 +103,7 @@ export const LoginUser = () => {
 
         <div>
           <p className="mt-3">Do you not have a account?</p>
-          <button className="btn btn-outline-primary" onClick={() => navigate("/users/singup")}>Create Account</button>
+          <button className="btn btn-outline-primary" onClick={() => navigate("/users/signup")}>Create Account</button>
         </div>
 
       </div>

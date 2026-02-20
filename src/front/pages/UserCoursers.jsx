@@ -12,10 +12,15 @@ export const UserCourses = () => {
     const [userCourses, setUserCourses] = useState([]);
     const [error, setError] = useState("");
 
+    // added by arash
+    const token = localStorage.getItem("token-user") || localStorage.getItem("token-admin");
+
     const userCourse = async () => {
         try {
             setError("");
-            const response = await fetch(`${BACKEND_URL}/user_course`);
+            const response = await fetch(`${BACKEND_URL}/user_course`, {
+                headers: { Authorization: `Bearer ${token}` } // added by arash
+            });
             if (!response.ok) throw new Error("Error fetching user courses");
 
             const data = await response.json();
@@ -35,7 +40,8 @@ export const UserCourses = () => {
             setError("");
 
             const response = await fetch(`${BACKEND_URL}/user_course/${id}`, {
-                method: "DELETE"
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` } // added by arash
             });
 
             if (!response.ok) throw new Error("Error deleting user course");
@@ -60,7 +66,7 @@ export const UserCourses = () => {
 
                 <button
                     className="btn btn-secondary"
-                    onClick={() => navigate("/users")}
+                    onClick={() => navigate("/users")} // added by arash
                 >
                     Back to users
                 </button>

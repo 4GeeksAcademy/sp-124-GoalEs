@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { CoachUploadImage } from "./CoachUploadImage";
 
 export const CoachProfile = () => {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -17,7 +18,8 @@ export const CoachProfile = () => {
         city: "",
         country: "",
         phone: "",
-        gender: ""
+        gender: "",
+        profile_image: ""
 
     });
   
@@ -32,7 +34,8 @@ export const CoachProfile = () => {
                 city: store.coach.city || "",
                 country: store.coach.country || "",
                 phone: store.coach.phone || "",
-                gender: store.coach.gender || ""
+                gender: store.coach.gender || "",
+                profile_image: store.coach.profile_image || ""
             }));
         }
     }, [store.coach]);
@@ -52,7 +55,8 @@ const [error, setError] = useState("");
             city: form.city,
             country: form.country,
             phone: form.phone,
-            gender: form.gender
+            gender: form.gender,
+            profile_image: form.profile_image
         };
 
         if (form.password.trim() !== "") {
@@ -63,14 +67,16 @@ const [error, setError] = useState("");
             const res = await fetch(`${BACKEND_URL}/coach/${store.coach.id}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${store.token}`
                 },
                 body: JSON.stringify(body)
             });
 
             if (!res.ok) throw new Error("Error updating profile");
-
+            
             const data = await res.json();
+            console.log("Backend return:", data)
 
             localStorage.setItem("coach", JSON.stringify(data));
 
@@ -95,6 +101,12 @@ const [error, setError] = useState("");
             <h1>Complete Your Profile</h1>
 
             {error && <div className="alert alert-danger">{error}</div>}
+
+            <CoachUploadImage
+            uploadPhoto={(photo) =>
+                setForm(prev => ({...prev, profile_image: photo}))
+            }
+            />
 
             <form onSubmit={updateCoachProfile}>
 

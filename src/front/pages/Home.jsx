@@ -45,23 +45,37 @@ export const Home = () => {
 			</p>
 
 			{/* Publico */}
-			{localStorage.length == 0 &&
+			{(localStorage.length == 0) && (
 				<>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/login")} >Go to Login Admin </button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/new")}>Go to Singup Coach</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/users/singup")}>Go to Singup User</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to Courses</button>
+				</>
+			)}
+
+			{/* Exclusivo Admin */}
+			{(localStorage.getItem("token-admin")) &&
+				<>
+					<button className="btn btn-success ms-3" onClick={() => navigate("/admin/home")}> Admin Dashboard</button>
+					
 				</>
 			}
 
-			{/* Exclusivo Admin */}
-			{localStorage.getItem("admin-token") &&
-				<button className="btn btn-primary ms-3" onClick={() => navigate("/UserCourseFavorite")}>Go to UserCourseFavorite</button>
+			{/* Exclusivo user */}
+			{(localStorage.getItem("token-user")) &&
+				<>
+					<button className="btn btn-success ms-3" onClick={() => navigate("/users/home")}> User Dashboard</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/users/profile")}>Edit Profile</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
+				</>
 			}
 
-			{/* Exclusivo cualquier usuario logeado */}
-			{localStorage.getItem("admin-token") || localStorage.getItem("token-user") || localStorage.getItem("token-coach") &&
+			{/* Exclusivo coache */}
+			{(localStorage.getItem("token-coach") || localStorage.getItem("coach")) &&
 				<>
+					<button className="btn btn-success ms-3" onClick={() => navigate("/coach/private")}> Coach Dashboard</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/messages")}>Go to Message</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/users")}>Go to Users</button>

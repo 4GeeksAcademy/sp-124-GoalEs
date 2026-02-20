@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import useGlobalReducer from "../hooks/useGlobalReducer"; //added by arash
 
 export const CourseDetail = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -11,9 +11,14 @@ export const CourseDetail = () => {
   const [course, setCourse] = useState(null);
   const [error, setError] = useState("");
 
+  const { store } = useGlobalReducer(); //added by arash
+  const token = store.token || localStorage.getItem("token-user") || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); //added by arash
+
   const fetchCourse = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/course/${id}`);
+      const res = await fetch(`${BACKEND_URL}/course/${id}`, {
+        headers: { Authorization: `Bearer ${token}` } //added by arash, to send the token in the request header for authentication
+      });
       if (!res.ok) throw new Error("Error loading course");
 
       const data = await res.json();
