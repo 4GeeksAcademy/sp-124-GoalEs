@@ -14,7 +14,6 @@ export const UserCourses = () => {
 
     // added by arash
     const token = localStorage.getItem("token-user") || localStorage.getItem("token-admin");
-    const baseUsersPath = localStorage.getItem("token-admin") ? "/admin/users" : "/users"; // added by arash
 
     const userCourse = async () => {
         try {
@@ -67,7 +66,7 @@ export const UserCourses = () => {
 
                 <button
                     className="btn btn-secondary"
-                    onClick={() => navigate("baseUsersPath")} // added by arash
+                    onClick={() => navigate("/users")} // added by arash
                 >
                     Back to users
                 </button>
