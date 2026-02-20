@@ -1,14 +1,8 @@
 """empty message
 
-<<<<<<<< HEAD:migrations/versions/0ba43055aa76_.py
-Revision ID: 0ba43055aa76
+Revision ID: 49cb61e5f962
 Revises: 
-Create Date: 2026-02-19 12:14:30.152476
-========
-Revision ID: 9eb9e9125a22
-Revises: 
-Create Date: 2026-02-20 09:22:49.266995
->>>>>>>> develop:migrations/versions/9eb9e9125a22_.py
+Create Date: 2026-02-20 11:35:41.841751
 
 """
 from alembic import op
@@ -16,11 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-<<<<<<<< HEAD:migrations/versions/0ba43055aa76_.py
-revision = '0ba43055aa76'
-========
-revision = '9eb9e9125a22'
->>>>>>>> develop:migrations/versions/9eb9e9125a22_.py
+revision = '49cb61e5f962'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -46,8 +36,11 @@ def upgrade():
     sa.Column('last_name', sa.String(length=120), nullable=False),
     sa.Column('gender', sa.String(length=50), nullable=True),
     sa.Column('birthday', sa.Date(), nullable=True),
-    sa.Column('city', sa.String(length=120), nullable=True),
     sa.Column('country', sa.String(length=120), nullable=True),
+    sa.Column('province', sa.String(length=120), nullable=True),
+    sa.Column('city', sa.String(length=120), nullable=True),
+    sa.Column('latitude', sa.Float(), nullable=True),
+    sa.Column('longitude', sa.Float(), nullable=True),
     sa.Column('phone', sa.String(length=120), nullable=True),
     sa.Column('profile_image', sa.String(length=500), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
