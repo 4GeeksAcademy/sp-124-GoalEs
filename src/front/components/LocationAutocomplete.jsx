@@ -22,8 +22,11 @@ export const LocationAutocomplete = ({ onPlaceSelected }) => {
             params: {
                 countrycodes: "es,it,pt",
                  addressdetails: 1,
-            }
-        });
+        },
+    headers: {
+        "User-Agent": "GoalES-App/1.0" 
+    }
+});
 
         const searchControl = new GeoSearchControl({
             provider,
@@ -34,7 +37,7 @@ export const LocationAutocomplete = ({ onPlaceSelected }) => {
             retainZoomLevel: false,
             animateZoom: true,
             keepResult: true,
-            searchLabel: "Buscar cidade, província, país..."
+            searchLabel: "Search to city, province, country..."
         });
 
         map.addControl(searchControl);
