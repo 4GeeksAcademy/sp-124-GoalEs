@@ -52,6 +52,7 @@ export const CourseDetail = () => {
       />
           <p><strong>Description:</strong> {course.description}</p>
           <p><strong>Cost:</strong> € {course.cost}</p>
+          <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
         </div>
       </div>
 

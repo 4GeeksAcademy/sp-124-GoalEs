@@ -88,7 +88,9 @@ class Course(db.Model):
             "cost": self.cost,
             "coach_id": self.coach_id,
             "category_id": self.category_id,
-            "image_url": self.image_url 
+            "image_url": self.image_url,
+            "category": self.category.serialize() if self.category else None
+
         }
 
 

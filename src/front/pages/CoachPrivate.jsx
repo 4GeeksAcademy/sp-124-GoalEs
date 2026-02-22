@@ -238,6 +238,7 @@ export default function CoachPrivate() {
                 <h5 className="card-title">{course.title}</h5>
                 <p className="card-text">{course.description}</p>
                 <p className="fw-bold">${course.cost}</p>
+                <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
 
                 <button className="btn btn-info btn-sm w-100" onClick={() => openStudentsModal(course)}>
                   👥 View {course.enrolled_students} Students

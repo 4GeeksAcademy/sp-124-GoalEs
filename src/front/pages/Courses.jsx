@@ -79,6 +79,7 @@ export const Courses = () => {
                 <h5>{course.title}</h5>
                 <p className="text-muted">{course.description}</p>
                 <p><strong>€ {course.cost}</strong></p>
+                <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
 
                 <div className="mt-auto d-flex gap-2">
                   <button
@@ -110,3 +111,4 @@ export const Courses = () => {
     </div>
   );
 };
+
