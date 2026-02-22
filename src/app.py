@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from sqlite3 import IntegrityError
+from sqlalchemy.exc import IntegrityError
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
@@ -691,26 +691,28 @@ def create_course():
     if body is None:
         return jsonify({"error": "Missing JSON body"}), 400
 
-    # force ownership for coach
     if current_role() == "coach":
         coach_id = int(get_jwt_identity())
     else:
         coach_id = body.get("coach_id")
 
-    if not body.get("title") or not body.get("description") or body.get("cost") is None or not coach_id:
-        return jsonify({"error": "title, description, cost, coach_id are required"}), 400
-    print("___________________________________________ antes de crear course")    
+    category_id = body.get("category_id")
+
+    if (not body.get("title") or not body.get("description")
+        or body.get("cost") is None or not coach_id or not category_id):
+        return jsonify({"error": "title, description, cost, coach_id, category_id are required"}), 400
+
     new_course = Course(
         title=body["title"],
         description=body["description"],
         cost=int(body["cost"]),
         coach_id=int(coach_id),
+        category_id=int(category_id),
         image_url=body.get("image_url")
     )
 
     db.session.add(new_course)
     db.session.commit()
-
     return jsonify(course=new_course.serialize()), 201
 
 
@@ -739,6 +741,7 @@ def update_course(id):
     course.description = body["description"]
     course.cost = int(body["cost"])
     course.image_url = body.get("image_url", course.image_url)
+    course.category_id = int(body.get("category_id", course.category_id))
 
     db.session.commit()
     return jsonify(course=course.serialize()), 200
@@ -1148,9 +1151,12 @@ def admin_signup():
 #CATEGORY
 
 #Public
-@app.route("/categories", methods=["Get"])
+@app.route("/categories", methods=["GET"])
 def get_categories():
-    categories= db.session.ecxute(select(Category).where(Category.is_active==True)). scalars().all()
+    categories = db.session.execute(
+        select(Category).where(Category.is_active == True)
+    ).scalars().all()
+
     return jsonify(categories=[c.serialize() for c in categories]), 200
 
 #admin only
@@ -1166,8 +1172,9 @@ def create_category():
     if not name:
         return jsonify({"error": "name is required"}), 400
 
-    # unique check
-    exists = db.session.execute(select(Category).where(Category.name == name)).scalar_one_or_none()
+    exists = db.session.execute(
+        select(Category).where(Category.name == name)
+    ).scalar_one_or_none()
     if exists:
         return jsonify({"error": "Category already exists"}), 409
 
@@ -1213,7 +1220,8 @@ def update_category(cat_id):
     db.session.commit()
     return jsonify(category=category.serialize()), 200
 
-#admin only @app.route("/categories/<int:cat_id>", methods=["DELETE"])
+#admin only
+@app.route("/categories/<int:cat_id>", methods=["DELETE"])
 @jwt_required()
 @role_required("admin")
 def delete_category(cat_id):
@@ -1221,7 +1229,7 @@ def delete_category(cat_id):
     if not category:
         return jsonify({"error": "Category not found"}), 404
 
-    # if category has courses -> block delete
+    # if category has courses block delete
     has_courses = db.session.execute(
         select(Course.id).where(Course.category_id == cat_id)
     ).first()

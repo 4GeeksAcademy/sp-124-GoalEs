@@ -13,10 +13,11 @@ export const CreateCourse = () => {
     description: "",
     cost: "",
     coach_id: store.coach?.id || null,
-    image_url: ""
+    category_id: "",
   });
   const [error, setError] = useState("");
   const [coaches, setCoaches] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach");
   const isAdmin = !!localStorage.getItem("token-admin");
@@ -38,7 +39,9 @@ export const CreateCourse = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/categories`);
+        let res = await fetch(`${BACKEND_URL}/categories`);
+        if (!res.ok) res = await fetch(`${BACKEND_URL}/api/categories`);
+
         const data = await res.json();
         if (!res.ok) throw new Error(data?.error || "Error fetching categories");
         setCategories(data.categories || []);
@@ -55,6 +58,11 @@ export const CreateCourse = () => {
 
     if (!form.title || !form.description || !form.cost) {
       setError("All fields are required");
+      return;
+    }
+
+    if (!form.category_id) {
+      setError("Category is required");
       return;
     }
 
@@ -86,7 +94,6 @@ export const CreateCourse = () => {
       {error && <div className="text-danger mb-3">{error}</div>}
 
       <form onSubmit={createCourse}>
-
         <select
         className="form-select mb-2"
         value={form.coach_id}
@@ -106,7 +113,7 @@ export const CreateCourse = () => {
           onChange={(e) => setForm(p => ({ ...p, category_id: e.target.value }))}
         >
           <option value="">Select category</option>
-          {categories.map(cat => (
+          {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
             </option>
