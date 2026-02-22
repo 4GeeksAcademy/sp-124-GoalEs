@@ -55,8 +55,11 @@ setup_commands(app)
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
 
+
+#SEGURIDAD CON JWT
 app.config["JWT_SECRET_KEY"] = "super-secret-key-change-this"
 jwt = JWTManager(app)
+
 
 #helper, because we don't repeat ourself and never forget the role
 def issue_token(identity: int, role: str):
