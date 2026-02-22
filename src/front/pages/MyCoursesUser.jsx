@@ -82,7 +82,7 @@ export const MyCoursesUser = () => {
                     <div key={course.userCourseId} className="col-md-4 mb-4">
                         <div className="card h-100 shadow-sm">
                             <img
-                                src="https://picsum.photos/400/200"
+                                src={course.image_url || "https://picsum.photos/400/200"}
                                 className="card-img-top"
                                 alt="course"
                             />
