@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { StripeWrapper } from "../hooks/StripeWrapper"
 
 export const AvailableCoursesUser = () => {
 
@@ -11,6 +12,7 @@ export const AvailableCoursesUser = () => {
     const { store } = useGlobalReducer();
 
     const [courses, setCourses] = useState([])
+    const [selectedCourse, setSelectedCourse] = useState(null);
 
     // added by arash
     const token = store.token || localStorage.getItem("token-user") || localStorage.getItem("token-admin");
@@ -34,9 +36,10 @@ export const AvailableCoursesUser = () => {
         try {
             const res = await fetch(
                 `${backendURL}/users/${store.user.id}/favorites/${courseId}`,
-                { method: "POST",
-                  headers: { Authorization: `Bearer ${token}` } // added by arash
-                 }
+                {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${token}` } // added by arash
+                }
             );
 
             const data = await res.json();
@@ -104,12 +107,19 @@ export const AvailableCoursesUser = () => {
                                     <p className="fw-bold">${course.cost}</p>
                                     <div className="mt-auto d-flex gap-2">
                                         <button className="btn btn-outline-primary w-100" onClick={() => addFavorite(course.id)}>Add to Favorites</button>
-                                        <button className="btn btn-success w-100" onClick={() => addCourse(course.id)}>Start</button>
+                                        <button
+                                            className="btn btn-success w-100"
+                                            onClick={() => setSelectedCourse(course)}>Start</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     ))}
+                    {selectedCourse && (
+                        <div className="mt-4">
+                            <StripeWrapper course={selectedCourse} />
+                        </div>
+                    )}
                 </div>
             </div>
 

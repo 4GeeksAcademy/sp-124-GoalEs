@@ -4,40 +4,25 @@ import stripe
 
 # Configuración del entorno
 dotenv.load_dotenv()
-STRIPE_SECRET_KEY = os.getenv("VITE_STRIPE_SECRET_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 
 stripe.api_key = STRIPE_SECRET_KEY
 
 
-# Creando método de pago
-# def create_payment_method() -> str:
-#     try:
-#         payment_method = stripe.PaymentMethod.create(
-#             type="card",
-#             card={"token": "tok_visa"}
-#         )
-
-#         print(f"Método de pago creado con ID: {payment_method.id}")
-
-#         return payment_method.id
-
-#     except stripe.error.StripeError as error:
-#         print(f"Error en Stripe: {error.user_message}")
-
-def create_payment_intent(amount: int, currency: str):
-
+#Creando método de pago
+def create_payment_method() -> str:
     try:
-        intent = stripe.PaymentIntent.create(
-            amount=amount,
-            currency=currency,
-            automatic_payment_methods={"enabled": True}
+        payment_method = stripe.PaymentMethod.create(
+            type="card",
+            card={"token": "tok_visa"}
         )
 
-        return intent.client_secret
-    
+        print(f"Método de pago creado con ID: {payment_method.id}")
+
+        return payment_method.id
+
     except stripe.error.StripeError as error:
         print(f"Error en Stripe: {error.user_message}")
-
 
 # Crear un pago
 def create_payment(client_id: str, payment_method_id: str, product_id: str, amount: int, currency: str):

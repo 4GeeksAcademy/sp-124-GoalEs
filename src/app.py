@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+import stripe
 from sqlite3 import IntegrityError
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
@@ -59,6 +60,9 @@ app.register_blueprint(api, url_prefix='/api')
 #SEGURIDAD CON JWT
 app.config["JWT_SECRET_KEY"] = "super-secret-key-change-this"
 jwt = JWTManager(app)
+
+#Stripe
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 
 #helper, because we don't repeat ourself and never forget the role
@@ -384,6 +388,27 @@ def user_delete(user_id): #changed because it's a function not a data base
     db.session.commit()
 
     return jsonify({"message": "User deleted successfully"}), 200
+
+@app.route("/create-payment-intent", methods=["POST"])
+def create_payment_intent():
+    data = request.get_json()
+
+    try:
+        intent = stripe.PaymentIntent.create(
+            amount=data["amount"],
+            currency="eur",
+            metadata={
+                "user_id": data["user_id"],
+                "course_id": data["course_id"]
+            }
+        )
+
+        return jsonify({
+            "clientSecret": intent.client_secret
+        })
+
+    except Exception as error:
+        return jsonify(error=str(error)), 400
 
 #public
 @app.route('/coach', methods=['GET'])
