@@ -7,7 +7,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin
+from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin, Category
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -1141,6 +1141,96 @@ def admin_signup():
         "admin": new_admin.serialize()
         # "token": token
     }), 201
+
+
+#CATEGORY
+
+#Public
+@app.route("/categories", methods=["Get"])
+def get_categories():
+    categories= db.session.ecxute(select(Category).where(Category.is_active==True)). scalars().all()
+    return jsonify(categories=[c.serialize() for c in categories]), 200
+
+#admin only
+@app.route("/categories", methods=["POST"])
+@jwt_required()
+@role_required("admin")
+def create_category():
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    name = body.get("name")
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+
+    # unique check
+    exists = db.session.execute(select(Category).where(Category.name == name)).scalar_one_or_none()
+    if exists:
+        return jsonify({"error": "Category already exists"}), 409
+
+    new_cat = Category(
+        name=name,
+        description=body.get("description"),
+        is_active=body.get("is_active", True)
+    )
+
+    db.session.add(new_cat)
+    db.session.commit()
+
+    return jsonify(category=new_cat.serialize()), 201
+
+#admin only
+@app.route("/categories/<int:cat_id>", methods=["PUT"])
+@jwt_required()
+@role_required("admin")
+def update_category(cat_id):
+    category = db.session.execute(select(Category).where(Category.id == cat_id)).scalar_one_or_none()
+    if not category:
+        return jsonify({"error": "Category not found"}), 404
+
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    if "name" in body:
+        # prevent duplicates
+        exists = db.session.execute(
+            select(Category).where(Category.name == body["name"], Category.id != cat_id)
+        ).scalar_one_or_none()
+        if exists:
+            return jsonify({"error": "Category name already used"}), 409
+        category.name = body["name"]
+
+    if "description" in body:
+        category.description = body["description"]
+
+    if "is_active" in body:
+        category.is_active = body["is_active"]
+
+    db.session.commit()
+    return jsonify(category=category.serialize()), 200
+
+#admin only @app.route("/categories/<int:cat_id>", methods=["DELETE"])
+@jwt_required()
+@role_required("admin")
+def delete_category(cat_id):
+    category = db.session.execute(select(Category).where(Category.id == cat_id)).scalar_one_or_none()
+    if not category:
+        return jsonify({"error": "Category not found"}), 404
+
+    # if category has courses -> block delete
+    has_courses = db.session.execute(
+        select(Course.id).where(Course.category_id == cat_id)
+    ).first()
+
+    if has_courses:
+        return jsonify({"error": "Cannot delete category: category has courses"}), 409
+
+    db.session.delete(category)
+    db.session.commit()
+    return jsonify({"msg": "Category deleted"}), 200
+
 
 
 

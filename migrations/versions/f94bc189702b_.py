@@ -1,14 +1,8 @@
 """empty message
 
-<<<<<<<< HEAD:migrations/versions/0ba43055aa76_.py
-Revision ID: 0ba43055aa76
+Revision ID: f94bc189702b
 Revises: 
-Create Date: 2026-02-19 12:14:30.152476
-========
-Revision ID: 9eb9e9125a22
-Revises: 
-Create Date: 2026-02-20 09:22:49.266995
->>>>>>>> develop:migrations/versions/9eb9e9125a22_.py
+Create Date: 2026-02-22 18:06:53.636343
 
 """
 from alembic import op
@@ -16,11 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-<<<<<<<< HEAD:migrations/versions/0ba43055aa76_.py
-revision = '0ba43055aa76'
-========
-revision = '9eb9e9125a22'
->>>>>>>> develop:migrations/versions/9eb9e9125a22_.py
+revision = 'f94bc189702b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,6 +28,14 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
+    op.create_table('category',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=120), nullable=False),
+    sa.Column('description', sa.String(length=300), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
+    )
     op.create_table('coach',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
@@ -46,8 +44,11 @@ def upgrade():
     sa.Column('last_name', sa.String(length=120), nullable=False),
     sa.Column('gender', sa.String(length=50), nullable=True),
     sa.Column('birthday', sa.Date(), nullable=True),
-    sa.Column('city', sa.String(length=120), nullable=True),
     sa.Column('country', sa.String(length=120), nullable=True),
+    sa.Column('province', sa.String(length=120), nullable=True),
+    sa.Column('city', sa.String(length=120), nullable=True),
+    sa.Column('latitude', sa.Float(), nullable=True),
+    sa.Column('longitude', sa.Float(), nullable=True),
     sa.Column('phone', sa.String(length=120), nullable=True),
     sa.Column('profile_image', sa.String(length=500), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
@@ -73,6 +74,8 @@ def upgrade():
     sa.Column('description', sa.String(length=300), nullable=False),
     sa.Column('cost', sa.Integer(), nullable=False),
     sa.Column('coach_id', sa.Integer(), nullable=False),
+    sa.Column('category_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['category_id'], ['category.id'], ),
     sa.ForeignKeyConstraint(['coach_id'], ['coach.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -113,5 +116,6 @@ def downgrade():
     op.drop_table('course')
     op.drop_table('user')
     op.drop_table('coach')
+    op.drop_table('category')
     op.drop_table('admin')
     # ### end Alembic commands ###
