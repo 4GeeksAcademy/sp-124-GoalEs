@@ -68,6 +68,7 @@ class Course(db.Model):
     title: Mapped[str] = mapped_column(String(120), nullable=False)
     description: Mapped[str] = mapped_column(String(300), nullable=False)
     cost: Mapped[int] = mapped_column(Integer, nullable=False)
+    image_url = db.Column(db.String(500), nullable=True)
 
     #relationship
     favorited_course: Mapped[List["User_Course_Favorite"]] = relationship(back_populates="course", cascade="all, delete-orphan")
@@ -86,7 +87,8 @@ class Course(db.Model):
             "description": self.description,
             "cost": self.cost,
             "coach_id": self.coach_id,
-            "category_id": self.category_id
+            "category_id": self.category_id,
+            "image_url": self.image_url 
         }
 
 

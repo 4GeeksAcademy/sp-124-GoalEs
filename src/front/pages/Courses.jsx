@@ -37,7 +37,7 @@ export const Courses = () => {
     try {
       const res = await fetch(`${BACKEND_URL}/course/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` } //added by arash
+        headers: { Authorization: `Bearer ${token}` } 
       });
 
       if (!res.ok) throw new Error("Error deleting course");
@@ -69,6 +69,12 @@ export const Courses = () => {
         {courses.map(course => (
           <div key={course.id} className="col-md-4 mb-3">
             <div className="card h-100 shadow-sm">
+              <img
+                src={course.image_url || "https://picsum.photos/400/200"}
+                class="img-thumbnail"
+                alt="course"
+                style={{ height: "25rem", objectFit: "contain" }}
+              />
               <div className="card-body d-flex flex-column">
                 <h5>{course.title}</h5>
                 <p className="text-muted">{course.description}</p>
