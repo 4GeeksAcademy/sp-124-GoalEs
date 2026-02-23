@@ -118,6 +118,7 @@ export const UserCourses = () => {
                             <p>
                                 <strong>Status:</strong> {userCourse.active ? "Active" : "Inactive"}
                             </p>
+                            <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
 
                             <div className="mt-auto">
                                 <button

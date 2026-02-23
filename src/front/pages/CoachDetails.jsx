@@ -90,6 +90,7 @@ export const CoachDetails = () => {
                                                         <h6 className="card-title">{course.title}</h6>
                                                         <p className="card-text small">{course.description}</p>
                                                         <p className="fw-bold">${course.cost}</p>
+                                                        <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
                                                     </div>
                                                 </div>
                                             </div>

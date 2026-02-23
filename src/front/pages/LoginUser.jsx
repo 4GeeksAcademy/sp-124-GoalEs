@@ -36,14 +36,24 @@ export const LoginUser = () => {
 
       const data = await response.json();
 
+      const normalizedUser = {
+        id: data.user.data?.id ?? data.user.id,
+        name: data.user.data?.name ?? data.user.name,
+        email: data.user.data?.email ?? data.user.email,
+        age: data.user.data?.age ?? data.user.age,
+        gender: data.user.data?.gender ?? data.user.gender,
+        surname: data.user.data?.surname ?? data.user.surname,
+        profile_picture: data.user.data?.profile_picture ?? data.user.profile_picture,
+      };
+
       localStorage.setItem("token-user", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("user", JSON.stringify(normalizedUser));
 
       dispatch({
         type: "login-user",
         payload: {
           token: data.token,
-          user: data.user,
+          user: normalizedUser,
         }
       });
 

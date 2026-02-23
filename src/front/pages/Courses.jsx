@@ -71,7 +71,7 @@ export const Courses = () => {
             <div className="card h-100 shadow-sm">
               <img
                 src={course.image_url || "https://picsum.photos/400/200"}
-                class="img-thumbnail"
+                className="img-thumbnail"
                 alt="course"
                 style={{ height: "25rem", objectFit: "contain" }}
               />

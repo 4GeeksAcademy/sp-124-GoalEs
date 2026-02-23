@@ -75,6 +75,8 @@ export const CoursesFavoritesUser = () => {
                                 <h5 className="card-title">{favorites.course.title}</h5>
                                 <p className="card-text">{favorites.course.description}</p>
                                 <p className="fw-bold">${favorites.course.cost}</p>
+                                <p className="text-muted mb-1"> Category: {favorites.course.category?.name || "—"} </p>
+
                                 <div className="mt-auto">
                                     <button
                                         className="btn btn-danger w-100"
