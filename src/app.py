@@ -577,33 +577,48 @@ def put_coach(coach_id):
     if not body:
         return jsonify({"error": "No data provided to update"}), 400
     
-    if "name" in body:
+    name = body.get("name")
+    last_name = body.get("last_name")
+    email = body.get("email")
+    password = body.get("password")
+    is_active = body.get("is_active")
+    gender = body.get("gender")
+    country = body.get("country")
+    province = body.get("province")
+    city = body.get("city")
+    latitude = body.get("latitude")
+    longitude = body.get("longitude")
+    phone = body.get("phone")
+    birthday = body.get("birthday")
+    profile_image = body.get("profile_image")
+    
+    if len(name)> 0:
         coach_update.name = body["name"]
-    if "last_name" in body:
+    if len(last_name)> 0:
         coach_update.last_name = body["last_name"]
-    if "email" in body:
+    if len(email)> 0:
         coach_update.email = body["email"]
-    if "password" in body:
+    if len(password)> 0:
         coach_update.password = body["password"]
-    if "is_active" in body:
+    if len(is_active) > 0:
         coach_update.is_active = body["is_active"]
-    if "gender" in body:
+    if len(gender)> 0:
         coach_update.gender = body["gender"]
-    if "country" in body:
+    if len(country)> 0:
         coach_update.country = body["country"]
-    if "province" in body:
+    if len(province) > 0:
         coach_update.province = body["province"]
-    if "city" in body:
+    if len(city) > 0:
         coach_update.city = body["city"]
-    if "latitude" in body:
+    if len(latitude) > 0:
         coach_update.latitude = body["latitude"]
-    if "longitude" in body:
+    if len(longitude) > 0:
         coach_update.longitude = body["longitude"]
-    if "phone" in body:
+    if len(phone) > 0:
         coach_update.phone = body["phone"]
-    if "birthday" in body:
+    if (birthday) > 0:
         coach_update.birthday = body["birthday"]
-    if "profile_image" in body:
+    if len(profile_image) > 0:
         coach_update.profile_image = body["profile_image"]    
 
     db.session.commit()
