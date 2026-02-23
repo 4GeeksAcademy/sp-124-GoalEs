@@ -13,10 +13,12 @@ export const CreateCourse = () => {
     description: "",
     cost: "",
     coach_id: store.coach?.id || null,
-    image_url: ""
+    image_url: "",
+    category_id: ""
   });
   const [error, setError] = useState("");
   const [coaches, setCoaches] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach");
   const isAdmin = !!localStorage.getItem("token-admin");
@@ -35,11 +37,33 @@ export const CreateCourse = () => {
     }
   },[store.coach])
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        let res = await fetch(`${BACKEND_URL}/categories`);
+        if (!res.ok) res = await fetch(`${BACKEND_URL}/api/categories`);
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Error fetching categories");
+        setCategories(data.categories || []);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchCategories();
+  }, [BACKEND_URL]);
+
   const createCourse = async (e) => {
     e.preventDefault();
 
     if (!form.title || !form.description || !form.cost) {
       setError("All fields are required");
+      return;
+    }
+
+    if (!form.category_id) {
+      setError("Category is required");
       return;
     }
 
@@ -71,7 +95,6 @@ export const CreateCourse = () => {
       {error && <div className="text-danger mb-3">{error}</div>}
 
       <form onSubmit={createCourse}>
-
         <select
         className="form-select mb-2"
         value={form.coach_id}
@@ -81,6 +104,19 @@ export const CreateCourse = () => {
           {coaches.map(c => (
             <option key={c.id} value={c.id}>
               {c.name} {c.last_name} (id: {c.id})
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="form-select mb-2"
+          value={form.category_id}
+          onChange={(e) => setForm(p => ({ ...p, category_id: e.target.value }))}
+        >
+          <option value="">Select category</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
             </option>
           ))}
         </select>

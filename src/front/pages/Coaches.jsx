@@ -107,8 +107,8 @@ export const Coaches = () => {
         <button className="btn btn-primary mt-3" onClick={() => navigate("/coaches/new")}>
           New Coach
         </button>
-        <button className="btn btn-secondary mt-3" onClick={() => navigate("/main")}>
-          Back to main
+        <button className="btn btn-secondary mt-3" onClick={() => navigate("/admin/home")}>
+          Back to Admin Dashboard
         </button>
       </div>
     </div>

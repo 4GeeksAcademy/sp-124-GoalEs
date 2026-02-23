@@ -89,6 +89,12 @@ export const PrivateAdmin = () => {
                 User Favorites
               </button>
             </div>
+
+            <div className="col-12 col-md-6 col-lg-4">
+              <button className="btn btn-primary w-100" onClick={() => navigate("/admin/categories")}>
+                Categories
+              </button>
+            </div>
           </div>
         </div>
       </div>

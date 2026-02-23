@@ -59,8 +59,8 @@ export const Courses = () => {
           <button className="btn btn-primary mt-3" onClick={() => navigate("/courses/new")}>
             Create Course
           </button>
-          <button className="btn btn-secondary mt-3" onClick={() => navigate("/")}>
-            Back Home
+          <button className="btn btn-secondary mt-3" onClick={() => navigate("/admin/home")}>
+            Back to Admin Dashboard
           </button>
         </div>
       </div>
@@ -79,6 +79,7 @@ export const Courses = () => {
                 <h5>{course.title}</h5>
                 <p className="text-muted">{course.description}</p>
                 <p><strong>€ {course.cost}</strong></p>
+                <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
 
                 <div className="mt-auto d-flex gap-2">
                   <button

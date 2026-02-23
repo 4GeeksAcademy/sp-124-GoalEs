@@ -32,6 +32,8 @@ import { CourseDetail } from "./pages/CourseDetail";
 import { EditCourse } from "./pages/EditCourse";
 import { CreateCourse } from "./pages/CreateCourse";
 
+import { Categories } from "./pages/Categories";
+
 import Message from "./pages/Message";
 import UserCourseFavorite from "./pages/UserFavorites";
 import { UserCourses } from "./pages/UserCoursers";
@@ -78,6 +80,7 @@ export const router = createBrowserRouter(
         <Route path="main" element={<MainSection />} />
         <Route path="UserCourseFavorite" element={<UserCourseFavorite />} />
         <Route path="/coaches-edit/:id" element={<CoachEdit />} />
+        <Route path="admin/categories" element={<Categories />} />
       </Route>
 
       {/* USER PRIVATE (user pages, but you can allow admin inside UserLayout too) */}

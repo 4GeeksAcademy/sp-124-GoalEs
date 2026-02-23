@@ -52,6 +52,7 @@ export const CourseDetail = () => {
       />
           <p><strong>Description:</strong> {course.description}</p>
           <p><strong>Cost:</strong> € {course.cost}</p>
+          <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
         </div>
       </div>
 
@@ -59,8 +60,8 @@ export const CourseDetail = () => {
         <button className="btn btn-secondary" onClick={() => navigate("/courses")}>
           Back to Courses
         </button>
-        <button className="btn btn-outline-secondary" onClick={() => navigate("/")}>
-          Home
+        <button className="btn btn-outline-secondary" onClick={() => navigate("/admin/home")}>
+          Back to Admin Dashboard
         </button>
       </div>
     </div>
