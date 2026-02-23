@@ -8,7 +8,6 @@ export const AvailableCoursesUser = () => {
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-    const navigate = useNavigate();
     const { store } = useGlobalReducer();
 
     const [courses, setCourses] = useState([])
@@ -30,6 +29,8 @@ export const AvailableCoursesUser = () => {
             console.error(err);
         }
     }
+
+    console.log(store.user)
 
     const addFavorite = async (courseId) => {
         try {
