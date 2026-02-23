@@ -60,8 +60,8 @@ export const CourseDetail = () => {
         <button className="btn btn-secondary" onClick={() => navigate("/courses")}>
           Back to Courses
         </button>
-        <button className="btn btn-outline-secondary" onClick={() => navigate("/")}>
-          Home
+        <button className="btn btn-outline-secondary" onClick={() => navigate("/admin/home")}>
+          Back to Admin Dashboard
         </button>
       </div>
     </div>

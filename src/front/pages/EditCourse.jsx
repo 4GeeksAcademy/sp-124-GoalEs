@@ -15,7 +15,7 @@ export const EditCourse = () => {
     description: "",
     cost: "",
     image_url: "",
-    category_id: " "
+    category_id: ""
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -23,6 +23,11 @@ export const EditCourse = () => {
 
   const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); 
   const isAdmin = !!localStorage.getItem("token-admin"); 
+
+  const handleBack = () => {
+    if (localStorage.getItem("token-admin")) navigate("/admin/home");
+    else navigate("/coach/private");
+  };
 
   const fetchCourse = async () => {
     try {
@@ -108,7 +113,7 @@ export const EditCourse = () => {
             </option>
           ))}
         </select>
-        
+
         <input
           className="form-control mb-2"
           value={form.title}
@@ -138,7 +143,7 @@ export const EditCourse = () => {
       </form>
 
       <div className="mt-4 d-flex gap-2">
-        <button className="btn btn-secondary" onClick={() => navigate("/coach/private")}>
+        <button className="btn btn-secondary" onClick={handleBack} type="button">
           Back to Dashboard
         </button>
         <button className="btn btn-outline-secondary" onClick={() => navigate("/")}>

@@ -71,9 +71,9 @@ export const User = () => {
 
             <button
               className="btn btn-secondary"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/admin/home")}
             >
-              Back to home
+              Back to Admin Dashboard
             </button>
           </div>
         </div>

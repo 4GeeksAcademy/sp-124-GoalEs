@@ -13,7 +13,8 @@ export const CreateCourse = () => {
     description: "",
     cost: "",
     coach_id: store.coach?.id || null,
-    category_id: "",
+    image_url: "",
+    category_id: ""
   });
   const [error, setError] = useState("");
   const [coaches, setCoaches] = useState([]);

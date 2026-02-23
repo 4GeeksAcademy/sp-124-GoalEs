@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ add
 
 export const Categories = () => {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+    const navigate = useNavigate(); // ✅ add
 
     const token = localStorage.getItem("token-admin");
     const isAdmin = !!token;
@@ -161,7 +164,18 @@ export const Categories = () => {
 
     return (
         <div className="container py-4">
-            <h1 className="mb-3">Manage Categories</h1>
+            {/* ✅ add: header row with back button */}
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h1 className="mb-0">Manage Categories</h1>
+
+                <button
+                    className="btn btn-secondary"
+                    onClick={() => navigate("/admin/home")}
+                    type="button"
+                >
+                    Back to Admin Dashboard
+                </button>
+            </div>
 
             {!isAdmin && (
                 <div className="alert alert-warning">
