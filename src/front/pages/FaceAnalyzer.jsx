@@ -5,30 +5,14 @@ export const FaceAnalyzer = () => {
 
     const [analysis, setAnalysis] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    const API_LUXAND = import.meta.env.VITE_LUXAND_API;
-    const API_TOKEN = import.meta.env.VITE_LUXAND_TOKEN;
+    const API_LUXAND = import.meta.env.VITE_LUXAND_API
+    const API_TOKEN = import.meta.env.VITE_LUXAND_TOKEN
 
     const analyzeFace = async (file) => {
 
         if (!file) return;
-
-        setError(null);
-        setAnalysis(null);
-
-        const allowedTypes = ["image/jpeg", "image/png"];
-        if (!allowedTypes.includes(file.type)) {
-            setError("Only JPEG and PNG images are allowed.");
-            return;
-        }
-
-        const maxSize = 2 * 1024 * 1024;
-        if (file.size > maxSize) {
-            setError("Image must be smaller than 2MB.");
-            return;
-        }
 
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -38,28 +22,19 @@ export const FaceAnalyzer = () => {
 
         try {
 
-            const myHeaders = new Headers();
-            myHeaders.append("token", API_TOKEN);
-
             const formData = new FormData();
-            
-            formData.append("photo", file, file.name);
+            formData.append("photo", file);
 
-            const requestOptions = {
-                method: "POST",
-                headers: myHeaders,
-                body: formData,
-                redirect: "follow"
-            };
-
-            const response = await fetch(API_LUXAND, requestOptions);
-
-            if (!response.ok) {
-                const raw = await response.text();
-                console.log("Luxand error raw:", raw);
-                setError("Error analyzing image.");
-                return;
-            }
+            const response = await fetch(
+                API_LUXAND,
+                {
+                    method: "POST",
+                    headers: {
+                        "token": API_TOKEN
+                    },
+                    body: formData
+                }
+            );
 
             const result = await response.json();
             console.log("Luxand FULL result:", result);
@@ -67,7 +42,7 @@ export const FaceAnalyzer = () => {
             const face = result?.faces?.[0];
 
             if (!face) {
-                setError("No face detected.");
+                console.log("No face detected");
                 return;
             }
 
@@ -80,25 +55,19 @@ export const FaceAnalyzer = () => {
 
         } catch (error) {
             console.error("Error analyzing face:", error);
-            setError("Unexpected error occurred.");
         }
     };
+
 
     return (
         <>
             {!imagePreview &&
                 <input
                     type="file"
-                    accept="image/jpeg, image/png"
+                    accept="image/*"
                     onChange={(e) => analyzeFace(e.target.files[0])}
                 />
             }
-
-            {error && (
-                <div className="alert alert-danger mt-3">
-                    {error}
-                </div>
-            )}
 
             {imagePreview && (
                 <div className="mt-3 text-center">
