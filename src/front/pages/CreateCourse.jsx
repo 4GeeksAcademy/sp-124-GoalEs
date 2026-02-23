@@ -155,6 +155,7 @@ export const CreateCourse = () => {
             <div className="d-flex flex-wrap gap-2">
               {tags.map((t) => {
                 const checked = (form.tag_ids || []).includes(t.id);
+                const tagId = Number(t.id);
 
                 return (
                   <label key={t.id} className="border rounded px-2 py-1">
@@ -166,8 +167,8 @@ export const CreateCourse = () => {
                         setForm((prev) => {
                           const prevIds = prev.tag_ids || [];
                           const nextIds = e.target.checked
-                            ? [...prevIds, t.id]
-                            : prevIds.filter((id) => id !== t.id);
+                            ? [...prevIds, tagId]
+                            : prevIds.filter((id) => id !== tagId);
                           return { ...prev, tag_ids: nextIds };
                         });
                       }}

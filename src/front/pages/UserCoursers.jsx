@@ -119,6 +119,7 @@ export const UserCourses = () => {
                                 <strong>Status:</strong> {userCourse.active ? "Active" : "Inactive"}
                             </p>
                             <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
+                            <p className="text-muted mb-1"> Tags: {course.tags?.map(t => t.name).join(", ") || "—"} </p>
 
                             <div className="mt-auto">
                                 <button

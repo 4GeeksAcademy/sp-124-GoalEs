@@ -80,6 +80,8 @@ export const Courses = () => {
                 <p className="text-muted">{course.description}</p>
                 <p><strong>€ {course.cost}</strong></p>
                 <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
+                <p className="text-muted mb-1"> Tags: {course.tags?.map(t => t.name).join(", ") || "—"} </p>
+                
 
                 <div className="mt-auto d-flex gap-2">
                   <button

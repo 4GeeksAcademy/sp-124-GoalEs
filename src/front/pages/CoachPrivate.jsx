@@ -239,6 +239,7 @@ export default function CoachPrivate() {
                 <p className="card-text">{course.description}</p>
                 <p className="fw-bold">${course.cost}</p>
                 <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
+                <p className="text-muted mb-1"> Tags: {course.tags?.map(t => t.name).join(", ") || "—"} </p>
 
                 <button className="btn btn-info btn-sm w-100" onClick={() => openStudentsModal(course)}>
                   👥 View {course.enrolled_students} Students

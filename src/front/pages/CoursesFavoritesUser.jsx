@@ -76,6 +76,7 @@ export const CoursesFavoritesUser = () => {
                                 <p className="card-text">{favorites.course.description}</p>
                                 <p className="fw-bold">${favorites.course.cost}</p>
                                 <p className="text-muted mb-1"> Category: {favorites.course.category?.name || "—"} </p>
+                                <p className="text-muted mb-1"> Tags: {favorites.course.tags?.map(t => t.name).join(", ") || "—"} </p>
 
                                 <div className="mt-auto">
                                     <button

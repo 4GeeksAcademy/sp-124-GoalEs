@@ -95,6 +95,12 @@ export const PrivateAdmin = () => {
                 Categories
               </button>
             </div>
+
+            <div className="col-12 col-md-6 col-lg-4">
+              <button className="btn btn-primary w-100" onClick={() => navigate("/admin/tags")}>
+                Tags
+              </button>
+            </div>
           </div>
         </div>
       </div>
