@@ -8,7 +8,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin, Category
+from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -754,6 +754,7 @@ def create_course():
         coach_id = body.get("coach_id")
 
     category_id = body.get("category_id")
+    tag_ids = body.get("tag_ids", []) or []
 
     if (not body.get("title") or not body.get("description")
         or body.get("cost") is None or not coach_id or not category_id):
@@ -768,6 +769,14 @@ def create_course():
         image_url=body.get("image_url")
     )
 
+    if isinstance(tag_ids, list) and len(tag_ids) > 0:
+        tags = db.session.execute(
+            select(Tag).where(Tag.id.in_([int(x) for x in tag_ids]))
+        ).scalars().all()
+        new_course.tags = tags
+    else:
+        new_course.tags = []
+
     db.session.add(new_course)
     db.session.commit()
     return jsonify(course=new_course.serialize()), 201
@@ -778,19 +787,15 @@ def create_course():
 @jwt_required()
 @role_required("coach", "admin")
 def update_course(id):
-    course = db.session.execute(
-        select(Course).where(Course.id == id)
-    ).scalar_one_or_none()
-
+    course = db.session.execute(select(Course).where(Course.id == id)).scalar_one_or_none()
     if not course:
         return jsonify({"error": "Course not found"}), 404
-    
+
     forbidden = course_owner_or_admin_required(course.coach_id)
     if forbidden:
         return forbidden
 
     body = request.get_json()
-
     if body is None:
         return jsonify({"error": "Missing JSON body"}), 400
 
@@ -799,6 +804,16 @@ def update_course(id):
     course.cost = int(body["cost"])
     course.image_url = body.get("image_url", course.image_url)
     course.category_id = int(body.get("category_id", course.category_id))
+
+    tag_ids = body.get("tag_ids", None)
+    if tag_ids is not None:
+        if isinstance(tag_ids, list) and len(tag_ids) > 0:
+            tags = db.session.execute(
+                select(Tag).where(Tag.id.in_([int(x) for x in tag_ids]))
+            ).scalars().all()
+            course.tags = tags
+        else:
+            course.tags = []
 
     db.session.commit()
     return jsonify(course=course.serialize()), 200
@@ -825,6 +840,7 @@ def delete_course(id):
 
         # added by arash: delete favorites that reference this course
         db.session.query(User_Course_Favorite).filter(User_Course_Favorite.course_favorite_id == id).delete(synchronize_session=False)
+        db.session.execute( course_tag.delete().where(course_tag.c.course_id == id) )
 
         db.session.delete(course)
         db.session.commit()
@@ -1297,6 +1313,113 @@ def delete_category(cat_id):
     db.session.delete(category)
     db.session.commit()
     return jsonify({"msg": "Category deleted"}), 200
+
+
+#public
+@app.route("/tags", methods=["GET"])
+def get_tags():
+    tags = db.session.execute(
+        select(Tag).where(Tag.is_active == True)
+    ).scalars().all()
+
+    return jsonify(tags=[t.serialize() for t in tags]), 200
+
+
+#admin only
+@app.route("/tags", methods=["POST"])
+@jwt_required()
+@role_required("admin")
+def create_tag():
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    name = body.get("name")
+    if not name or not name.strip():
+        return jsonify({"error": "name is required"}), 400
+
+    name = name.strip()
+
+    exists = db.session.execute(
+        select(Tag).where(Tag.name == name)
+    ).scalar_one_or_none()
+    if exists:
+        return jsonify({"error": "Tag already exists"}), 409
+
+    new_tag = Tag(
+        name=name,
+        description=body.get("description"),
+        is_active=body.get("is_active", True)
+    )
+
+    db.session.add(new_tag)
+    db.session.commit()
+
+    return jsonify(tag=new_tag.serialize()), 201
+
+
+#admin only
+@app.route("/tags/<int:tag_id>", methods=["PUT"])
+@jwt_required()
+@role_required("admin")
+def update_tag(tag_id):
+    tag = db.session.execute(
+        select(Tag).where(Tag.id == tag_id)
+    ).scalar_one_or_none()
+
+    if not tag:
+        return jsonify({"error": "Tag not found"}), 404
+
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    if "name" in body:
+        new_name = (body.get("name") or "").strip()
+        if not new_name:
+            return jsonify({"error": "name is required"}), 400
+
+        exists = db.session.execute(
+            select(Tag).where(Tag.name == new_name, Tag.id != tag_id)
+        ).scalar_one_or_none()
+        if exists:
+            return jsonify({"error": "Tag name already used"}), 409
+
+        tag.name = new_name
+
+    if "description" in body:
+        tag.description = body.get("description")
+
+    if "is_active" in body:
+        tag.is_active = body.get("is_active")
+
+    db.session.commit()
+    return jsonify(tag=tag.serialize()), 200
+
+
+#admin only
+@app.route("/tags/<int:tag_id>", methods=["DELETE"])
+@jwt_required()
+@role_required("admin")
+def delete_tag(tag_id):
+    tag = db.session.execute(
+        select(Tag).where(Tag.id == tag_id)
+    ).scalar_one_or_none()
+
+    if not tag:
+        return jsonify({"error": "Tag not found"}), 404
+
+    # delete association rows first (avoid FK error)
+    db.session.execute(
+        course_tag.delete().where(course_tag.c.tag_id == tag_id)
+    )
+
+    db.session.delete(tag)
+    db.session.commit()
+    return jsonify({"msg": "Tag deleted"}), 200
+
+
+
 
 
 

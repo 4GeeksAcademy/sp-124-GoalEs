@@ -53,6 +53,7 @@ export const CourseDetail = () => {
           <p><strong>Description:</strong> {course.description}</p>
           <p><strong>Cost:</strong> € {course.cost}</p>
           <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
+          <p className="text-muted mb-1"> Tags: {course.tags?.map(t => t.name).join(", ") || "—"} </p>
         </div>
       </div>
 

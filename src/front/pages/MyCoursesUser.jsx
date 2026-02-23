@@ -91,6 +91,7 @@ export const MyCoursesUser = () => {
                                 <p className="card-text">{course.description}</p>
                                 <p className="fw-bold">${course.cost}</p>
                                 <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
+                                <p className="text-muted mb-1"> Tags: {course.tags?.map(t => t.name).join(", ") || "—"} </p>
                                 
                                 <div className="mt-auto">
                                     <button

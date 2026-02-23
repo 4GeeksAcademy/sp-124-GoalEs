@@ -12,15 +12,22 @@ export const CreateCourse = () => {
     title: "",
     description: "",
     cost: "",
-    coach_id: store.coach?.id || null,
+    coach_id: store.coach?.id || "",
     image_url: "",
-    category_id: ""
+    category_id: "",
+    tag_ids: [] 
   });
+
   const [error, setError] = useState("");
   const [coaches, setCoaches] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]); 
 
-  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach");
+  const token =
+    store.token ||
+    localStorage.getItem("token-admin") ||
+    localStorage.getItem("token-coach");
+
   const isAdmin = !!localStorage.getItem("token-admin");
 
   useEffect(() => { 
@@ -29,13 +36,13 @@ export const CreateCourse = () => {
     fetch(`${BACKEND_URL}/coach`) 
       .then(res => res.json())
       .then(data => setCoaches(data.coaches || []));
-  }, [isAdmin]);
+  }, [isAdmin, BACKEND_URL]);
 
   useEffect(() => {
     if (store.coach?.id) {
-      setForm(prev => ({...prev, coach_id: store.coach.id}));
+      setForm(prev => ({ ...prev, coach_id: store.coach.id }));
     }
-  },[store.coach])
+  }, [store.coach]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -50,8 +57,23 @@ export const CreateCourse = () => {
         console.error(e);
       }
     };
-
     fetchCategories();
+  }, [BACKEND_URL]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        let res = await fetch(`${BACKEND_URL}/tags`);
+        if (!res.ok) res = await fetch(`${BACKEND_URL}/api/tags`);
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Error fetching tags");
+        setTags(data.tags || []);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchTags();
   }, [BACKEND_URL]);
 
   const createCourse = async (e) => {
@@ -75,13 +97,16 @@ export const CreateCourse = () => {
     try {
       const res = await fetch(`${BACKEND_URL}/course`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form)
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(form) 
       });
 
       if (!res.ok) throw new Error("Error creating course");
 
-      if (isAdmin) navigate ("/courses"); 
+      if (isAdmin) navigate("/courses");
       else navigate("/coach/private");
     } catch (e) {
       setError(e.message);
@@ -96,11 +121,11 @@ export const CreateCourse = () => {
 
       <form onSubmit={createCourse}>
         <select
-        className="form-select mb-2"
-        value={form.coach_id}
-        onChange={(e) => setForm(p => ({ ...p, coach_id: e.target.value }))}
+          className="form-select mb-2"
+          value={form.coach_id}
+          onChange={(e) => setForm(p => ({ ...p, coach_id: e.target.value }))}
         >
-          <option value= "">Select coach</option>
+          <option value="">Select coach</option>
           {coaches.map(c => (
             <option key={c.id} value={c.id}>
               {c.name} {c.last_name} (id: {c.id})
@@ -114,12 +139,47 @@ export const CreateCourse = () => {
           onChange={(e) => setForm(p => ({ ...p, category_id: e.target.value }))}
         >
           <option value="">Select category</option>
-          {categories.map((cat) => (
+          {categories.map(cat => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
             </option>
           ))}
         </select>
+
+        <div className="mt-3 mb-2">
+          <label className="form-label">Tags (optional)</label>
+
+          {tags.length === 0 ? (
+            <div className="text-muted">No tags available.</div>
+          ) : (
+            <div className="d-flex flex-wrap gap-2">
+              {tags.map((t) => {
+                const checked = (form.tag_ids || []).includes(t.id);
+                const tagId = Number(t.id);
+
+                return (
+                  <label key={t.id} className="border rounded px-2 py-1">
+                    <input
+                      type="checkbox"
+                      className="form-check-input me-2"
+                      checked={checked}
+                      onChange={(e) => {
+                        setForm((prev) => {
+                          const prevIds = prev.tag_ids || [];
+                          const nextIds = e.target.checked
+                            ? [...prevIds, tagId]
+                            : prevIds.filter((id) => id !== tagId);
+                          return { ...prev, tag_ids: nextIds };
+                        });
+                      }}
+                    />
+                    {t.name}
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         <input
           className="form-control mb-2"
@@ -145,7 +205,7 @@ export const CreateCourse = () => {
 
         <UploadCourseImage
           initialUrl={form.image_url}
-          onUpload={(url) => setForm((p) => ({ ...p, image_url: url }))}
+          onUpload={(url) => setForm(p => ({ ...p, image_url: url }))}
         />
 
         <button className="btn btn-success">Create</button>

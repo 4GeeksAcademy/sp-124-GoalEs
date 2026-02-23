@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ add
+import { useNavigate } from "react-router-dom"; 
 
 export const Categories = () => {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-    const navigate = useNavigate(); // ✅ add
+    const navigate = useNavigate(); 
 
     const token = localStorage.getItem("token-admin");
     const isAdmin = !!token;
