@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-flask = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-swagger = "*"
@@ -15,17 +14,18 @@ gunicorn = "*"
 cloudinary = "*"
 flask-admin = "==2.0.0"
 typing-extensions = "*"
-flask-jwt-extended = "==4.6.0"
 wtforms = "==3.1.2"
 sqlalchemy = "*"
 flask-cors = "*"
 psycopg2-binary = "*"
+flask = "*"
+flask-jwt-extended = "*"
 
 [requires]
 python_version = "3.13"
 
 [scripts]
-start="flask run -p 3001 -h 0.0.0.0"
+start="python -m flask run -p 3001 -h 0.0.0.0"
 init="flask db init"
 migrate="flask db migrate"
 local="heroku local"

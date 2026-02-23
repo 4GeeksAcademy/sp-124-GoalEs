@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+import stripe
 from sqlite3 import IntegrityError
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
@@ -55,8 +56,14 @@ setup_commands(app)
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
 
+
+#SEGURIDAD CON JWT
 app.config["JWT_SECRET_KEY"] = "super-secret-key-change-this"
 jwt = JWTManager(app)
+
+#Stripe
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+
 
 #helper, because we don't repeat ourself and never forget the role
 def issue_token(identity: int, role: str):
@@ -382,6 +389,41 @@ def user_delete(user_id): #changed because it's a function not a data base
 
     return jsonify({"message": "User deleted successfully"}), 200
 
+@app.route("/create-payment-intent", methods=["POST"])
+@jwt_required()
+def create_payment_intent():
+
+    data = request.get_json()
+    print("Stripe Key:", stripe.api_key)
+
+    if not data:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    amount = data.get("amount")
+    user_id = data.get("user_id")
+    course_id = data.get("course_id")
+
+    if amount is None or user_id is None or course_id is None:
+        return jsonify({"error": "Missing required fields"}), 400
+        
+
+    try:
+        intent = stripe.PaymentIntent.create(
+            amount=int(amount),
+            currency="eur",
+            metadata={
+                "user_id": user_id,
+                "course_id": course_id
+            }
+        )
+
+        return jsonify({
+            "clientSecret": intent.client_secret
+        }), 200
+
+    except stripe.error.StripeError as e:
+        return jsonify({"error": str(e)}), 400
+
 #public
 @app.route('/coach', methods=['GET'])
 def get_coaches():
@@ -704,8 +746,7 @@ def create_course():
         title=body["title"],
         description=body["description"],
         cost=int(body["cost"]),
-        coach_id=int(coach_id),
-        image_url=body.get("image_url")
+        coach_id=int(coach_id)
     )
 
     db.session.add(new_course)
@@ -738,7 +779,6 @@ def update_course(id):
     course.title = body["title"]
     course.description = body["description"]
     course.cost = int(body["cost"])
-    course.image_url = body.get("image_url", course.image_url)
 
     db.session.commit()
     return jsonify(course=course.serialize()), 200

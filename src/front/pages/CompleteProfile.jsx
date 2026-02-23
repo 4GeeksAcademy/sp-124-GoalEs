@@ -29,7 +29,8 @@ export const CompleteProfileUser = () => {
                 email: store.user.email || "",
                 age: store.user.age || "",
                 gender: store.user.gender || "",
-                profile_picture: store.user.profile_picture || ""
+                profile_picture: store.user.profile_picture || "",
+                id: store.user.id
             }));
 
             console.log(form)
@@ -48,7 +49,8 @@ export const CompleteProfileUser = () => {
             email: form.email,
             age: form.age,
             gender: form.gender,
-            profile_picture: form.profile_picture
+            profile_picture: form.profile_picture,
+            id: form.id
         };
 
         if (form.password.trim() !== "") {
@@ -69,17 +71,11 @@ export const CompleteProfileUser = () => {
 
             const data = await res.json();
 
-            localStorage.setItem("user", JSON.stringify({
-                ...form,
-                data
-            }));
+            localStorage.setItem("user", JSON.stringify(data));
 
             dispatch({
-                type: "login-user",
-                payload: {
-                    token: store.token,
-                    user: data
-                }
+                type: "update-user",
+                payload: data
             });
 
             navigate("/users/home");
