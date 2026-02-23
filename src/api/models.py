@@ -74,9 +74,11 @@ class Course(db.Model):
     favorited_course: Mapped[List["User_Course_Favorite"]] = relationship(back_populates="course", cascade="all, delete-orphan")
     user_course: Mapped[List["User_course"]] = relationship(back_populates="course")
     coach: Mapped["Coach"] = relationship(back_populates="courses")
+    category: Mapped["Category"] = relationship(back_populates="courses")
 
     #foreign key
     coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"))
+    category_id: Mapped[int] = mapped_column(ForeignKey("category.id"), nullable= False)
 
     def serialize(self):
         return {
@@ -85,9 +87,32 @@ class Course(db.Model):
             "description": self.description,
             "cost": self.cost,
             "coach_id": self.coach_id,
-            "image_url": self.image_url 
+            "category_id": self.category_id,
+            "image_url": self.image_url,
+            "category": self.category.serialize() if self.category else None
+
         }
 
+
+##CATEGORY
+class Category(db.Model):
+    __tablename__="category"
+
+    id: Mapped[int]= mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(120), unique=True, nullable= False)
+    description: Mapped[str] = mapped_column(String(300), nullable= True)
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable= False, default=True)
+
+    #relatioship
+    courses: Mapped[List["Course"]] = relationship(back_populates="category")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "is_active": self.is_active
+        }
 
 # ======================
 # COACH

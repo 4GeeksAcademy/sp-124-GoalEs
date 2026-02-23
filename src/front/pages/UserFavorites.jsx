@@ -9,12 +9,10 @@ const UserCourseFavorite = () => {
   const [courses, setCourses] = useState([]);
   const [favoritesByUser, setFavoritesByUser] = useState({});
 
-  //added by arash
   const token =
     localStorage.getItem("token-user") ||
     localStorage.getItem("token-admin");
 
-  //  Load users
   useEffect(() => {
     fetch(`${BACKEND_URL}/users`, {
       //added by arash
@@ -84,8 +82,8 @@ const UserCourseFavorite = () => {
     <div className="container py-4">
       <div className="d-flex justify-content-between mb-4">
         <h1>User Course Favorites</h1>
-        <button className="btn btn-secondary" onClick={() => navigate("/")}>
-          Back Home
+        <button className="btn btn-secondary" onClick={() => navigate("/admin/home")}>
+          Back to Admin Dashboard
         </button>
       </div>
 

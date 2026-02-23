@@ -88,6 +88,7 @@ export const UserCourseSelect = () => {
                                     <h5>{course.title}</h5>
                                     <p className="text-muted">{course.description}</p>
                                     <p><strong>€ {course.cost}</strong></p>
+                                    <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
 
                                     <div className="mt-auto">
                                         <button

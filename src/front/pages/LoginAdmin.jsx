@@ -51,7 +51,7 @@ export const LoginAdmin = () => {
       <h1>Login Admin</h1>
 
       {error && <div className="alert alert-danger">{error}</div>}
-      {welcome && <div className="alert alert-success">Welcome!</div>}
+      {welcome && <div className="alert alert-success">Welcome Boss!</div>}
 
       <form onSubmit={loginAdmin} className="mt-3">
         <input

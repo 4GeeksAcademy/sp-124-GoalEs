@@ -14,13 +14,20 @@ export const EditCourse = () => {
     title: "",
     description: "",
     cost: "",
-    image_url: ""
+    image_url: "",
+    category_id: ""
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
 
   const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); 
   const isAdmin = !!localStorage.getItem("token-admin"); 
+
+  const handleBack = () => {
+    if (localStorage.getItem("token-admin")) navigate("/admin/home");
+    else navigate("/coach/private");
+  };
 
   const fetchCourse = async () => {
     try {
@@ -36,7 +43,8 @@ export const EditCourse = () => {
         title: course.title,
         description: course.description,
         cost: course.cost,
-        image_url: course.image_url || ""
+        image_url: course.image_url || "",
+        category_id: course.category_id || ""
       });
     } catch (e) {
       setError(e.message);
@@ -48,6 +56,21 @@ export const EditCourse = () => {
   useEffect(() => {
     fetchCourse()
   }, [])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/categories`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Error fetching categories");
+        setCategories(data.categories || []);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchCategories();
+  }, [BACKEND_URL]);
 
   const updateCourse = async (e) => {
     e.preventDefault();
@@ -78,6 +101,19 @@ export const EditCourse = () => {
       <h1>Edit Course #{id}</h1>
 
       <form onSubmit={updateCourse}>
+        <select
+          className="form-select mb-2"
+          value={form.category_id}
+          onChange={(e) => setForm((p) => ({ ...p, category_id: e.target.value }))}
+        >
+          <option value="">Select category</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+
         <input
           className="form-control mb-2"
           value={form.title}
@@ -107,7 +143,7 @@ export const EditCourse = () => {
       </form>
 
       <div className="mt-4 d-flex gap-2">
-        <button className="btn btn-secondary" onClick={() => navigate("/coach/private")}>
+        <button className="btn btn-secondary" onClick={handleBack} type="button">
           Back to Dashboard
         </button>
         <button className="btn btn-outline-secondary" onClick={() => navigate("/")}>

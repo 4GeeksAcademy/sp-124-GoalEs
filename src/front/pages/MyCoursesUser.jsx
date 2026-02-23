@@ -90,6 +90,8 @@ export const MyCoursesUser = () => {
                                 <h5 className="card-title">{course.title}</h5>
                                 <p className="card-text">{course.description}</p>
                                 <p className="fw-bold">${course.cost}</p>
+                                <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
+                                
                                 <div className="mt-auto">
                                     <button
                                         className="btn btn-danger w-100"
