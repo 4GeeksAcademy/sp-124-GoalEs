@@ -36,6 +36,12 @@ export const Home = () => {
 		loadMessage()
 	}, [])
 
+	const isAdmin = !!localStorage.getItem("token-admin");
+	const isUser = !!localStorage.getItem("token-user");
+	const isCoach = !!localStorage.getItem("token-coach") || !!localStorage.getItem("coach");
+
+	const isPublic = !isAdmin && !isUser && !isCoach;
+
 	return (
 		<div className="text-center mt-5">
 			<h1 className="display-4">Hello Rigo!!</h1>
@@ -45,7 +51,7 @@ export const Home = () => {
 			</p>
 
 			{/* Publico */}
-			{(localStorage.length == 0) && (
+			{isPublic && (
 				<>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/admin/login")} >Go to Login Admin </button>
 					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches/new")}>Go to Singup Coach</button>
