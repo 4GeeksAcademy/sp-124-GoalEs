@@ -2,7 +2,7 @@ import React from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer"; //added by arash
+import useGlobalReducer from "../hooks/useGlobalReducer"; 
 import { CoachMap } from "./CoachMap";
 
 export const CoachDetails = () => {
@@ -12,11 +12,10 @@ export const CoachDetails = () => {
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-    const { store } = useGlobalReducer(); //added by arash
+    const { store } = useGlobalReducer(); 
 
     const [coach, setCoach] = useState();
     const [courses, setCourses] = useState([]);
-
     const getCoachCourses = async () => {
         try {
             const res = await fetch(`${backendURL}/coach/${id}/courses`);
@@ -35,7 +34,7 @@ export const CoachDetails = () => {
     const getCoachDetails = async () => {
         try {
             const res = await fetch(`${backendURL}/coach/${id}`, {
-                headers: { Authorization: `Bearer ${store.token}` } //added by arash, to send the token in the request header for authentication
+                headers: { Authorization: `Bearer ${store.token}` } 
             })
 
             if (!res.ok) throw new Error("Coach not found")
@@ -82,6 +81,11 @@ export const CoachDetails = () => {
                                         {courses.map(course => (
                                             <div key={course.id} className="col-md-4 mb-3">
                                                 <div className="card h-100 shadow-sm">
+                                                     <img
+                                                        src={course.image_url || "https://picsum.photos/400/200"}
+                                                        className="card-img-top"
+                                                        alt={course.title}
+                                                    />
                                                     <div className="card-body">
                                                         <h6 className="card-title">{course.title}</h6>
                                                         <p className="card-text small">{course.description}</p>

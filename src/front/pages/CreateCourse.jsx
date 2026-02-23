@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { UploadCourseImage } from "./UploadCourseImage"; 
 
 export const CreateCourse = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -11,18 +12,19 @@ export const CreateCourse = () => {
     title: "",
     description: "",
     cost: "",
-    coach_id: store.coach?.id || null
+    coach_id: store.coach?.id || null,
+    image_url: ""
   });
   const [error, setError] = useState("");
-  const [coaches, setCoaches] = useState([]); //new  arash
+  const [coaches, setCoaches] = useState([]);
 
-  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); //added by arash
-  const isAdmin = !!localStorage.getItem("token-admin"); //new arash
+  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach");
+  const isAdmin = !!localStorage.getItem("token-admin");
 
-  useEffect(() => { //new arash
+  useEffect(() => { 
     if (!isAdmin) return;
 
-    fetch(`${BACKEND_URL}/coach`) //new arash
+    fetch(`${BACKEND_URL}/coach`) 
       .then(res => res.json())
       .then(data => setCoaches(data.coaches || []));
   }, [isAdmin]);
@@ -41,7 +43,7 @@ export const CreateCourse = () => {
       return;
     }
 
-    if (isAdmin && !form.coach_id) { //new arash
+    if (isAdmin && !form.coach_id) {
       setError("Coach not found. Please login again.");
       return;
     }
@@ -49,13 +51,13 @@ export const CreateCourse = () => {
     try {
       const res = await fetch(`${BACKEND_URL}/course`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, //added by arash
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(form)
       });
 
       if (!res.ok) throw new Error("Error creating course");
 
-      if (isAdmin) navigate ("/courses"); //new arash
+      if (isAdmin) navigate ("/courses"); 
       else navigate("/coach/private");
     } catch (e) {
       setError(e.message);
@@ -70,7 +72,7 @@ export const CreateCourse = () => {
 
       <form onSubmit={createCourse}>
 
-        <select //new arash
+        <select
         className="form-select mb-2"
         value={form.coach_id}
         onChange={(e) => setForm(p => ({ ...p, coach_id: e.target.value }))}
@@ -103,6 +105,11 @@ export const CreateCourse = () => {
           placeholder="Cost"
           value={form.cost}
           onChange={e => setForm(p => ({ ...p, cost: e.target.value }))}
+        />
+
+        <UploadCourseImage
+          initialUrl={form.image_url}
+          onUpload={(url) => setForm((p) => ({ ...p, image_url: url }))}
         />
 
         <button className="btn btn-success">Create</button>

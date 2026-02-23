@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { UploadCourseImage } from "./UploadCourseImage";
 
 
 export const EditCourse = () => {
@@ -12,18 +13,19 @@ export const EditCourse = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    cost: ""
+    cost: "",
+    image_url: ""
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); //added by arash
-  const isAdmin = !!localStorage.getItem("token-admin"); //new arash
+  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); 
+  const isAdmin = !!localStorage.getItem("token-admin"); 
 
   const fetchCourse = async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/course/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }, //added by arash, to send the token in the request header for authentication
+        headers: { Authorization: `Bearer ${token}` }, 
       });
       if (!res.ok) throw new Error("Error loading course");
 
@@ -33,7 +35,8 @@ export const EditCourse = () => {
       setForm({
         title: course.title,
         description: course.description,
-        cost: course.cost
+        cost: course.cost,
+        image_url: course.image_url || ""
       });
     } catch (e) {
       setError(e.message);
@@ -53,14 +56,14 @@ export const EditCourse = () => {
     try {
       const res = await fetch(`${BACKEND_URL}/course/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` //added by arash, to send the token in the request header for authentication
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` 
          },
         body: JSON.stringify(form)
       });
 
       if (!res.ok) throw new Error("Error updating course");
 
-      if (isAdmin) navigate ("/courses"); //new arash
+      if (isAdmin) navigate ("/courses");
       else navigate("/coach/private");
     } catch (e) {
       setError(e.message);
@@ -93,6 +96,11 @@ export const EditCourse = () => {
           value={form.cost}
           max={999999999}
           onChange={e => setForm(p => ({ ...p, cost: e.target.value }))}
+        />
+
+        <UploadCourseImage
+        initialUrl={form.image_url}
+        onUpload={(url) => setForm((p) => ({ ...p, image_url: url}))}
         />
 
         <button className="btn btn-primary">Save</button>

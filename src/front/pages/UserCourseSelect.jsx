@@ -60,11 +60,12 @@ export const UserCourseSelect = () => {
     return (
         <div className="container py-4">
             <div className="d-flex justify-content-between mb-4">
+                
                 <h1>Select courses</h1>
 
                 <button
                     className="btn btn-secondary"
-                    onClick={() => navigate("/users")} // added by arash
+                    onClick={() => navigate("/users")} 
                 >
                     Back to users
                 </button>
@@ -77,6 +78,13 @@ export const UserCourseSelect = () => {
                         <div key={course.id} className="col-md-4 mb-3">
                             <div className="card h-100 shadow-sm">
                                 <div className="card-body d-flex flex-column">
+                                    <img
+                                        src={course?.image_url || "https://picsum.photos/400/200"}
+                                        class="img-thumbnail"
+                                        alt={course?.title || "course"}
+                                        style={{ height: "25rem", objectFit: "contain" }}
+                                        />
+
                                     <h5>{course.title}</h5>
                                     <p className="text-muted">{course.description}</p>
                                     <p><strong>€ {course.cost}</strong></p>

@@ -12,15 +12,15 @@ export const Coaches = () => {
 
   const [cargando, setCargando] = useState(false)
 
-  const { store } = useGlobalReducer(); //added by arash
-  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); //added by arash
+  const { store } = useGlobalReducer();
+  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); 
 
 
   const getAllCoaches = async () => {
     try {
       setCargando(true);
 
-      const res = await fetch(backendURL + "/coach"); //added by arash (GET /coach is public, no token needed)
+      const res = await fetch(backendURL + "/coach"); 
 
 
       if (!res.ok) throw new Error("We can’t get coaches right now");
@@ -37,10 +37,10 @@ export const Coaches = () => {
 
   const deletedCoach = async (id) => {
     try {
-      if (!token) throw new Error("Missing token, login as admin/coach"); //added by arash
+      if (!token) throw new Error("Missing token, login as admin/coach"); 
       const res = await fetch(`${backendURL}/coach/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` } //added by arash, to send the token in the request header for authentication
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (!res.ok) throw new Error("Not deleted the coach");
@@ -97,7 +97,7 @@ export const Coaches = () => {
                 <button
                     className="btn btn-primary btn-sm mt-2 w-100"
                     onClick={() => navigate(`/coaches-details/${coach.id}`)}>
-                    Ver perfil
+                    show profile
                 </button>
             </div>
         </div>
