@@ -17,7 +17,7 @@ export const CoursesFavoritesUser = () => {
     const loadFavorites = async () => {
         try {
             const res = await fetch(`${backendURL}/users/${userId}/favorites`, {
-                headers: {Authorization: `Bearer ${store.token}`}, //added by arash, to send the token in the request header for authentication
+                headers: {Authorization: `Bearer ${store.token}`},
             });
             
 
@@ -37,7 +37,7 @@ export const CoursesFavoritesUser = () => {
             const res = await fetch(
                 `${backendURL}/users/${userId}/favorites/${courseId}`,
                 { method: "DELETE" ,
-                    headers: {Authorization: `Bearer ${store.token}`}, //added by arash, to send the token in the request header for authentication
+                    headers: {Authorization: `Bearer ${store.token}`},
         });
 
             if (!res.ok) throw new Error("Error removing favorite");

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer"; //added by arash
+import useGlobalReducer from "../hooks/useGlobalReducer"; 
 
 
 export const Courses = () => {
@@ -11,14 +11,14 @@ export const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
 
-  const { store } = useGlobalReducer(); //added by arash
-  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); //added by arash
+  const { store } = useGlobalReducer(); 
+  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach");
 
   const fetchCourses = async () => {
     try {
       setError("");
       const res = await fetch(`${BACKEND_URL}/course`, {
-        headers: { Authorization: `Bearer ${token}` }  //added by arash, to send the token in the request header for authentication
+        headers: { Authorization: `Bearer ${token}` }  
       });
       if (!res.ok) throw new Error("Error fetching courses");
 

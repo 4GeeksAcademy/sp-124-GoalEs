@@ -12,14 +12,13 @@ export const UserCourseSelect = () => {
     const [courses, setCourses] = useState([]);
     const [error, setError] = useState("");
 
-    // added by arash
     const token = localStorage.getItem("token-user") || localStorage.getItem("token-admin");
 
     const course = async () => {
         try {
             setError("");
             const response = await fetch(`${BACKEND_URL}/course`, {
-                headers: { Authorization: `Bearer ${token}` } // added by arash
+                headers: { Authorization: `Bearer ${token}` }
             });
             if (!response.ok) throw new Error("Error fetching courses");
 
@@ -36,7 +35,7 @@ export const UserCourseSelect = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}` // added by arash (safe even if backend doesn't require yet)
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     active: true,

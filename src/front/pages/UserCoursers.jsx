@@ -19,7 +19,7 @@ export const UserCourses = () => {
         try {
             setError("");
             const response = await fetch(`${BACKEND_URL}/user_course`, {
-                headers: { Authorization: `Bearer ${token}` } // added by arash
+                headers: { Authorization: `Bearer ${token}` }
             });
             if (!response.ok) throw new Error("Error fetching user courses");
 
@@ -65,7 +65,6 @@ export const UserCourses = () => {
 
         setCoursesById(map);
     } catch (e) {
-        // optional: console.log(e)
     }
     };
 
@@ -82,7 +81,7 @@ export const UserCourses = () => {
 
                 <button
                     className="btn btn-secondary"
-                    onClick={() => navigate("/users")} // added by arash
+                    onClick={() => navigate("/users")} 
                 >
                     Back to users
                 </button>
