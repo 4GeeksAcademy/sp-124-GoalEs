@@ -100,6 +100,7 @@ export const AvailableCoursesUser = () => {
                                     <h5 className="card-title">{course.title}</h5>
                                     <p className="card-text">{course.description}</p>
                                     <p className="fw-bold">${course.cost}</p>
+                                    <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
                                     <div className="mt-auto d-flex gap-2">
                                         <button className="btn btn-outline-primary w-100" onClick={() => addFavorite(course.id)}>Add to Favorites</button>
                                         <button className="btn btn-success w-100" onClick={() => addCourse(course.id)}>Start</button>
