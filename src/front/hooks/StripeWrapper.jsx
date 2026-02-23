@@ -4,10 +4,10 @@ import { CheckoutForm } from "./../StripeCheckout";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-export const StripeWrapper = () => {
+export const StripeWrapper = ({ course }) => {
     return (
         <Elements stripe={stripePromise}>
-            <CheckoutForm />
+            <CheckoutForm course={course} />
         </Elements>
     );
 };

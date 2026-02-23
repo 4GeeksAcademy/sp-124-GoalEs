@@ -19,15 +19,27 @@ export const CheckoutForm = ({ course }) => {
 
         const res = await fetch(backendURL + "/create-payment-intent", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${store.token}`
+            },
             body: JSON.stringify({
-                amount: course.cost * 100,
+                amount: Number(course.cost) * 100,
                 user_id: store.user.id,
                 course_id: course.id
             })
         });
 
-        const { clientSecret } = await res.json();
+        const data = await res.json();
+        console.log("PaymentIntent response:", data);
+
+        if (!res.ok) {
+            setMessage(data.error || "Payment failed");
+            setLoading(false);
+            return;
+        }
+
+        const clientSecret = data.clientSecret;
 
         const result = await stripe.confirmCardPayment(clientSecret, {
             payment_method: {

@@ -390,25 +390,39 @@ def user_delete(user_id): #changed because it's a function not a data base
     return jsonify({"message": "User deleted successfully"}), 200
 
 @app.route("/create-payment-intent", methods=["POST"])
+@jwt_required()
 def create_payment_intent():
+
     data = request.get_json()
+    print("Stripe Key:", stripe.api_key)
+
+    if not data:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    amount = data.get("amount")
+    user_id = data.get("user_id")
+    course_id = data.get("course_id")
+
+    if amount is None or user_id is None or course_id is None:
+        return jsonify({"error": "Missing required fields"}), 400
+        
 
     try:
         intent = stripe.PaymentIntent.create(
-            amount=data["amount"],
+            amount=int(amount),
             currency="eur",
             metadata={
-                "user_id": data["user_id"],
-                "course_id": data["course_id"]
+                "user_id": user_id,
+                "course_id": course_id
             }
         )
 
         return jsonify({
             "clientSecret": intent.client_secret
-        })
+        }), 200
 
-    except Exception as error:
-        return jsonify(error=str(error)), 400
+    except stripe.error.StripeError as e:
+        return jsonify({"error": str(e)}), 400
 
 #public
 @app.route('/coach', methods=['GET'])
