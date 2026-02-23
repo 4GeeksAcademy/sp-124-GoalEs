@@ -34,7 +34,6 @@ export const LoginAdmin = () => {
         payload: {
           token: data.token,
           role: "Admin",
-          // optional: if backend returns admin object and you want it in UI
           user: data.admin || null,
         },
       });
@@ -51,7 +50,7 @@ export const LoginAdmin = () => {
       <h1>Login Admin</h1>
 
       {error && <div className="alert alert-danger">{error}</div>}
-      {welcome && <div className="alert alert-success">Welcome!</div>}
+      {welcome && <div className="alert alert-success">Welcome boss!</div>}
 
       <form onSubmit={loginAdmin} className="mt-3">
         <input

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { UploadCourseImage } from "./UploadCourseImage"; 
+import { UploadCourseImage } from "./UploadCourseImage";
 
 export const CreateCourse = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -14,28 +14,30 @@ export const CreateCourse = () => {
     cost: "",
     coach_id: store.coach?.id || null,
     image_url: "",
-    category_id: ""
+    category_id: "",
+    tag_ids: []
   });
   const [error, setError] = useState("");
   const [coaches, setCoaches] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
 
   const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach");
   const isAdmin = !!localStorage.getItem("token-admin");
 
-  useEffect(() => { 
+  useEffect(() => {
     if (!isAdmin) return;
 
-    fetch(`${BACKEND_URL}/coach`) 
+    fetch(`${BACKEND_URL}/coach`)
       .then(res => res.json())
       .then(data => setCoaches(data.coaches || []));
   }, [isAdmin]);
 
   useEffect(() => {
     if (store.coach?.id) {
-      setForm(prev => ({...prev, coach_id: store.coach.id}));
+      setForm(prev => ({ ...prev, coach_id: store.coach.id }));
     }
-  },[store.coach])
+  }, [store.coach])
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -52,6 +54,24 @@ export const CreateCourse = () => {
     };
 
     fetchCategories();
+  }, [BACKEND_URL]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        let res = await fetch(`${BACKEND_URL}/tags`);
+        if (!res.ok) res = await fetch(`${BACKEND_URL}/api/tags`);
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Error fetching tags");
+
+        setTags(data.tags || []);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchTags();
   }, [BACKEND_URL]);
 
   const createCourse = async (e) => {
@@ -72,19 +92,31 @@ export const CreateCourse = () => {
       return;
     }
 
+    const payload = {
+      ...form,
+      cost: Number(form.cost),
+      category_id: form.category_id ? Number(form.category_id) : null,
+      coach_id: form.coach_id ? Number(form.coach_id) : null,
+      tag_ids: (form.tag_ids || []).map(Number)
+    };
+
     try {
       const res = await fetch(`${BACKEND_URL}/course`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form)
+        body: JSON.stringify(payload)
       });
 
-      if (!res.ok) throw new Error("Error creating course");
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || data.details || "Error creating course");
+      }
 
-      if (isAdmin) navigate ("/courses"); 
+      if (isAdmin) navigate("/courses");
       else navigate("/coach/private");
     } catch (e) {
       setError(e.message);
+      console.error("Create course error:", e);
     }
   };
 
@@ -96,11 +128,11 @@ export const CreateCourse = () => {
 
       <form onSubmit={createCourse}>
         <select
-        className="form-select mb-2"
-        value={form.coach_id}
-        onChange={(e) => setForm(p => ({ ...p, coach_id: e.target.value }))}
+          className="form-select mb-2"
+          value={form.coach_id}
+          onChange={(e) => setForm(p => ({ ...p, coach_id: e.target.value }))}
         >
-          <option value= "">Select coach</option>
+          <option value="">Select coach</option>
           {coaches.map(c => (
             <option key={c.id} value={c.id}>
               {c.name} {c.last_name} (id: {c.id})
@@ -120,6 +152,41 @@ export const CreateCourse = () => {
             </option>
           ))}
         </select>
+
+        <div className="mt-3">
+          <label className="form-label">Tags (optional)</label>
+
+          {tags.length === 0 ? (
+            <div className="text-muted">No tags available.</div>
+          ) : (
+            <div className="d-flex flex-wrap gap-2">
+              {tags.map((t) => {
+                const tagId = Number(t.id);
+                const checked = (form.tag_ids || []).includes(tagId);
+
+                return (
+                  <label key={t.id} className="border rounded px-2 py-1">
+                    <input
+                      type="checkbox"
+                      className="form-check-input me-2"
+                      checked={checked}
+                      onChange={(e) => {
+                        setForm((prev) => {
+                          const prevIds = prev.tag_ids || [];
+                          const nextIds = e.target.checked
+                            ? [...prevIds, tagId]
+                            : prevIds.filter((id) => id !== tagId);
+                          return { ...prev, tag_ids: nextIds };
+                        });
+                      }}
+                    />
+                    {t.name}
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         <input
           className="form-control mb-2"
