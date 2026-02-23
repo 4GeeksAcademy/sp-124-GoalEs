@@ -15,11 +15,13 @@ export const EditCourse = () => {
     description: "",
     cost: "",
     image_url: "",
-    category_id: ""
+    category_id: "",
+    tag_ids: []
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
 
   const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); 
   const isAdmin = !!localStorage.getItem("token-admin"); 
@@ -38,13 +40,15 @@ export const EditCourse = () => {
 
       const data = await res.json();
       const course = data.course ?? data;
+      const tagIdsFromCourse = Array.isArray(course.tags) ? course.tags.map(t => t.id) : [];
 
       setForm({
         title: course.title,
         description: course.description,
         cost: course.cost,
         image_url: course.image_url || "",
-        category_id: course.category_id || ""
+        category_id: course.category_id || "",
+        tag_ids: tagIdsFromCourse
       });
     } catch (e) {
       setError(e.message);
@@ -70,6 +74,23 @@ export const EditCourse = () => {
     };
 
     fetchCategories();
+  }, [BACKEND_URL]);
+
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        let res = await fetch(`${BACKEND_URL}/tags`);
+        if (!res.ok) res = await fetch(`${BACKEND_URL}/api/tags`);
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Error fetching tags");
+        setTags(data.tags || []);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchTags();
   }, [BACKEND_URL]);
 
   const updateCourse = async (e) => {
@@ -113,6 +134,41 @@ export const EditCourse = () => {
             </option>
           ))}
         </select>
+
+        <div className="mt-3 mb-2">
+          <label className="form-label">Tags (optional)</label>
+
+          {tags.length === 0 ? (
+            <div className="text-muted">No tags available.</div>
+          ) : (
+            <div className="d-flex flex-wrap gap-2">
+              {tags.map((t) => {
+                const tagId = Number(t.id);
+                const checked = (form.tag_ids || []).includes(tagId);
+
+                return (
+                  <label key={t.id} className="border rounded px-2 py-1">
+                    <input
+                      type="checkbox"
+                      className="form-check-input me-2"
+                      checked={checked}
+                      onChange={(e) => {
+                        setForm((prev) => {
+                          const prevIds = (prev.tag_ids || []).map(Number);
+                          const nextIds = e.target.checked
+                            ? [...prevIds, tagId]
+                            : prevIds.filter((id) => id !== tagId);
+                          return { ...prev, tag_ids: nextIds };
+                        });
+                      }}
+                    />
+                    {t.name}
+                  </label>
+                );
+              })} 
+            </div>
+          )}
+        </div>
 
         <input
           className="form-control mb-2"

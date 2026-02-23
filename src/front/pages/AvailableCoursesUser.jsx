@@ -108,6 +108,7 @@ export const AvailableCoursesUser = () => {
                                     <p className="card-text">{course.description}</p>
                                     <p className="fw-bold">${course.cost}</p>
                                     <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
+                                    <p className="text-muted mb-1"> Tags: {course.tags?.map(t => t.name).join(", ") || "—"} </p>
                                     <div className="mt-auto d-flex gap-2">
                                         <button className="btn btn-outline-primary w-100" onClick={() => addFavorite(course.id)}>Add to Favorites</button>
                                         <button

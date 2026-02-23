@@ -34,7 +34,6 @@ export const LoginAdmin = () => {
         payload: {
           token: data.token,
           role: "Admin",
-          // optional: if backend returns admin object and you want it in UI
           user: data.admin || null,
         },
       });

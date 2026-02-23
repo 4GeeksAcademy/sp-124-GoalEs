@@ -15,7 +15,6 @@ const UserCourseFavorite = () => {
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/users`, {
-      //added by arash
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
@@ -25,7 +24,6 @@ const UserCourseFavorite = () => {
   useEffect(() => {
     users.forEach(user => {
       fetch(`${BACKEND_URL}/users/${user.id}/favorites`, {
-        //added by arash
         headers: { Authorization: `Bearer ${token}` },
       })
         .then(res => res.json())
@@ -48,7 +46,6 @@ const UserCourseFavorite = () => {
   // Load favorites for a user
   const loadFavorites = (userId) => {
     fetch(`${BACKEND_URL}/users/${userId}/favorites`, {
-      //added by arash
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
@@ -73,7 +70,6 @@ const UserCourseFavorite = () => {
   const addFavorite = (userId, courseId) => {
     fetch(`${BACKEND_URL}/users/${userId}/favorites/${courseId}`, {
       method: "POST",
-      //added by arash
       headers: { Authorization: `Bearer ${token}` },
     }).then(() => loadFavorites(userId));
   };
