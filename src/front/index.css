@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap');
+
+        .goales-navbar {
+          background: #ffffff;
+          border-bottom: 1px solid #f0f0f0;
+          padding: 16px 0;
+          font-family: 'DM Sans', sans-serif;
+        }
+
+        .goales-navbar .navbar-brand {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: #1a1a2e;
+          letter-spacing: -0.5px;
+        }
+
+        .goales-navbar .navbar-brand span {
+          color: green;
+        }
+
+        .goales-navbar .nav-link {
+          color: #444 !important;
+          font-size: 0.92rem;
+          font-weight: 500;
+          padding: 6px 14px !important;
+          transition: color 0.2s;
+        }
+
+        .goales-navbar .nav-link:hover {
+          color: #1a1a2e !important;
+        }
+
+        .goales-navbar .dropdown-menu {
+          border: none;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+          border-radius: 12px;
+          padding: 8px;
+          min-width: 160px;
+        }
+
+        .goales-navbar .dropdown-item {
+          font-size: 0.88rem;
+          font-weight: 500;
+          color: #444;
+          padding: 8px 16px;
+          border-radius: 8px;
+          transition: all 0.15s;
+        }
+
+        .goales-navbar .dropdown-item:hover {
+          background: #f7f3ec;
+          color: #1a1a2e;
+        }
+
+        .btn-login {
+          font-size: 0.88rem;
+          font-weight: 500;
+          color: #1a1a2e !important;
+          border: 1.5px solid #ddd;
+          border-radius: 50px;
+          padding: 7px 20px !important;
+          transition: all 0.2s;
+        }
+
+        .btn-login:hover {
+          border-color: #1a1a2e;
+        }
+
+        .btn-signup {
+          font-size: 0.88rem;
+          font-weight: 600;
+          background: #1a1a2e;
+          color: #fff !important;
+          border-radius: 50px;
+          padding: 8px 22px !important;
+          transition: all 0.2s;
+        }
+
+        .btn-signup:hover {
+          background: #e8a838;
+          color: #1a1a2e !important;
+        }
+     
