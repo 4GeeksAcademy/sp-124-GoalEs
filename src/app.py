@@ -8,15 +8,17 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag
+from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag, Appointment
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
 from sqlalchemy import select
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt, verify_jwt_in_request
-from datetime import timedelta
+from datetime import timedelta, timezone, datetime
 from functools import wraps
+from zoneinfo import ZoneInfo
+from dateutil import parser as dtparser
 
 
 
@@ -1419,9 +1421,148 @@ def delete_tag(tag_id):
     return jsonify({"msg": "Tag deleted"}), 200
 
 
+#APPOINTMENTS
+#private, only for user and admin, but user can only create for himself
+@app.route("/appointments", methods=["POST"])
+@jwt_required()
+@role_required("user", "admin")   # اگر admin لازم نداری، فقط "user" بذار
+def create_appointment():
+    role = current_role()
+    if role != "user":
+        return jsonify({"error": "Only user can create appointment"}), 403
+
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    user_id = int(get_jwt_identity())
+    coach_id = body.get("coach_id")
+    starts_at_raw = body.get("starts_at")
+    note = body.get("note")
+
+    if not coach_id or not starts_at_raw:
+        return jsonify({"error": "coach_id and starts_at are required"}), 400
+
+    coach = db.session.execute(select(Coach).where(Coach.id == int(coach_id))).scalar_one_or_none()
+    if not coach:
+        return jsonify({"error": "Coach not found"}), 404
+
+    # parse starts_at
+    try:
+        dt = dtparser.isoparse(starts_at_raw)  # accepts "2026-02-23T15:00:00+01:00" or "...Z"
+    except Exception:
+        return jsonify({"error": "Invalid starts_at format. Use ISO8601"}), 400
+
+    # if naive -> assume Europe/Madrid
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=ZoneInfo("Europe/Madrid"))
+
+    starts_at_utc = dt.astimezone(timezone.utc)
+    now_utc = datetime.now(timezone.utc)
+
+    if starts_at_utc <= now_utc:
+        return jsonify({"error": "starts_at must be in the future"}), 400
+
+    appt = Appointment(
+        user_id=user_id,
+        coach_id=int(coach_id),
+        starts_at=starts_at_utc,
+        status="pending",
+        note=note
+    )
+
+    db.session.add(appt)
+    db.session.commit()
+
+    return jsonify(appointment=appt.serialize()), 201
 
 
+#user can see only his appointments, admin can see all but should pass user_id as query param
+@app.route("/appointments/my", methods=["GET"])
+@jwt_required()
+@role_required("user")
+def get_my_appointments():
+    user_id = int(get_jwt_identity())
 
+    appts = db.session.execute(
+        select(Appointment).where(Appointment.user_id == user_id).order_by(Appointment.starts_at.desc())
+    ).scalars().all()
+
+    return jsonify(appointments=[a.serialize() for a in appts]), 200
+
+
+#coach can see only his appointments, admin can see all but should pass coach_id as query param
+@app.route("/coach/appointments/my", methods=["GET"])
+@jwt_required()
+@role_required("coach")
+def get_my_coach_appointments():
+    coach_id = int(get_jwt_identity())
+
+    appts = db.session.execute(
+        select(Appointment).where(Appointment.coach_id == coach_id).order_by(Appointment.starts_at.desc())
+    ).scalars().all()
+
+    return jsonify(appointments=[a.serialize() for a in appts]), 200
+
+
+#admin can update status of any appointment, coach can update only his appointments
+@app.route("/coach/appointments/<int:appt_id>", methods=["PUT"])
+@jwt_required()
+@role_required("coach")
+def coach_update_appointment(appt_id):
+    coach_id = int(get_jwt_identity())
+
+    appt = db.session.execute(
+        select(Appointment).where(Appointment.id == appt_id)
+    ).scalar_one_or_none()
+
+    if not appt:
+        return jsonify({"error": "Appointment not found"}), 404
+
+    if int(appt.coach_id) != coach_id:
+        return jsonify({"error": "Forbidden: not your appointment"}), 403
+
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    status = body.get("status")
+    if status not in ["approved", "rejected", "canceled"]:
+        return jsonify({"error": "status must be one of: approved, rejected, canceled"}), 400
+
+    appt.status = status
+    db.session.commit()
+
+    return jsonify(appointment=appt.serialize()), 200
+
+
+#user can cancel only his appointments and only if coach hasn't approved/rejected yet
+@app.route("/appointments/<int:appt_id>", methods=["PUT"])
+@jwt_required()
+@role_required("user")
+def user_cancel_appointment(appt_id):
+    user_id = int(get_jwt_identity())
+
+    appt = db.session.execute(
+        select(Appointment).where(Appointment.id == appt_id)
+    ).scalar_one_or_none()
+
+    if not appt:
+        return jsonify({"error": "Appointment not found"}), 404
+
+    if int(appt.user_id) != user_id:
+        return jsonify({"error": "Forbidden: not your appointment"}), 403
+
+    body = request.get_json() or {}
+    action = body.get("action")
+
+    if action != "cancel":
+        return jsonify({"error": "Use action: cancel"}), 400
+
+    appt.status = "canceled"
+    db.session.commit()
+
+    return jsonify(appointment=appt.serialize()), 200
 
 
 # this only runs if `$ python src/main.py` is executed
