@@ -48,6 +48,10 @@ import PublicLayout from "./pages/Layouts/PublicLayout";
 
 import { FaceAnalyzer } from "./pages/FaceAnalyzer.jsx";
 
+import { ReserveCoach } from "./pages/ReserveCoach";
+import { MyAppointmentsUser } from "./pages/MyAppointmentsUser";
+import { MyAppointmentsCoach } from "./pages/MyAppointmentsCoach";
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found</h1>}>
@@ -90,6 +94,8 @@ export const router = createBrowserRouter(
         <Route path="users/home" element={<PrivateUser />} />
         <Route path="users/profile" element={<CompleteProfileUser />} />
         <Route path="/users/faceanalyzer" element={<FaceAnalyzer />} />
+        <Route path="coaches/:id/reserve" element={<ReserveCoach />} />
+        <Route path="appointments/my" element={<MyAppointmentsUser />} />
 
         {/* CRUD USERS (shared for user/admin) */}
         <Route path="users" element={<User />} />
@@ -107,6 +113,7 @@ export const router = createBrowserRouter(
         <Route path="coaches/profile" element={<CoachProfile />} />
         <Route path="coach/create-course" element={<CreateCourse />} />
         <Route path="coach/edit-course/:id" element={<EditCourse />} />
+        <Route path="coach/appointments/my" element={<MyAppointmentsCoach />} />
 
         {/* optional aliases */}
         <Route path="courses/new" element={<CreateCourse />} />
