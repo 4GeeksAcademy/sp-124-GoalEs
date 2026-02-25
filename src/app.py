@@ -1425,17 +1425,23 @@ def delete_tag(tag_id):
 #private, only for user and admin, but user can only create for himself
 @app.route("/appointments", methods=["POST"])
 @jwt_required()
-@role_required("user", "admin")   # اگر admin لازم نداری، فقط "user" بذار
+@role_required("user", "admin")
 def create_appointment():
     role = current_role()
-    if role != "user":
-        return jsonify({"error": "Only user can create appointment"}), 403
 
     body = request.get_json()
     if not body:
         return jsonify({"error": "Missing JSON body"}), 400
 
-    user_id = int(get_jwt_identity())
+    #  user_id logic
+    if role == "user":
+        user_id = int(get_jwt_identity())
+    else:  # admin
+        user_id = body.get("user_id")
+        if not user_id:
+            return jsonify({"error": "user_id is required for admin"}), 400
+        user_id = int(user_id)
+
     coach_id = body.get("coach_id")
     starts_at_raw = body.get("starts_at")
     note = body.get("note")
@@ -1443,17 +1449,21 @@ def create_appointment():
     if not coach_id or not starts_at_raw:
         return jsonify({"error": "coach_id and starts_at are required"}), 400
 
+    #  validate user exists (recommended minimal)
+    user = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
     coach = db.session.execute(select(Coach).where(Coach.id == int(coach_id))).scalar_one_or_none()
     if not coach:
         return jsonify({"error": "Coach not found"}), 404
 
     # parse starts_at
     try:
-        dt = dtparser.isoparse(starts_at_raw)  # accepts "2026-02-23T15:00:00+01:00" or "...Z"
+        dt = dtparser.isoparse(starts_at_raw)
     except Exception:
         return jsonify({"error": "Invalid starts_at format. Use ISO8601"}), 400
 
-    # if naive -> assume Europe/Madrid
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=ZoneInfo("Europe/Madrid"))
 
@@ -1476,17 +1486,26 @@ def create_appointment():
 
     return jsonify(appointment=appt.serialize()), 201
 
-
 #user can see only his appointments, admin can see all but should pass user_id as query param
 @app.route("/appointments/my", methods=["GET"])
 @jwt_required()
-@role_required("user")
+@role_required("user","admin")
 def get_my_appointments():
-    user_id = int(get_jwt_identity())
+    role = current_role()
 
-    appts = db.session.execute(
-        select(Appointment).where(Appointment.user_id == user_id).order_by(Appointment.starts_at.desc())
-    ).scalars().all()
+    q = select(Appointment).order_by(Appointment.starts_at.desc())
+
+    if role == "user":
+        user_id = int(get_jwt_identity())
+        q = q.where(Appointment.user_id == user_id)
+
+    else:  # admin
+        user_id = request.args.get("user_id", type=int)
+        if user_id:
+            q = q.where(Appointment.user_id == user_id)
+        # else: no filter => all appointments
+
+    appts = db.session.execute(q).scalars().all()
 
     return jsonify(appointments=[a.serialize() for a in appts]), 200
 
@@ -1494,32 +1513,39 @@ def get_my_appointments():
 #coach can see only his appointments, admin can see all but should pass coach_id as query param
 @app.route("/coach/appointments/my", methods=["GET"])
 @jwt_required()
-@role_required("coach")
+@role_required("coach", "admin")
 def get_my_coach_appointments():
-    coach_id = int(get_jwt_identity())
+    role = current_role()
 
-    appts = db.session.execute(
-        select(Appointment).where(Appointment.coach_id == coach_id).order_by(Appointment.starts_at.desc())
-    ).scalars().all()
+    q = select(Appointment).order_by(Appointment.starts_at.desc())
 
+    if role == "coach":
+        coach_id = int(get_jwt_identity())
+        q = q.where(Appointment.coach_id == coach_id)
+
+    else:  # admin
+        coach_id = request.args.get("coach_id", type=int)
+        if coach_id:
+            q = q.where(Appointment.coach_id == coach_id)
+        # else: all appointments
+
+    appts = db.session.execute(q).scalars().all()
     return jsonify(appointments=[a.serialize() for a in appts]), 200
 
 
 #admin can update status of any appointment, coach can update only his appointments
 @app.route("/coach/appointments/<int:appt_id>", methods=["PUT"])
 @jwt_required()
-@role_required("coach")
+@role_required("coach", "admin")
 def coach_update_appointment(appt_id):
-    coach_id = int(get_jwt_identity())
+    role = current_role()
+    identity = int(get_jwt_identity())
 
-    appt = db.session.execute(
-        select(Appointment).where(Appointment.id == appt_id)
-    ).scalar_one_or_none()
-
+    appt = db.session.execute(select(Appointment).where(Appointment.id == appt_id)).scalar_one_or_none()
     if not appt:
         return jsonify({"error": "Appointment not found"}), 404
 
-    if int(appt.coach_id) != coach_id:
+    if role == "coach" and int(appt.coach_id) != identity:
         return jsonify({"error": "Forbidden: not your appointment"}), 403
 
     body = request.get_json()
@@ -1539,18 +1565,16 @@ def coach_update_appointment(appt_id):
 #user can cancel only his appointments and only if coach hasn't approved/rejected yet
 @app.route("/appointments/<int:appt_id>", methods=["PUT"])
 @jwt_required()
-@role_required("user")
+@role_required("user", "admin")
 def user_cancel_appointment(appt_id):
-    user_id = int(get_jwt_identity())
+    role = current_role()
+    identity = int(get_jwt_identity())
 
-    appt = db.session.execute(
-        select(Appointment).where(Appointment.id == appt_id)
-    ).scalar_one_or_none()
-
+    appt = db.session.execute(select(Appointment).where(Appointment.id == appt_id)).scalar_one_or_none()
     if not appt:
         return jsonify({"error": "Appointment not found"}), 404
 
-    if int(appt.user_id) != user_id:
+    if role == "user" and int(appt.user_id) != identity:
         return jsonify({"error": "Forbidden: not your appointment"}), 403
 
     body = request.get_json() or {}

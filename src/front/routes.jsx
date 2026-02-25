@@ -51,6 +51,7 @@ import { FaceAnalyzer } from "./pages/FaceAnalyzer.jsx";
 import { ReserveCoach } from "./pages/ReserveCoach";
 import { MyAppointmentsUser } from "./pages/MyAppointmentsUser";
 import { MyAppointmentsCoach } from "./pages/MyAppointmentsCoach";
+import { AdminAppointments } from "./pages/AdminAppointments.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -87,6 +88,7 @@ export const router = createBrowserRouter(
         <Route path="/coaches-edit/:id" element={<CoachEdit />} />
         <Route path="admin/categories" element={<Categories />} />
         <Route path="admin/tags" element={<Tags />} />
+        <Route path="admin/appointments" element={<AdminAppointments />} />
       </Route>
 
       {/* USER PRIVATE (user pages, but you can allow admin inside UserLayout too) */}

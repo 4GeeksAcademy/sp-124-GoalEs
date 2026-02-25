@@ -65,7 +65,7 @@ export const ReserveCoach = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Error creating appointment");
 
-      navigate("/appointments/my");
+      navigate(-1);
     } catch (e) {
       setError(e.message);
     }
