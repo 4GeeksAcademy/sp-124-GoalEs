@@ -18,6 +18,7 @@ import { User } from "./pages/User";
 import { UserDetails } from "./pages/UserDetails";
 import { CreateUser } from "./pages/CreateUser";
 import { EditUser } from "./pages/EditUser";
+import { UserChats } from "./pages/UserChat.jsx";
 
 import { Coaches } from "./pages/Coaches";
 import { CoachDetails } from "./pages/CoachDetails";
@@ -90,6 +91,8 @@ export const router = createBrowserRouter(
         <Route path="users/home" element={<PrivateUser />} />
         <Route path="users/profile" element={<CompleteProfileUser />} />
         <Route path="/users/faceanalyzer" element={<FaceAnalyzer />} />
+        <Route path="/users/chats" element={<UserChats />} />
+
 
         {/* CRUD USERS (shared for user/admin) */}
         <Route path="users" element={<User />} />

@@ -59,6 +59,7 @@ export const PrivateUser = () => {
                 <AvailableCoursesUser />
                 <CoursesFavoritesUser />
                 <MyCoursesUser />
+                <button onClick={() => navigate("/users/chats")}>Chats</button>
             </div>
         </>
     );

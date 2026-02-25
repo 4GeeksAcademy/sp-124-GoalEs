@@ -5,7 +5,7 @@ from typing import List
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship
-from datetime import date
+from datetime import date, datetime, timezone
 
 
 db = SQLAlchemy()
@@ -35,6 +35,11 @@ class User(db.Model):
 
     #relationships
     favorites: Mapped[List["User_Course_Favorite"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    chats: Mapped[List["Chat"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan"
     )
@@ -168,7 +173,12 @@ class Coach(db.Model):
     profile_image: Mapped[str] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-    messages: Mapped[List["Message"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
+    chats: Mapped[List["Chat"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
+
+    messages: Mapped[List["Message"]] = relationship(
+        back_populates="coach",
+        cascade="all, delete-orphan"
+    )
 
     courses: Mapped[List["Course"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
 
@@ -256,24 +266,52 @@ class User_course(db.Model):
         }
 
 
-# MESSAGE
+# CHAT
+
+class Chat(db.Model):
+    __tablename__ = "chat"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    last_updated: Mapped[datetime] = mapped_column(default=lambda:datetime.now(timezone.utc))
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"))
+
+    messages: Mapped[List["Message"]] = relationship(
+        back_populates="chat",
+        cascade="all, delete-orphan"
+    )
+
+    user: Mapped["User"] = relationship(back_populates="chats")
+    coach: Mapped["Coach"] = relationship(back_populates="chats")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "coach_id": self.coach_id,
+            "last_updated": self.last_updated,
+            "messages": [message.serialize() for message in self.messages]
+        }
 
 class Message(db.Model):
     __tablename__ = "message"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    message: Mapped[str] = mapped_column(String(500), nullable=False)
+    text: Mapped[str] = mapped_column(String(150), nullable=False)
 
-    userMessage_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    coachMessage_id: Mapped[int] = mapped_column(ForeignKey("coach.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable=False)
+    chat_id: Mapped[int] = mapped_column(ForeignKey("chat.id"), nullable=False)
 
     user: Mapped["User"] = relationship(back_populates="messages")
     coach: Mapped["Coach"] = relationship(back_populates="messages")
+    chat: Mapped["Chat"] = relationship(back_populates="messages")
 
     def serialize(self):
         return {
             "id": self.id,
-            "message": self.message,
-            "userMessage_id": self.userMessage_id,
-            "coachMessage_id": self.coachMessage_id,
+            "user_id": self.user_id,
+            "coach_id": self.coach_id,
+            "text": self.text
         }
