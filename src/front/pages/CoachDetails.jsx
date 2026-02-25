@@ -2,7 +2,7 @@ import React from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer"; 
+import useGlobalReducer from "../hooks/useGlobalReducer";
 import { CoachMap } from "./CoachMap";
 
 export const CoachDetails = () => {
@@ -12,7 +12,7 @@ export const CoachDetails = () => {
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-    const { store } = useGlobalReducer(); 
+    const { store } = useGlobalReducer();
 
     const [coach, setCoach] = useState();
     const [courses, setCourses] = useState([]);
@@ -34,7 +34,7 @@ export const CoachDetails = () => {
     const getCoachDetails = async () => {
         try {
             const res = await fetch(`${backendURL}/coach/${id}`, {
-                headers: { Authorization: `Bearer ${store.token}` } 
+                headers: { Authorization: `Bearer ${store.token}` }
             })
 
             if (!res.ok) throw new Error("Coach not found")
@@ -81,7 +81,7 @@ export const CoachDetails = () => {
                                         {courses.map(course => (
                                             <div key={course.id} className="col-md-4 mb-3">
                                                 <div className="card h-100 shadow-sm">
-                                                     <img
+                                                    <img
                                                         src={course.image_url || "https://picsum.photos/400/200"}
                                                         className="card-img-top"
                                                         alt={course.title}
@@ -107,6 +107,11 @@ export const CoachDetails = () => {
                                     </button>
                                     <button className="btn btn-success" onClick={() => navigate('/main')}>
                                         Back to Main
+                                    </button>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() => navigate(`/coaches/${id}/reserve`)}>
+                                        Reserve
                                     </button>
                                 </div>
                             }
