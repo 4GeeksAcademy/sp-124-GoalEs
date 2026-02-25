@@ -5,7 +5,7 @@ from typing import List
 from sqlalchemy import ForeignKey, UniqueConstraint, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 
 db = SQLAlchemy()
@@ -204,12 +204,12 @@ class Appointment(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable=False)
 
-    starts_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
     note: Mapped[str] = mapped_column(String(300), nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column( DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     # relationships
     user: Mapped["User"] = relationship(back_populates="appointments")
