@@ -61,13 +61,13 @@ export const User = () => {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="m-0">Users</h1>
 
-        <div className="d-flex gap-2">
-          <button
-            className="d-flex gap-2 justify-content-md-end btn btn-primary"
-            onClick={() => navigate("/users/new")}
-          >
-            Create new user
-          </button>
+          <div className="d-flex gap-2">
+            <button
+              className="d-flex gap-2 justify-content-md-end btn btn-primary"
+              onClick={() => navigate("/users/new")}
+            >
+              Create new user
+            </button>
 
             <button
               className="btn btn-secondary"
@@ -83,7 +83,17 @@ export const User = () => {
           {users && users.map((user) => (
             <div key={user.id} className="col-md-4 mb-4">
               <div className="card h-100 shadow-sm">
-                <div className="card-body d-flex flex-column">
+                <div className="card-body d-flex flex-column mb-3">
+                  <img
+                    src={user.profile_picture || "https://via.placeholder.com/40"}
+                    alt="Profile"
+                    style={{
+                      width: "380px",
+                      height: "400px",
+                      objectFit: "cover",
+                      marginRight: "10px"
+                    }}
+                  />
                   <h5 className="card-title">
                     {user.name} {user.surname}
                   </h5>
@@ -111,7 +121,7 @@ export const User = () => {
                     >
                       Delete
                     </button>
-                    
+
                     <button
                       className="btn btn-outline-success btn-sm"
                       onClick={() => navigate(`/users/${user.id}/courses/select`)}
@@ -133,7 +143,7 @@ export const User = () => {
             </div>
           ))}
         </div>
-        
+
         <div className="d-flex justify-content-center mt-3">
           <button className="btn btn-primary" onClick={userFetch}>
             Reload

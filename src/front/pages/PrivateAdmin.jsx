@@ -18,7 +18,7 @@ export const PrivateAdmin = () => {
   const handleLogout = () => {
     localStorage.removeItem("token-admin");
     dispatch({ type: "logout_admin" });
-    navigate("/admin/login");
+    navigate("/");
   };
 
   if (isUnauthorized) {
