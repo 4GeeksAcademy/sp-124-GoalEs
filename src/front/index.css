@@ -153,3 +153,94 @@
   color: #666;
   margin: 0;
 }
+/* home */
+
+.home-hero {
+  position: relative;
+  background-image: url('https://img.freepik.com/fotos-premium/aluno-estudando-na-biblioteca_1421-7997.jpg');
+  background-size: cover;
+  background-position: center top;
+  min-height: 90vh;
+  margin-top: 15px;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(10,10,30,0.75) 40%, rgba(10,10,30,0.1) 100%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #e8a838;
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.hero-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.7;
+  margin-bottom: 36px;
+  max-width: 480px;
+}
+
+.btn-hero-primary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  background: #e8a838;
+  color: #1a1a2e;
+  padding: 13px 28px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+
+.btn-hero-primary:hover {
+  background: #fff;
+  color: #1a1a2e;
+  text-decoration: none;
+}
+
+.btn-hero-secondary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  background: transparent;
+  color: #ffffff;
+  padding: 13px 28px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  text-decoration: none;
+  transition: all 0.25s;
+}
+
+.btn-hero-secondary:hover {
+  border-color: #fff;
+  color: #fff;
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+}
