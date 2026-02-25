@@ -5,6 +5,7 @@ import { AvailableCoursesUser } from "./AvailableCoursesUser";
 import { CoursesFavoritesUser } from "./CoursesFavoritesUser";
 import { MyCoursesUser } from "./MyCoursesUser";
 import { NavbarUser } from "./NavbarUser";
+import { MyAppointmentsUser } from "./MyAppointmentsUser";
 
 export const PrivateUser = () => {
 
@@ -52,13 +53,14 @@ export const PrivateUser = () => {
 
     return (
         <>
-        <NavbarUser logout={logout}/>
+            <NavbarUser logout={logout} />
             <div className="container py-4">
                 {goodbye && <div className="alert alert-success">We hope to see you back soon!</div>}
                 <h1>Dashboard</h1>
                 <AvailableCoursesUser />
                 <CoursesFavoritesUser />
                 <MyCoursesUser />
+                <MyAppointmentsUser />
             </div>
         </>
     );

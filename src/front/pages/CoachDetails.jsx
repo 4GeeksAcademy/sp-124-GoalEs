@@ -102,14 +102,12 @@ export const CoachDetails = () => {
                                         longitude={coach.longitude}
                                         name={`${coach.name} ${coach.last_name}`}
                                     />
-                                    <button className="btn btn-secondary me-2" onClick={() => navigate('/coaches')}>
+                                    <button className="btn btn-secondary me-2 mt-3" onClick={() => navigate('/coaches')}>
                                         Back to Coaches
                                     </button>
-                                    <button className="btn btn-success" onClick={() => navigate('/main')}>
-                                        Back to Main
-                                    </button>
+                                
                                     <button
-                                        className="btn btn-primary"
+                                        className="btn btn-primary me-2 mt-3"
                                         onClick={() => navigate(`/coaches/${id}/reserve`)}>
                                         Reserve
                                     </button>

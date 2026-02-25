@@ -15,6 +15,11 @@ export const Coaches = () => {
   const { store } = useGlobalReducer();
   const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); 
 
+  const handleBack = () => {
+    if (localStorage.getItem("token-admin")) navigate("/admin/home");
+    else if (localStorage.getItem("token-user")) navigate("/users/home");
+    else navigate("/")
+  };
 
   const getAllCoaches = async () => {
     try {
@@ -73,11 +78,7 @@ export const Coaches = () => {
            <div className="card mt-3 shadow-sm">
             <div className="card-body">
                 <div className="d-flex align-items-center gap-3 mb-2">
-                    <img
-                        src={coach.profile_image || `https://ui-avatars.com/api/?name=${coach.name}`}
-                        alt="Profile"
-                        style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover" }}
-                    />
+                    
                     <div>
                         <h5 className="card-title mb-0">{coach.name} {coach.last_name}</h5>
                         {coach.city && (
@@ -87,12 +88,11 @@ export const Coaches = () => {
                         )}
                     </div>
                 </div>
-
-                <CoachMap
-                    latitude={coach.latitude}
-                    longitude={coach.longitude}
-                    name={`${coach.name} ${coach.last_name}`}
-                />
+                <img
+                        src={coach.profile_image || `https://ui-avatars.com/api/?name=${coach.name}`}
+                        alt="Profile"
+                        style={{ width: "380px", height: "500px", objectFit: "cover" }}
+                    />
 
                 <button
                     className="btn btn-primary btn-sm mt-2 w-100"
@@ -107,8 +107,8 @@ export const Coaches = () => {
         <button className="btn btn-primary mt-3" onClick={() => navigate("/coaches/new")}>
           New Coach
         </button>
-        <button className="btn btn-secondary mt-3" onClick={() => navigate("/admin/home")}>
-          Back to Admin Dashboard
+        <button className="btn btn-secondary mt-3" onClick={handleBack} type="button">
+          Back to Dashboard
         </button>
       </div>
     </div>

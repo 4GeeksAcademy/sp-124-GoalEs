@@ -103,8 +103,8 @@ export const ReserveCoach = () => {
         <button className="btn btn-secondary" type="button" onClick={() => navigate(-1)}>
           Back
         </button>
-        <button className="btn btn-outline-secondary" type="button" onClick={() => navigate("/")}>
-          Home
+        <button className="btn btn-primary"  type="button" onClick={() => navigate("/courses")}>
+          Back to Courses
         </button>
       </div>
     </div>
