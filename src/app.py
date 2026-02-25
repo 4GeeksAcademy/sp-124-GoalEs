@@ -8,7 +8,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, Chat, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag, Message
+from api.models import db, User, Coach, Course, Chat, Message, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -17,7 +17,7 @@ from sqlalchemy import select
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt, verify_jwt_in_request
 from datetime import timedelta
 from functools import wraps
-from datetime import datetime, date, timezone
+from datetime import datetime, timezone
 
 
 
@@ -69,7 +69,7 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 #helper, because we don't repeat ourself and never forget the role
 def issue_token(identity: int, role: str):
     return create_access_token(
-        identity=identity,
+        identity=str(identity),
         additional_claims={"role": role}
     )
 
@@ -270,7 +270,7 @@ def login():
     if not user or user.password != password:
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = issue_token(user.id, "user")
+    access_token = issue_token(user.id, "user") #changed
 
     return jsonify({
         "msg": "Login successful",
@@ -509,11 +509,14 @@ def coach_login():
         select(Coach).where(Coach.email == email)
     ).scalar_one_or_none()
 
-    if coach is None or coach.password != password:
+    if coach is None:
         return jsonify({"error": "Wrong email or password"}), 401
     
-    access_token = issue_token(coach.id, "coach")
-
+    if coach.password != password:
+        return jsonify({"error": "Wrong email or password"}), 401
+    
+    access_token = issue_token(coach.id, "coach") #changed
+    
     return jsonify({
         "msg": "Login successful",
         "token": access_token,
@@ -939,18 +942,7 @@ def delete_chat(chat_id):
 
 
 
-@app.route('/user/chats', methods=['GET'])
-@jwt_required()
-def get_user_chats():
-    user_id = get_jwt_identity()
 
-    chats = Chat.query.filter_by(user_id=user_id)\
-        .order_by(Chat.last_updated.desc())\
-        .all()
-
-    return jsonify({
-        "chats": [chat.serialize() for chat in chats]
-    }), 200
 
 
 
@@ -1000,80 +992,56 @@ def create_chat_by_role(role):
 @jwt_required()
 def create_message_by_role(role):
 
-    try:
-        main_id = int(get_jwt_identity())
-        data = request.get_json()
+    main_id = get_jwt_identity()
+    data = request.get_json()
 
-        if not data:
-            return jsonify({"msg": "Missing JSON body"}), 400
+    secondary_id = data.get("secondary_id")
+    text = data.get("text")
 
-        chat_id = data.get("chat_id")
-        text = data.get("text")
+    if not secondary_id or not text:
+        return jsonify({"error": "secondary_id and text required"}), 400
 
-        if not chat_id or not text:
-            return jsonify({"msg": "chat_id and text are required"}), 400
+    if role == "user":
+        user_id = main_id
+        coach_id = secondary_id
+    elif role == "coach":
+        coach_id = main_id
+        user_id = secondary_id
+    else:
+        return jsonify({"error": "role must be user or coach"}), 400
 
-        chat_id = int(chat_id)
+    chat = Chat.query.filter_by(
+        user_id=user_id,
+        coach_id=coach_id
+    ).first()
 
-        chat = Chat.query.get(chat_id)
-        if not chat:
-            return jsonify({"msg": "Chat not found"}), 404
+    if not chat:
+        chat = Chat(
+            user_id=user_id,
+            coach_id=coach_id
+        )
+        db.session.add(chat)
+        db.session.flush()
 
-        if role == "user":
-            if chat.user_id != main_id:
-                return jsonify({"msg": "Unauthorized"}), 403
+    new_message = Message(
+        user_id=user_id,
+        coach_id=coach_id,
+        chat_id=chat.id,
+        text=text
+    )
 
-            new_message = Message(
-                text=text,
-                user_id=main_id,
-                coach_id=None,
-                chat_id=chat_id
-            )
+    db.session.add(new_message)
 
-        elif role == "coach":
-            if chat.coach_id != main_id:
-                return jsonify({"msg": "Unauthorized"}), 403
+    chat.last_updated = datetime.now(timezone.utc)
 
-            new_message = Message(
-                text=text,
-                coach_id=main_id,
-                user_id=None,
-                chat_id=chat_id
-            )
+    db.session.commit()
 
-        else:
-            return jsonify({"msg": "role must be user or coach"}), 400
+    return jsonify(new_message.serialize()), 201
 
-        chat.last_updated = datetime.now(timezone.utc)
 
-        db.session.add(new_message)
-        db.session.commit()
-
-        return jsonify(new_message.serialize()), 201
-
-    except Exception as error:
-        print("ERROR SENDING MESSAGE:", str(error))
-        return jsonify({"msg": "Internal server error"}), 500
     
 
-@app.route('/chat/<int:chat_id>/messages', methods=['GET'])
-@jwt_required()
-def get_chat_messages(chat_id):
 
-    main_id = int(get_jwt_identity())
-
-    chat = Chat.query.get(chat_id)
-    if not chat:
-        return jsonify({"msg": "Chat not found"}), 404
-
-    if main_id not in [chat.user_id, chat.coach_id]:
-        return jsonify({"msg": "Unauthorized"}), 403
-
-    messages = Message.query.filter_by(chat_id=chat_id)\
-        .order_by(Message.id.asc())\
-        .all()
-
-    return jsonify([m.serialize() for m in messages]), 200
 
 
 
