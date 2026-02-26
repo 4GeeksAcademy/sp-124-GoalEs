@@ -1136,6 +1136,24 @@ def get_chat_messages(chat_id):
 
     return jsonify([m.serialize() for m in messages]), 200
 
+@app.route('/chats/<int:chat_id>', methods=['DELETE'])
+@jwt_required()
+def delete_chats(chat_id):
+
+    main_id = int(get_jwt_identity())
+    chat = Chat.query.get(chat_id)
+
+    if not chat:
+        return jsonify({"error": "Chat not found"}), 404
+
+    if chat.user_id != main_id and chat.coach_id != main_id:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    db.session.delete(chat)
+    db.session.commit()
+
+    return jsonify({"msg": "Chat deleted"}), 200
+
 
 @app.route('/user_course', methods=['GET'])
 def get_user_courses():

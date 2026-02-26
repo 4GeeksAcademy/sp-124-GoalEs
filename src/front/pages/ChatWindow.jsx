@@ -10,10 +10,6 @@ export default function ChatWindow({ chat }) {
 
   const role = localStorage.getItem("role");
 
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const storedCoach = JSON.parse(localStorage.getItem("coach"));
-  const myId = storedUser?.id || storedCoach?.id;
-
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
@@ -38,7 +34,6 @@ export default function ChatWindow({ chat }) {
     if (!chat) return;
 
     socket.connect();
-
     socket.emit("join_chat", { chat_id: chat.id });
 
     socket.on("new_message", (message) => {
@@ -56,6 +51,11 @@ export default function ChatWindow({ chat }) {
     return <div>Selecciona un chat</div>;
   }
 
+  const otherName =
+    role === "user"
+      ? chat.coach_name
+      : chat.user_name;
+
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
@@ -64,10 +64,6 @@ export default function ChatWindow({ chat }) {
         ? chat.coach_id
         : chat.user_id;
 
-
-    console.log("role:", role);
-    console.log("chat:", chat);
-    console.log("secondaryId:", secondaryId);
     try {
       const res = await fetch(`${backendURL}/message/create/${role}`, {
         method: "POST",
@@ -83,7 +79,6 @@ export default function ChatWindow({ chat }) {
 
       if (!res.ok) throw new Error("Error sending message");
 
-      const data = await res.json();
       setNewMessage("");
 
     } catch (error) {
@@ -93,33 +88,61 @@ export default function ChatWindow({ chat }) {
 
   return (
     <div>
-      {messages.map(message => {
-        const isMine = message.sender_role === role;
+      <h3>{otherName}</h3>
 
-        return (
-          <div
-            key={message.id}
-            style={{
-              display: "flex",
-              justifyContent: isMine ? "flex-end" : "flex-start"
-            }}
-          >
-            <div style={{
-              backgroundColor: isMine ? "#DCF8C6" : "white",
-              padding: "10px",
-              borderRadius: "12px"
-            }}>
-              {message.text}
+      {[...messages]
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        .map(message => {
+
+          const isMine = message.sender_role === role;
+
+          return (
+            <div
+              key={message.id}
+              style={{
+                display: "flex",
+                justifyContent: isMine ? "flex-end" : "flex-start"
+              }}
+            >
+              <div style={{
+                backgroundColor: isMine ? "#DCF8C6" : "white",
+                padding: "10px",
+                borderRadius: "12px",
+                maxWidth: "60%"
+              }}>
+                <div>{message.text}</div>
+
+                <div style={{
+                  fontSize: "0.7rem",
+                  color: "#777",
+                  marginTop: "4px",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "4px"
+                }}>
+                  {new Date(message.created_at).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  })}
+
+                  {isMine && (
+                    <span style={{ color: "grey" }}>
+                      ✓✓
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
 
-      <input
-        value={newMessage}
-        onChange={event => setNewMessage(event.target.value)}
-      />
-      <button onClick={handleSendMessage}>Enviar</button>
+      <div style={{ marginTop: "10px" }}>
+        <input
+          value={newMessage}
+          onChange={event => setNewMessage(event.target.value)}
+        />
+        <button onClick={handleSendMessage}>Enviar</button>
+      </div>
     </div>
   );
 }

@@ -1,41 +1,58 @@
 import { useEffect, useState } from "react";
 import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
-import { useNavigate } from "react-router-dom";
+import socket from "../socket";
 
 export const ChatPage = () => {
 
-    const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const token =
+    localStorage.getItem("token-user") ||
+    localStorage.getItem("token-coach");
 
-    const [chats, setChats] = useState([]);
-    const [selectedChat, setSelectedChat] = useState(null);
-    const token = localStorage.getItem("token-user") || localStorage.getItem("token-coach");
+  const [chats, setChats] = useState([]);
+  const [selectedChat, setSelectedChat] = useState(null);
 
-    const navigate = useNavigate();
+  useEffect(() => {
+    fetch(`${backendURL}/chats`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(data => setChats(data))
+      .catch(err => console.error(err));
+  }, []);
 
-    useEffect(() => {
-        fetch(backendURL + "/chats", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
-            .then(res => res.json())
-            .then(data => setChats(data))
-            .catch(err => console.error(err));
-    }, [backendURL, token]);
+  const handleDeleteChat = async (chatId) => {
+    try {
+      const res = await fetch(`${backendURL}/chat/${chatId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    return (
-        <>
-            <div style={{ display: "flex", height: "100vh" }}>
-                <ChatList
-                    chats={chats}
-                    onSelectChat={setSelectedChat}
-                    selectedChat={selectedChat}
-                />
-                <ChatWindow chat={selectedChat} />
+      if (!res.ok) throw new Error("Error deleting chat");
 
-            </div>
-            <button onClick={() => navigate("/users/home")}>Back to Home Users</button>
-        </>
-    );
-}
+      setChats(prev => prev.filter(chat => chat.id !== chatId));
+
+      if (selectedChat?.id === chatId) {
+        setSelectedChat(null);
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", height: "100vh" }}>
+      <ChatList
+        chats={chats}
+        onSelectChat={setSelectedChat}
+        selectedChat={selectedChat}
+        onDeleteChat={handleDeleteChat}
+      />
+      <ChatWindow chat={selectedChat} />
+    </div>
+  );
+};
