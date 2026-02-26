@@ -48,6 +48,7 @@ export const LoginUser = () => {
 
       localStorage.setItem("token-user", data.token);
       localStorage.setItem("user", JSON.stringify(normalizedUser));
+      localStorage.setItem("role", "user")
 
       dispatch({
         type: "login-user",

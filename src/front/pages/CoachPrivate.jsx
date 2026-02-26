@@ -106,6 +106,7 @@ export default function CoachPrivate() {
     localStorage.removeItem("token-coach");
     localStorage.removeItem("coach");  
     localStorage.removeItem("coach_id"); 
+    localStorage.removeItem("role")
 
     dispatch({ type: "logout-coach" });
     navigate("/");

@@ -36,6 +36,7 @@ export const PrivateUser = () => {
             dispatch({ type: "logout-user" });
             localStorage.removeItem("token-user");
             localStorage.removeItem("user");
+            localStorage.removeItem("role")
             navigate("/users/login");
         }, 3000)
     };

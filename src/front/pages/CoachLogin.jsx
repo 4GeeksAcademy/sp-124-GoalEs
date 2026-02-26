@@ -34,6 +34,7 @@ const { dispatch, store } = useGlobalReducer();
       
       localStorage.setItem("token-coach", data.token);
       localStorage.setItem("coach", JSON.stringify(data.coach));
+      localStorage.setItem("role", "coach")
 
       dispatch({
         type: "login-coach", 

@@ -7,7 +7,7 @@ export const ChatPage = () => {
     const backendURL = import.meta.env.VITE_BACKEND_URL;
 
     const [chats, setChats] = useState([]);
-    const [selectedChatId, setSelectedChatId] = useState(null);
+    const [selectedChat, setSelectedChat] = useState(null);
     const token = localStorage.getItem("token-user") || localStorage.getItem("token-coach");
 
     useEffect(() => {
@@ -25,10 +25,10 @@ export const ChatPage = () => {
         <div style={{ display: "flex", height: "100vh" }}>
             <ChatList
                 chats={chats}
-                onSelectChat={setSelectedChatId}
-                selectedChatId={selectedChatId}
+                onSelectChat={setSelectedChat}
+                selectedChat={selectedChat}
             />
-            <ChatWindow chatId={selectedChatId} />
+            <ChatWindow chat={selectedChat} />
         </div>
     );
 }
