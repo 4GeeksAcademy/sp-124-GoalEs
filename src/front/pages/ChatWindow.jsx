@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import socket from "../socket";
 
 export default function ChatWindow({ chat }) {
 
@@ -33,6 +34,37 @@ export default function ChatWindow({ chat }) {
 
   }, [chat]);
 
+  useEffect(() => {
+    if (!chat) return;
+
+    socket.connect();
+
+    socket.emit("join_chat", { chat_id: chat.id });
+
+    socket.on("new_message", (message) => {
+      if (message.chat_id === chat.id) {
+        setMessages(prev => [...prev, message]);
+      }
+    });
+
+    return () => {
+      socket.off("new_message");
+    };
+  }, [chat]);
+
+  useEffect(() => {
+
+    socket.on("new_message", (message) => {
+      console.log("📩 MESSAGE RECEIVED VIA SOCKET:", message);
+      setMessages(prev => [...prev, message]);
+    });
+
+    return () => {
+      socket.off("new_message");
+    };
+
+  }, []);
+
   if (!chat) {
     return <div>Selecciona un chat</div>;
   }
@@ -45,6 +77,10 @@ export default function ChatWindow({ chat }) {
         ? chat.coach_id
         : chat.user_id;
 
+
+    console.log("role:", role);
+    console.log("chat:", chat);
+    console.log("secondaryId:", secondaryId);
     try {
       const res = await fetch(`${backendURL}/message/create/${role}`, {
         method: "POST",
@@ -61,10 +97,7 @@ export default function ChatWindow({ chat }) {
       if (!res.ok) throw new Error("Error sending message");
 
       const data = await res.json();
-      setMessages(prev => [...prev, data]);
       setNewMessage("");
-      console.log("message:", messages);
-      console.log("myId:", myId);
 
     } catch (error) {
       console.error(error);
@@ -74,7 +107,7 @@ export default function ChatWindow({ chat }) {
   return (
     <div>
       {messages.map(message => {
-       const isMine = message.sender_role === role;
+        const isMine = message.sender_role === role;
 
         return (
           <div
