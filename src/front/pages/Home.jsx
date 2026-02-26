@@ -135,7 +135,7 @@ export const Home = () => {
 
     </div>
 
-    {/* Chatbot mention */}
+   
     <div className="chatbot-mention">
       <div className="chatbot-mention-inner">
         <span className="chatbot-icon">💬</span>

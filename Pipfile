@@ -21,6 +21,8 @@ psycopg2-binary = "*"
 flask = "*"
 flask-jwt-extended = "*"
 stripe = "*"
+flask-socketio = "*"
+python-dateutil = "*"
 
 [requires]
 python_version = "3.13"

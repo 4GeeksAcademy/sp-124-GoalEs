@@ -8,15 +8,19 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag
+from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag, Appointment, Chat
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
 from sqlalchemy import select
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt, verify_jwt_in_request
-from datetime import timedelta
+from datetime import timedelta, timezone, datetime
 from functools import wraps
+from zoneinfo import ZoneInfo
+from dateutil import parser as dtparser
+from datetime import datetime, timezone
+from flask_socketio import SocketIO, join_room
 
 
 
@@ -26,11 +30,15 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
-#app.config["JWT_SECRET_KEY"] = "anything that is very difficult to read54321"
+# app.config["JWT_SECRET_KEY"] = "anything that is very difficult to read54321"
 app.url_map.strict_slashes = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
-CORS(app, resources={r"/*": {"origins": "*"}}, allow_headers=["Content-Type", "Authorization"])
+CORS(app, resources={r"/*": {"origins": "*"}},
+     allow_headers=["Content-Type", "Authorization"])
+
+# configurar socketio
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 app.url_map.strict_slashes = False
@@ -57,15 +65,15 @@ setup_commands(app)
 app.register_blueprint(api, url_prefix='/api')
 
 
-#SEGURIDAD CON JWT
-app.config["JWT_SECRET_KEY"] = "super-secret-key-change-this"
+# SEGURIDAD CON JWT
+app.config["JWT_SECRET_KEY"] = os.urandom(32)
 jwt = JWTManager(app)
 
-#Stripe
+# Stripe
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 
-#helper, because we don't repeat ourself and never forget the role
+# helper, because we don't repeat ourself and never forget the role
 def issue_token(identity: int, role: str):
     return create_access_token(
         identity=str(identity),
@@ -73,12 +81,13 @@ def issue_token(identity: int, role: str):
     )
 
 
-#helper, do you have a valid token? are you allowed?
+# helper, do you have a valid token? are you allowed?
 def current_role():
     try:
         return get_jwt().get("role")
     except Exception:
         return None
+
 
 def role_required(*allowed_roles):
     """
@@ -100,6 +109,7 @@ def role_required(*allowed_roles):
         return wrapper
     return decorator
 
+
 def owner_or_admin_required(owner_id: int):
     role = current_role()
     identity = get_jwt_identity()
@@ -115,6 +125,7 @@ def owner_or_admin_required(owner_id: int):
 
     return None
 
+
 def coach_owner_or_admin_required(course_coach_id: int):
     role = current_role()
     identity = get_jwt_identity()
@@ -129,6 +140,7 @@ def coach_owner_or_admin_required(course_coach_id: int):
         return jsonify({"msg": "Forbidden: not course owner"}), 403
 
     return None
+
 
 def course_owner_or_admin_required(course_coach_id: int):
     role = current_role()
@@ -147,6 +159,11 @@ def course_owner_or_admin_required(course_coach_id: int):
     return None
 
 
+# socketio
+@socketio.on("join_chat")
+def handle_join_chat(data):
+    chat_id = data.get("chat_id")
+    join_room(f"chat_{chat_id}")
 
 
 # Handle/serialize errors like a JSON object
@@ -176,7 +193,9 @@ def serve_any_other_file(path):
     response.cache_control.max_age = 0  # avoid cache memory
     return response
 
-#admin only
+# admin only
+
+
 @app.route('/users', methods=['GET'])
 @jwt_required()
 @role_required("admin")
@@ -194,7 +213,9 @@ def get_users():
 
     return jsonify(response_body), 200
 
-#admin and owner can see the user, but user can't see other user
+# admin and owner can see the user, but user can't see other user
+
+
 @app.route('/users/<int:user_id>', methods=['GET'])
 @jwt_required()
 @role_required("user", "admin")
@@ -212,7 +233,9 @@ def get_user(user_id):
 # ===========================
 # now Post
 
-#public
+# public
+
+
 @app.route('/users', methods=['POST'])
 def created_user():
     body = request.get_json()
@@ -241,7 +264,7 @@ def created_user():
     db.session.add(new_user)
     db.session.commit()
 
-    access_token = issue_token(new_user.id, "user") #changed
+    access_token = issue_token(new_user.id, "user")  # changed
 
     response_body = {
         "msg": "User created successfully",
@@ -251,7 +274,9 @@ def created_user():
 
     return jsonify(response_body), 201
 
-#public
+# public
+
+
 @app.route('/login', methods=['POST'])
 def login():
     body = request.get_json()
@@ -269,7 +294,7 @@ def login():
     if not user or user.password != password:
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = issue_token(user.id, "user") #changed
+    access_token = issue_token(user.id, "user")  # changed
 
     return jsonify({
         "msg": "Login successful",
@@ -277,7 +302,9 @@ def login():
         "user": user.serialize()
     }), 200
 
-#public
+# public
+
+
 @app.route('/signup', methods=['POST'])
 def signup():
     body = request.get_json()
@@ -311,7 +338,7 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
 
-    access_token = issue_token(new_user.id, "user") #changed
+    access_token = issue_token(new_user.id, "user")  # changed
 
     return jsonify({
         "msg": "Signup successful",
@@ -321,18 +348,20 @@ def signup():
 
 # follow -CRUD, now it's time to do PUT
 
-#owner or admin can update, but user can't update other user 
+# owner or admin can update, but user can't update other user
+
+
 @app.route('/users/<int:user_id>', methods=['PUT'])
 @jwt_required()
 @role_required("user", "admin")
-def user_update(user_id): #changed because it's a function not a data base
-    forbidden = owner_or_admin_required(user_id) #new
+def user_update(user_id):  # changed because it's a function not a data base
+    forbidden = owner_or_admin_required(user_id)  # new
     if forbidden:
         return forbidden
     user_update = db.session.execute(select(User).where(
         User.id == user_id)).scalar_one_or_none()
 
-    if user_update is None: #changed
+    if user_update is None:  # changed
         return jsonify({"error": "User not found"}), 404
 
     body = request.get_json()
@@ -354,13 +383,13 @@ def user_update(user_id): #changed because it's a function not a data base
 
     if "is_active" in body:
         user_update.is_active = body["is_active"]
-    
+
     if "age" in body:
         user_update.age = body["age"]
 
     if "gender" in body:
         user_update.gender = body["gender"]
-        
+
     if "profile_picture" in body:
         user_update.profile_picture = body["profile_picture"]
 
@@ -370,12 +399,14 @@ def user_update(user_id): #changed because it's a function not a data base
 
 # The last one -  CRUD - DELETE
 
-#owner or admin can delete, but user can't delete other user
+# owner or admin can delete, but user can't delete other user
+
+
 @app.route('/users/<int:user_id>', methods=['DELETE'])
 @jwt_required()
 @role_required("user", "admin")
-def user_delete(user_id): #changed because it's a function not a data base
-    forbidden = owner_or_admin_required(user_id) #new
+def user_delete(user_id):  # changed because it's a function not a data base
+    forbidden = owner_or_admin_required(user_id)  # new
     if forbidden:
         return forbidden
     deleted = db.session.execute(select(User).where(
@@ -388,6 +419,7 @@ def user_delete(user_id): #changed because it's a function not a data base
     db.session.commit()
 
     return jsonify({"message": "User deleted successfully"}), 200
+
 
 @app.route("/create-payment-intent", methods=["POST"])
 @jwt_required()
@@ -405,7 +437,6 @@ def create_payment_intent():
 
     if amount is None or user_id is None or course_id is None:
         return jsonify({"error": "Missing required fields"}), 400
-        
 
     try:
         intent = stripe.PaymentIntent.create(
@@ -424,7 +455,9 @@ def create_payment_intent():
     except stripe.error.StripeError as e:
         return jsonify({"error": str(e)}), 400
 
-#public
+# public
+
+
 @app.route('/coach', methods=['GET'])
 def get_coaches():
     all_coaches = Coach.query.all()
@@ -443,7 +476,9 @@ def get_coaches():
 
     return jsonify(response_body), 200
 
-#public
+# public
+
+
 @app.route('/coach/<int:id>', methods=['GET'])
 def get_coach(id):
     coach = Coach.query.get(id)
@@ -458,7 +493,9 @@ def get_coach(id):
 
     return jsonify(response_body), 200
 
-#public
+# public
+
+
 @app.route('/coach', methods=['POST'])
 def post_coach():
     body = request.get_json()
@@ -475,17 +512,17 @@ def post_coach():
         return jsonify({"error": "name, last_name, email and password are required"}), 400
 
     new_coach = Coach(
-        name = name,
-        last_name = last_name,
-        email = email,
-        password =password,
-        is_active = True
+        name=name,
+        last_name=last_name,
+        email=email,
+        password=password,
+        is_active=True
     )
-    
+
     db.session.add(new_coach)
     db.session.commit()
 
-    access_token = create_access_token(identity=new_coach.id)
+    access_token = issue_token(new_coach.id, "coach")
 
     response_body = {
         "msg": "Coach created successfully",
@@ -503,19 +540,19 @@ def coach_login():
 
     if not email or not password:
         return jsonify({"error": "Missing email or password"}), 400
-    
+
     coach = db.session.execute(
         select(Coach).where(Coach.email == email)
     ).scalar_one_or_none()
 
     if coach is None:
         return jsonify({"error": "Wrong email or password"}), 401
-    
+
     if coach.password != password:
         return jsonify({"error": "Wrong email or password"}), 401
-    
-    access_token = issue_token(coach.id, "coach") #changed
-    
+
+    access_token = issue_token(coach.id, "coach")  # changed
+
     return jsonify({
         "msg": "Login successful",
         "token": access_token,
@@ -523,7 +560,7 @@ def coach_login():
     }), 200
 
 
-#private, only for coach and admin
+# private, only for coach and admin
 @app.route("/coach/private", methods=["GET"])
 @jwt_required()
 @role_required("coach", "admin")
@@ -538,13 +575,14 @@ def coach_private():
             return jsonify({"error": "coach id is required"}), 400
 
     coach = db.session.execute(
-    select(Coach).where(Coach.id == coach_id)
+        select(Coach).where(Coach.id == coach_id)
     ).scalar_one_or_none()
 
     if coach is None:
-        return jsonify({"msg": "Coach not found"}), 404 #added 
+        return jsonify({"msg": "Coach not found"}), 404  # added
 
     return jsonify({"coach": coach.serialize()}), 200
+
 
 @app.route("/coach/<int:coach_id>/courses-students", methods=["GET"])
 def coach_students(coach_id):
@@ -553,7 +591,7 @@ def coach_students(coach_id):
     result = []
     for course in courses:
         enrolled_count = User_course.query.filter_by(
-            course_id = course.id,
+            course_id=course.id,
             active=True
         ).count()
 
@@ -563,12 +601,15 @@ def coach_students(coach_id):
 
     return jsonify(result), 200
 
+
 @app.route('/coach/<int:coach_id>/courses', methods=['GET'])
 def get_coach_courses(coach_id):
     courses = Course.query.filter_by(coach_id=coach_id).all()
-    return jsonify([course.serialize() for course in courses]), 200    
+    return jsonify([course.serialize() for course in courses]), 200
 
-#private, only for coach and admin, but coach can only update himself
+# private, only for coach and admin, but coach can only update himself
+
+
 @app.route('/coach/<int:id>', methods=['PUT'])
 @jwt_required()
 @role_required("coach", "admin")
@@ -608,9 +649,11 @@ def put_coach_put(id):
 
     return jsonify(response_body), 200
 
+
 @app.route('/coach/<int:coach_id>', methods=['PUT'])
 def put_coach(coach_id):
-    coach_update = db.session.execute(select(Coach).where(Coach.id == coach_id)).scalar_one_or_none()
+    coach_update = db.session.execute(select(Coach).where(
+        Coach.id == coach_id)).scalar_one_or_none()
 
     if coach_update is None:
         return jsonify({"error": "Coach not found"}), 404
@@ -619,40 +662,57 @@ def put_coach(coach_id):
     if not body:
         return jsonify({"error": "No data provided to update"}), 400
     
-    if "name" in body:
+    name = body.get("name")
+    last_name = body.get("last_name")
+    email = body.get("email")
+    password = body.get("password")
+    is_active = body.get("is_active")
+    gender = body.get("gender")
+    country = body.get("country")
+    province = body.get("province")
+    city = body.get("city")
+    latitude = body.get("latitude")
+    longitude = body.get("longitude")
+    phone = body.get("phone")
+    birthday = body.get("birthday")
+    profile_image = body.get("profile_image")
+    
+    if len(name)> 0:
         coach_update.name = body["name"]
-    if "last_name" in body:
+    if len(last_name)> 0:
         coach_update.last_name = body["last_name"]
-    if "email" in body:
+    if len(email)> 0:
         coach_update.email = body["email"]
-    if "password" in body:
+    if len(password)> 0:
         coach_update.password = body["password"]
-    if "is_active" in body:
+    if len(is_active) > 0:
         coach_update.is_active = body["is_active"]
-    if "gender" in body:
+    if len(gender)> 0:
         coach_update.gender = body["gender"]
-    if "country" in body:
+    if len(country)> 0:
         coach_update.country = body["country"]
-    if "province" in body:
+    if len(province) > 0:
         coach_update.province = body["province"]
-    if "city" in body:
+    if len(city) > 0:
         coach_update.city = body["city"]
-    if "latitude" in body:
+    if len(latitude) > 0:
         coach_update.latitude = body["latitude"]
-    if "longitude" in body:
+    if len(longitude) > 0:
         coach_update.longitude = body["longitude"]
-    if "phone" in body:
+    if len(phone) > 0:
         coach_update.phone = body["phone"]
-    if "birthday" in body:
+    if (birthday) > 0:
         coach_update.birthday = body["birthday"]
-    if "profile_image" in body:
+    if len(profile_image) > 0:
         coach_update.profile_image = body["profile_image"]    
 
     db.session.commit()
 
     return jsonify(coach_update.serialize()), 200
 
-#private, only for coach and admin, but coach can only delete himself
+# private, only for coach and admin, but coach can only delete himself
+
+
 @app.route('/coach/<int:id>', methods=['DELETE'])
 @jwt_required()
 @role_required("coach", "admin")
@@ -664,13 +724,12 @@ def delete_coach(id):
 
     if coach is None:
         return jsonify({"error": "Coach not found"}), 404
-    
+
     has_courses = db.session.execute(
         select(Course.id).where(Course.coach_id == id)
     ).first()
     if has_courses:
         return jsonify({"error": "Cannot delete coach: coach has courses"}), 409
-
 
     db.session.delete(coach)
     db.session.commit()
@@ -678,14 +737,14 @@ def delete_coach(id):
     return jsonify({"msg": "Coach deleted"}), 200
 
 
-#public
+# public
 @app.route("/course", methods=["GET"])
 def get_courses():
     courses = db.session.execute(select(Course)).scalars().all()
     return jsonify(courses=[c.serialize() for c in courses]), 200
 
 
-#public
+# public
 @app.route("/course/<int:id>", methods=["GET"])
 def get_course(id):
     course = db.session.execute(
@@ -707,7 +766,7 @@ def get_enrolled_students(course_id):
         course_id=course_id,
         active=True
     ).all()
-    
+
     students = []
     for enrollment in enrollments:
         user = User.query.get(enrollment.user_id)
@@ -718,7 +777,7 @@ def get_enrolled_students(course_id):
                 "surname": user.surname,
                 "email": user.email
             })
-    
+
     return jsonify({
         "course_title": course.title,
         "students": students
@@ -742,7 +801,7 @@ def create_course():
     tag_ids = body.get("tag_ids", []) or []
 
     if (not body.get("title") or not body.get("description")
-        or body.get("cost") is None or not coach_id or not category_id):
+            or body.get("cost") is None or not coach_id or not category_id):
         return jsonify({"error": "title, description, cost, coach_id, category_id are required"}), 400
 
     new_course = Course(
@@ -767,12 +826,13 @@ def create_course():
     return jsonify(course=new_course.serialize()), 201
 
 
-#private, only for coach and admin, but coach can only update his courses
+# private, only for coach and admin, but coach can only update his courses
 @app.route("/course/<int:id>", methods=["PUT"])
 @jwt_required()
 @role_required("coach", "admin")
 def update_course(id):
-    course = db.session.execute(select(Course).where(Course.id == id)).scalar_one_or_none()
+    course = db.session.execute(select(Course).where(
+        Course.id == id)).scalar_one_or_none()
     if not course:
         return jsonify({"error": "Course not found"}), 404
 
@@ -803,7 +863,9 @@ def update_course(id):
     db.session.commit()
     return jsonify(course=course.serialize()), 200
 
-#private, only for coach and admin, but coach can only delete his courses
+# private, only for coach and admin, but coach can only delete his courses
+
+
 @app.route("/course/<int:id>", methods=["DELETE"])
 @jwt_required()
 @role_required("coach", "admin")
@@ -814,18 +876,21 @@ def delete_course(id):
 
     if not course:
         return jsonify({"error": "Course not found"}), 404
-    
+
     forbidden = course_owner_or_admin_required(course.coach_id)
     if forbidden:
         return forbidden
-    
+
     try:
         # added by arash: delete enrollments/links that reference this course
-        db.session.query(User_course).filter(User_course.course_id == id).delete(synchronize_session=False)
+        db.session.query(User_course).filter(
+            User_course.course_id == id).delete(synchronize_session=False)
 
         # added by arash: delete favorites that reference this course
-        db.session.query(User_Course_Favorite).filter(User_Course_Favorite.course_favorite_id == id).delete(synchronize_session=False)
-        db.session.execute( course_tag.delete().where(course_tag.c.course_id == id) )
+        db.session.query(User_Course_Favorite).filter(
+            User_Course_Favorite.course_favorite_id == id).delete(synchronize_session=False)
+        db.session.execute(course_tag.delete().where(
+            course_tag.c.course_id == id))
 
         db.session.delete(course)
         db.session.commit()
@@ -833,29 +898,32 @@ def delete_course(id):
 
     except IntegrityError as e:
         db.session.rollback()  # added by arash
-        return jsonify({"error": "Integrity error", "details": str(e)}), 500  # added by arash
-        
+        # added by arash
+        return jsonify({"error": "Integrity error", "details": str(e)}), 500
+
 
 @app.route('/coaches/profile', methods=["GET"])
 @jwt_required()
 def coach_profile():
-  coach_id = int(get_jwt_identity())
-  coach = Coach.query.get(coach_id)
+    coach_id = int(get_jwt_identity())
+    coach = Coach.query.get(coach_id)
 
-  return jsonify({"coach": coach.serialize()}), 200
+    return jsonify({"coach": coach.serialize()}), 200
+
 
 @app.route('/coach/<int:id>/info', methods=['PUT'])
 def coach_info(id):
     claims = get_jwt()
-    if claims.get.role("role") != "coach":
+    if claims.get("role") != "coach":
         return jsonify({"msg": "Only coach allowed"}), 403
     coach_id = int(get_jwt_identity())
 
-    coach = db.session.execute(select(Coach).where(Coach.id == id)).scalar_one_or_none()
+    coach = db.session.execute(select(Coach).where(
+        Coach.id == id)).scalar_one_or_none()
 
     if not coach:
         return jsonify({"error": "Coach not found"}), 400
-    
+
     body = request.get_json()
     coach.birthday = body["birthday"]
     coach.city = body["city"]
@@ -868,77 +936,241 @@ def coach_info(id):
     return jsonify(coach=coach.serialize()), 200
 
 
-
-
-#public
-@app.route('/messages', methods=['GET'])
-def get_messages():
-    all_messages = db.session.execute(select(Message)).scalars().all()
-    result = [m.serialize() for m in all_messages]
+# public
+@app.route('/chat', methods=['GET'])
+def get_chat():
+    all_chat = db.session.execute(select(Chat)).scalars().all()
+    result = [chat.serialize() for chat in all_chat]
 
     return jsonify({
-        "msg": "We get messages",
-        "messages": result
+        "msg": "We get chat",
+        "chat": result
     }), 200
 
-#public
-@app.route('/messages/<int:message_id>', methods=['GET'])
-def get_message(message_id):
-    message = db.session.execute(
-        select(Message).where(Message.id == message_id)
+# public
+
+
+@app.route('/chat/<int:chat_id>', methods=['GET'])
+def get_message(chat_id):
+    chat = db.session.execute(
+        select(Chat).where(Chat.id == chat_id)
     ).scalar_one_or_none()
 
-    if message is None:
-        return jsonify({"msg": "Message not found"}), 404
+    if chat is None:
+        return jsonify({"msg": "Chat not found"}), 404
 
-    return jsonify(message.serialize()), 200
+    return jsonify(chat.serialize()), 200
 
-#public
-@app.route('/messages', methods=['POST'])
-def create_message():
+# public
+
+
+@app.route('/chat', methods=['POST'])
+def create_chat():
     body = request.get_json()
 
-    new_message = Message(
-        message=body["message"],
-        userMessage_id=body["userMessage_id"],
-        coachMessage_id=body["coachMessage_id"]
+    new_chat = Chat(
+        userChat_id=body["userChat_id"],
+        coachChat_id=body["coachChat_id"]
     )
 
-    db.session.add(new_message)
+    db.session.add(new_chat)
     db.session.commit()
 
-    return jsonify(new_message.serialize()), 201
+    return jsonify(new_chat.serialize()), 201
 
-#public
-@app.route('/messages/<int:message_id>', methods=['PUT'])
-def update_message(message_id):
-    message = db.session.execute(
-        select(Message).where(Message.id == message_id)
+# public
+
+
+@app.route('/chat/<int:chat_id>', methods=['PUT'])
+def update_chat(chat_id):
+    chat = db.session.execute(
+        select(Chat).where(Chat.id == chat_id)
     ).scalar_one_or_none()
 
-    if message is None:
-        return jsonify({"msg": "Message not found"}), 404
+    if chat is None:
+        return jsonify({"msg": "Chat not found"}), 404
 
     body = request.get_json()
-    message.message = body.get("message", message.message)
+    chat.chat = body.get("chat", chat.chat)
 
     db.session.commit()
-    return jsonify(message.serialize()), 200
+    return jsonify(chat.serialize()), 200
 
-#public
-@app.route('/messages/<int:message_id>', methods=['DELETE'])
-def delete_message(message_id):
-    message = db.session.execute(
-        select(Message).where(Message.id == message_id)
+# public
+
+
+@app.route('/chat/<int:chat_id>', methods=['DELETE'])
+def delete_chat(chat_id):
+    chat = db.session.execute(
+        select(Chat).where(Chat.id == chat_id)
     ).scalar_one_or_none()
 
-    if message is None:
-        return jsonify({"msg": "Message not found"}), 404
+    if chat is None:
+        return jsonify({"msg": "Chat not found"}), 404
 
-    db.session.delete(message)
+    db.session.delete(chat)
     db.session.commit()
 
-    return jsonify({"msg": "Message deleted"}), 200
+    return jsonify({"msg": "Chat deleted"}), 200
+
+
+@app.route('/chat/create/<string:role>', methods=['POST'])
+@jwt_required()
+def create_chat_by_role(role):
+
+    main_id = int(get_jwt_identity())
+    secondary_id = request.get_json().get("secondary_id")
+
+    if not secondary_id:
+        return jsonify({"error": "secondary_id required"}), 400
+
+    secondary_id = int(secondary_id)
+
+    if role == "user":
+        # crear chat si eres user
+        user_id = main_id
+        coach_id = secondary_id
+    elif role == "coach":
+        # crear chat si eres coach
+        coach_id = main_id
+        user_id = secondary_id
+    else:
+        return jsonify({"error": "role must be user or coach"}), 400
+
+    # evitar duplicados
+    existing_chat = Chat.query.filter_by(
+        user_id=user_id,
+        coach_id=coach_id
+    ).first()
+
+    if existing_chat:
+        return jsonify(existing_chat.serialize()), 200
+
+    new_chat = Chat(
+        user_id=user_id,
+        coach_id=coach_id
+    )
+
+    db.session.add(new_chat)
+    db.session.commit()
+
+    return jsonify(new_chat.serialize()), 201
+
+
+@app.route('/message/create/<string:role>', methods=['POST'])
+@jwt_required()
+def create_message_by_role(role):
+
+    try:
+        main_id = int(get_jwt_identity())
+        data = request.get_json()
+
+        secondary_id = data.get("secondary_id")
+        text = data.get("text")
+
+        if not secondary_id or not text:
+            return jsonify({"error": "secondary_id and text required"}), 400
+
+        secondary_id = int(secondary_id)
+
+        if role == "user":
+            user_id = main_id
+            coach_id = secondary_id
+        elif role == "coach":
+            coach_id = main_id
+            user_id = secondary_id
+        else:
+            return jsonify({"error": "role must be user or coach"}), 400
+
+        chat = Chat.query.filter_by(
+            user_id=user_id,
+            coach_id=coach_id
+        ).first()
+
+        if not chat:
+            chat = Chat(
+                user_id=user_id,
+                coach_id=coach_id
+            )
+            db.session.add(chat)
+            db.session.flush()
+
+        new_message = Message(
+            chat_id=chat.id,
+            sender_id=main_id,
+            sender_role=role,
+            text=text
+        )
+
+        db.session.add(new_message)
+        chat.last_updated = datetime.now(timezone.utc)
+
+        db.session.commit()
+
+        socketio.emit(
+            "new_message",
+            new_message.serialize(),
+            room=f"chat_{chat.id}"
+        )
+
+        return jsonify(new_message.serialize()), 201
+
+    except Exception as error:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(error)}), 500
+
+
+@app.route('/chats', methods=['GET'])
+@jwt_required()
+def get_my_chats():
+
+    main_id = get_jwt_identity()
+
+    chats = Chat.query.filter(
+        (Chat.user_id == main_id) | (Chat.coach_id == main_id)
+    ).order_by(Chat.last_updated.desc()).all()
+
+    return jsonify([chat.serialize() for chat in chats]), 200
+
+
+@app.route('/chats/<int:chat_id>/messages', methods=['GET'])
+@jwt_required()
+def get_chat_messages(chat_id):
+
+    main_id = int(get_jwt_identity())
+
+    chat = Chat.query.get(chat_id)
+
+    if not chat:
+        return jsonify({"error": "Chat not found"}), 404
+
+    if chat.user_id != main_id and chat.coach_id != main_id:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    messages = Message.query.filter_by(chat_id=chat_id)\
+                            .order_by(Message.id.asc())\
+                            .all()
+
+    return jsonify([m.serialize() for m in messages]), 200
+
+@app.route('/chats/<int:chat_id>', methods=['DELETE'])
+@jwt_required()
+def delete_chats(chat_id):
+
+    main_id = int(get_jwt_identity())
+    chat = Chat.query.get(chat_id)
+
+    if not chat:
+        return jsonify({"error": "Chat not found"}), 404
+
+    if chat.user_id != main_id and chat.coach_id != main_id:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    db.session.delete(chat)
+    db.session.commit()
+
+    return jsonify({"msg": "Chat deleted"}), 200
 
 
 @app.route('/user_course', methods=['GET'])
@@ -1047,6 +1279,7 @@ def delete_user_course(id):
 
     return jsonify({"msg": "User-course deleted"}), 200
 
+
 @app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["POST"])
 @jwt_required()
 @role_required("user", "admin")
@@ -1066,7 +1299,7 @@ def add_favorite(user_id, course_id):
     fav = User_Course_Favorite(
         user_id=user_id,
         course_favorite_id=course_id
-    )   
+    )
 
     db.session.add(fav)
     db.session.commit()
@@ -1116,6 +1349,7 @@ def remove_favorite(user_id, course_id):
 
     return jsonify({"msg": "Favorite removed"}), 200
 
+
 @app.route("/users/<int:user_id>/favorites/<int:course_id>", methods=["PUT"])
 @jwt_required()
 @role_required("user", "admin")
@@ -1162,13 +1396,14 @@ def login_admin():
     if not admin or admin.password != password:
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = issue_token(admin.id, "admin") #changed
+    access_token = issue_token(admin.id, "admin")  # changed
 
     return jsonify({
         "msg": "Admin login successful",
         "token": access_token,
         "admin": admin.serialize()
     }), 200
+
 
 @app.route("/admin/signup", methods=["POST"])
 def admin_signup():
@@ -1184,7 +1419,8 @@ def admin_signup():
     if not name or not last_name or not email or not password:
         return jsonify({"error": "All fields are required"}), 400
 
-    existing = db.session.execute(select(Admin).where(Admin.email == email)).scalar_one_or_none()
+    existing = db.session.execute(select(Admin).where(
+        Admin.email == email)).scalar_one_or_none()
     if existing:
         return jsonify({"error": "Admin already exists"}), 409
 
@@ -1198,7 +1434,6 @@ def admin_signup():
     db.session.add(new_admin)
     db.session.commit()
 
-
     return jsonify({
         "msg": "Signup admin successful",
         "admin": new_admin.serialize()
@@ -1206,9 +1441,9 @@ def admin_signup():
     }), 201
 
 
-#CATEGORY
+# CATEGORY
 
-#Public
+# Public
 @app.route("/categories", methods=["GET"])
 def get_categories():
     categories = db.session.execute(
@@ -1217,7 +1452,9 @@ def get_categories():
 
     return jsonify(categories=[c.serialize() for c in categories]), 200
 
-#admin only
+# admin only
+
+
 @app.route("/categories", methods=["POST"])
 @jwt_required()
 @role_required("admin")
@@ -1247,12 +1484,15 @@ def create_category():
 
     return jsonify(category=new_cat.serialize()), 201
 
-#admin only
+# admin only
+
+
 @app.route("/categories/<int:cat_id>", methods=["PUT"])
 @jwt_required()
 @role_required("admin")
 def update_category(cat_id):
-    category = db.session.execute(select(Category).where(Category.id == cat_id)).scalar_one_or_none()
+    category = db.session.execute(select(Category).where(
+        Category.id == cat_id)).scalar_one_or_none()
     if not category:
         return jsonify({"error": "Category not found"}), 404
 
@@ -1263,7 +1503,8 @@ def update_category(cat_id):
     if "name" in body:
         # prevent duplicates
         exists = db.session.execute(
-            select(Category).where(Category.name == body["name"], Category.id != cat_id)
+            select(Category).where(Category.name ==
+                                   body["name"], Category.id != cat_id)
         ).scalar_one_or_none()
         if exists:
             return jsonify({"error": "Category name already used"}), 409
@@ -1278,12 +1519,15 @@ def update_category(cat_id):
     db.session.commit()
     return jsonify(category=category.serialize()), 200
 
-#admin only
+# admin only
+
+
 @app.route("/categories/<int:cat_id>", methods=["DELETE"])
 @jwt_required()
 @role_required("admin")
 def delete_category(cat_id):
-    category = db.session.execute(select(Category).where(Category.id == cat_id)).scalar_one_or_none()
+    category = db.session.execute(select(Category).where(
+        Category.id == cat_id)).scalar_one_or_none()
     if not category:
         return jsonify({"error": "Category not found"}), 404
 
@@ -1300,7 +1544,7 @@ def delete_category(cat_id):
     return jsonify({"msg": "Category deleted"}), 200
 
 
-#public
+# public
 @app.route("/tags", methods=["GET"])
 def get_tags():
     tags = db.session.execute(
@@ -1310,7 +1554,7 @@ def get_tags():
     return jsonify(tags=[t.serialize() for t in tags]), 200
 
 
-#admin only
+# admin only
 @app.route("/tags", methods=["POST"])
 @jwt_required()
 @role_required("admin")
@@ -1343,7 +1587,7 @@ def create_tag():
     return jsonify(tag=new_tag.serialize()), 201
 
 
-#admin only
+# admin only
 @app.route("/tags/<int:tag_id>", methods=["PUT"])
 @jwt_required()
 @role_required("admin")
@@ -1382,7 +1626,7 @@ def update_tag(tag_id):
     return jsonify(tag=tag.serialize()), 200
 
 
-#admin only
+# admin only
 @app.route("/tags/<int:tag_id>", methods=["DELETE"])
 @jwt_required()
 @role_required("admin")
@@ -1404,12 +1648,175 @@ def delete_tag(tag_id):
     return jsonify({"msg": "Tag deleted"}), 200
 
 
+#APPOINTMENTS
+#private, only for user and admin, but user can only create for himself
+@app.route("/appointments", methods=["POST"])
+@jwt_required()
+@role_required("user", "admin")
+def create_appointment():
+    role = current_role()
+
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    #  user_id logic
+    if role == "user":
+        user_id = int(get_jwt_identity())
+    else:  # admin
+        user_id = body.get("user_id")
+        if not user_id:
+            return jsonify({"error": "user_id is required for admin"}), 400
+        user_id = int(user_id)
+
+    coach_id = body.get("coach_id")
+    starts_at_raw = body.get("starts_at")
+    note = body.get("note")
+
+    if not coach_id or not starts_at_raw:
+        return jsonify({"error": "coach_id and starts_at are required"}), 400
+
+    #  validate user exists (recommended minimal)
+    user = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    coach = db.session.execute(select(Coach).where(Coach.id == int(coach_id))).scalar_one_or_none()
+    if not coach:
+        return jsonify({"error": "Coach not found"}), 404
+
+    # parse starts_at
+    try:
+        dt = dtparser.isoparse(starts_at_raw)
+    except Exception:
+        return jsonify({"error": "Invalid starts_at format. Use ISO8601"}), 400
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=ZoneInfo("Europe/Madrid"))
+
+    starts_at_utc = dt.astimezone(timezone.utc)
+    now_utc = datetime.now(timezone.utc)
+
+    if starts_at_utc <= now_utc:
+        return jsonify({"error": "starts_at must be in the future"}), 400
+
+    appt = Appointment(
+        user_id=user_id,
+        coach_id=int(coach_id),
+        starts_at=starts_at_utc,
+        status="pending",
+        note=note
+    )
+
+    db.session.add(appt)
+    db.session.commit()
+
+    return jsonify(appointment=appt.serialize()), 201
+
+#user can see only his appointments, admin can see all but should pass user_id as query param
+@app.route("/appointments/my", methods=["GET"])
+@jwt_required()
+@role_required("user","admin")
+def get_my_appointments():
+    role = current_role()
+
+    q = select(Appointment).order_by(Appointment.starts_at.desc())
+
+    if role == "user":
+        user_id = int(get_jwt_identity())
+        q = q.where(Appointment.user_id == user_id)
+
+    else:  # admin
+        user_id = request.args.get("user_id", type=int)
+        if user_id:
+            q = q.where(Appointment.user_id == user_id)
+        # else: no filter => all appointments
+
+    appts = db.session.execute(q).scalars().all()
+
+    return jsonify(appointments=[a.serialize() for a in appts]), 200
 
 
+#coach can see only his appointments, admin can see all but should pass coach_id as query param
+@app.route("/coach/appointments/my", methods=["GET"])
+@jwt_required()
+@role_required("coach", "admin")
+def get_my_coach_appointments():
+    role = current_role()
 
+    q = select(Appointment).order_by(Appointment.starts_at.desc())
+
+    if role == "coach":
+        coach_id = int(get_jwt_identity())
+        q = q.where(Appointment.coach_id == coach_id)
+
+    else:  # admin
+        coach_id = request.args.get("coach_id", type=int)
+        if coach_id:
+            q = q.where(Appointment.coach_id == coach_id)
+        # else: all appointments
+
+    appts = db.session.execute(q).scalars().all()
+    return jsonify(appointments=[a.serialize() for a in appts]), 200
+
+
+#admin can update status of any appointment, coach can update only his appointments
+@app.route("/coach/appointments/<int:appt_id>", methods=["PUT"])
+@jwt_required()
+@role_required("coach", "admin")
+def coach_update_appointment(appt_id):
+    role = current_role()
+    identity = int(get_jwt_identity())
+
+    appt = db.session.execute(select(Appointment).where(Appointment.id == appt_id)).scalar_one_or_none()
+    if not appt:
+        return jsonify({"error": "Appointment not found"}), 404
+
+    if role == "coach" and int(appt.coach_id) != identity:
+        return jsonify({"error": "Forbidden: not your appointment"}), 403
+
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    status = body.get("status")
+    if status not in ["approved", "rejected", "canceled"]:
+        return jsonify({"error": "status must be one of: approved, rejected, canceled"}), 400
+
+    appt.status = status
+    db.session.commit()
+
+    return jsonify(appointment=appt.serialize()), 200
+
+
+#user can cancel only his appointments and only if coach hasn't approved/rejected yet
+@app.route("/appointments/<int:appt_id>", methods=["PUT"])
+@jwt_required()
+@role_required("user", "admin")
+def user_cancel_appointment(appt_id):
+    role = current_role()
+    identity = int(get_jwt_identity())
+
+    appt = db.session.execute(select(Appointment).where(Appointment.id == appt_id)).scalar_one_or_none()
+    if not appt:
+        return jsonify({"error": "Appointment not found"}), 404
+
+    if role == "user" and int(appt.user_id) != identity:
+        return jsonify({"error": "Forbidden: not your appointment"}), 403
+
+    body = request.get_json() or {}
+    action = body.get("action")
+
+    if action != "cancel":
+        return jsonify({"error": "Use action: cancel"}), 400
+
+    appt.status = "canceled"
+    db.session.commit()
+
+    return jsonify(appointment=appt.serialize()), 200
 
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    socketio.run(app, host="0.0.0.0", port=3001, debug=True)

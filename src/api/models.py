@@ -2,17 +2,18 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from typing import List
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship
-from datetime import date
+from datetime import date, datetime, timezone
 
 
 db = SQLAlchemy()
 
 course_tag = db.Table(
     "course_tag",
-    db.Column("course_id", db.Integer, db.ForeignKey("course.id"), primary_key=True),
+    db.Column("course_id", db.Integer, db.ForeignKey(
+        "course.id"), primary_key=True),
     db.Column("tag_id", db.Integer, db.ForeignKey("tag.id"), primary_key=True),
 )
 
@@ -26,20 +27,21 @@ class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     surname: Mapped[str] = mapped_column(String(120), nullable=False)
-    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     age: Mapped[int] = mapped_column(Integer, nullable=True)
     gender: Mapped[str] = mapped_column(String(50), nullable=True)
     profile_picture = db.Column(db.String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-    #relationships
+    # relationships
     favorites: Mapped[List["User_Course_Favorite"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan"
     )
 
-    messages: Mapped[List["Message"]] = relationship(
+    chats: Mapped[List["Chat"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan"
     )
@@ -48,6 +50,8 @@ class User(db.Model):
         back_populates="user",
         cascade="all, delete-orphan"
     )
+
+    appointments: Mapped[List["Appointment"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 
     def serialize(self):
@@ -60,6 +64,7 @@ class User(db.Model):
             "age": self.age,
             "profile_picture": self.profile_picture
         }
+
     def __str__(self):
         return f"{self.name} {self.surname}"
 
@@ -76,18 +81,20 @@ class Course(db.Model):
     cost: Mapped[int] = mapped_column(Integer, nullable=False)
     image_url = db.Column(db.String(500), nullable=True)
 
-    #relationship
-    favorited_course: Mapped[List["User_Course_Favorite"]] = relationship(back_populates="course", cascade="all, delete-orphan")
-    user_course: Mapped[List["User_course"]] = relationship(back_populates="course")
+    # relationship
+    favorited_course: Mapped[List["User_Course_Favorite"]] = relationship(
+        back_populates="course", cascade="all, delete-orphan")
+    user_course: Mapped[List["User_course"]
+                        ] = relationship(back_populates="course")
     coach: Mapped["Coach"] = relationship(back_populates="courses")
     category: Mapped["Category"] = relationship(back_populates="courses")
-    tags: Mapped[List["Tag"]] = relationship(secondary=course_tag, back_populates="courses")
+    tags: Mapped[List["Tag"]] = relationship(
+        secondary=course_tag, back_populates="courses")
 
-
-    #foreign key
+    # foreign key
     coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"))
-    category_id: Mapped[int] = mapped_column(ForeignKey("category.id"), nullable= False)
-
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("category.id"), nullable=False)
 
     def serialize(self):
         return {
@@ -104,18 +111,18 @@ class Course(db.Model):
         }
 
 
-#CATEGORY
+# CATEGORY
 class Category(db.Model):
-    __tablename__="category"
+    __tablename__ = "category"
 
-    id: Mapped[int]= mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(120), unique=True, nullable= False)
-    description: Mapped[str] = mapped_column(String(300), nullable= True)
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable= False, default=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    description: Mapped[str] = mapped_column(String(300), nullable=True)
+    is_active: Mapped[bool] = mapped_column(
+        Boolean(), nullable=False, default=True)
 
-    #relatioship
+    # relatioship
     courses: Mapped[List["Course"]] = relationship(back_populates="category")
-
 
     def serialize(self):
         return {
@@ -124,18 +131,20 @@ class Category(db.Model):
             "description": self.description,
             "is_active": self.is_active
         }
-    
 
-#TAGS
+
+# TAGS
 class Tag(db.Model):
     __tablename__ = "tag"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     description: Mapped[str] = mapped_column(String(300), nullable=True)
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
+    is_active: Mapped[bool] = mapped_column(
+        Boolean(), nullable=False, default=True)
 
-    courses: Mapped[List["Course"]] = relationship(secondary=course_tag,back_populates="tags")
+    courses: Mapped[List["Course"]] = relationship(
+        secondary=course_tag, back_populates="tags")
 
     def serialize(self):
         return {
@@ -144,7 +153,7 @@ class Tag(db.Model):
             "description": self.description,
             "is_active": self.is_active
         }
-    
+
 
 # ======================
 # COACH
@@ -153,7 +162,8 @@ class Coach(db.Model):
     __tablename__ = "coach"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
@@ -168,9 +178,13 @@ class Coach(db.Model):
     profile_image: Mapped[str] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-    messages: Mapped[List["Message"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
+    chats: Mapped[List["Chat"]] = relationship(
+        back_populates="coach", cascade="all, delete-orphan")
 
-    courses: Mapped[List["Course"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
+    courses: Mapped[List["Course"]] = relationship(
+        back_populates="coach", cascade="all, delete-orphan")
+
+    appointments: Mapped[List["Appointment"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
 
     def serialize(self):
         return {
@@ -178,7 +192,7 @@ class Coach(db.Model):
             "email": self.email,
             "name": self.name,
             "last_name": self.last_name,
-            "birthday": self.birthday.isoformat() if self.birthday else None, 
+            "birthday": self.birthday.isoformat() if self.birthday else None,
             "country": self.country,
             "province": self.province,
             "city": self.city,
@@ -190,6 +204,38 @@ class Coach(db.Model):
             "is_active": self.is_active
         }
     
+
+# APPOINTMENT
+class Appointment(db.Model):
+    __tablename__ = "appointment"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable=False)
+
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
+    note: Mapped[str] = mapped_column(String(300), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column( DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+
+    # relationships
+    user: Mapped["User"] = relationship(back_populates="appointments")
+    coach: Mapped["Coach"] = relationship(back_populates="appointments")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "coach_id": self.coach_id,
+            "starts_at": self.starts_at.isoformat() if self.starts_at else None,
+            "status": self.status,
+            "note": self.note,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
 #ADMIN
 class Admin(db.Model):
     __tablename__ = "admin"
@@ -197,7 +243,8 @@ class Admin(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
-    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
@@ -210,17 +257,18 @@ class Admin(db.Model):
         }
 
 
-#USER COURSE FAVORITE
+# USER COURSE FAVORITE
 class User_Course_Favorite (db.Model):
     __tablename__ = "user_course_favorite"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    #foreign keys
+    # foreign keys
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
-    course_favorite_id: Mapped[int] = mapped_column(ForeignKey("course.id"), nullable=False)
+    course_favorite_id: Mapped[int] = mapped_column(
+        ForeignKey("course.id"), nullable=False)
 
-    #relationsips
+    # relationsips
     user: Mapped["User"] = relationship(back_populates="favorites")
     course: Mapped["Course"] = relationship(back_populates="favorited_course")
 
@@ -230,20 +278,20 @@ class User_Course_Favorite (db.Model):
             "course_favorite_id": self.course_favorite_id,
             "user_id": self.user_id
         }
-    
 
-#USER COURSE
+
+# USER COURSE
 class User_course(db.Model):
     __tablename__ = "user_course"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement= True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
 
-    #foreign keys
+    # foreign keys
     course_id: Mapped[int] = mapped_column(ForeignKey("course.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
 
-    #relationships
+    # relationships
     user: Mapped["User"] = relationship(back_populates="courses")
     course: Mapped["Course"] = relationship(back_populates="user_course")
 
@@ -256,24 +304,70 @@ class User_course(db.Model):
         }
 
 
-# MESSAGE
+# CHAT
+
+class Chat(db.Model):
+    __tablename__ = "chat"
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "coach_id", name="unique_chat_pair"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    last_updated: Mapped[datetime] = mapped_column(
+        default=lambda: datetime.now(timezone.utc))
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"))
+
+    messages: Mapped[List["Message"]] = relationship(
+        back_populates="chat",
+        cascade="all, delete-orphan"
+    )
+
+    user: Mapped["User"] = relationship(back_populates="chats")
+    coach: Mapped["Coach"] = relationship(back_populates="chats")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "coach_id": self.coach_id,
+            "last_updated": self.last_updated.isoformat() if self.last_updated else None,
+            "user_name": self.user.name if self.user else None,
+            "coach_name": self.coach.name if self.coach else None,
+            "messages": [message.serialize() for message in self.messages]
+        }
+
 
 class Message(db.Model):
     __tablename__ = "message"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    message: Mapped[str] = mapped_column(String(500), nullable=False)
 
-    userMessage_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    coachMessage_id: Mapped[int] = mapped_column(ForeignKey("coach.id"))
+    chat_id: Mapped[int] = mapped_column(
+        ForeignKey("chat.id"),
+        nullable=False,
+        index=True
+    )
 
-    user: Mapped["User"] = relationship(back_populates="messages")
-    coach: Mapped["Coach"] = relationship(back_populates="messages")
+    sender_id: Mapped[int] = mapped_column(nullable=False)
+    sender_role: Mapped[str] = mapped_column(String(10), nullable=False)
+
+    text: Mapped[str] = mapped_column(String(150), nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(
+        default=lambda: datetime.now(timezone.utc)
+    )
+
+    chat: Mapped["Chat"] = relationship(back_populates="messages")
 
     def serialize(self):
         return {
             "id": self.id,
-            "message": self.message,
-            "userMessage_id": self.userMessage_id,
-            "coachMessage_id": self.coachMessage_id,
+            "chat_id": self.chat_id,
+            "sender_id": self.sender_id,
+            "sender_role": self.sender_role,
+            "text": self.text,
+            "created_at": self.created_at.isoformat() if self.created_at else None
         }

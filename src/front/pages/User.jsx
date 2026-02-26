@@ -1,27 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const back_url = import.meta.env.VITE_BACKEND_URL;
-
 export const User = () => {
   const navigate = useNavigate()
 
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
 
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+
+  const token =
+    localStorage.getItem("token-user") ||
+    localStorage.getItem("token-coach");
+
+  const role = localStorage.getItem("role");
+
   // GET
 
   const userFetch = async () => {
     try {
-      const res = await fetch(`${back_url}/users`, {
+      const res = await fetch(`${backendURL}/users`, {
         //added by arash
-        headers: { Authorization: `Bearer ${localStorage.getItem("token-user") || localStorage.getItem("token-admin")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Error to search users");
       const data = await res.json();
       setUsers(data.users);
     } catch (e) {
       setError(e.message);
+    }
+  };
+
+  const handleCreateChat = async (otherUserId) => {
+    try {
+      const res = await fetch(`${backendURL}/chat/create/${role}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          secondary_id: otherUserId,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Error creating chat");
+
+      const chat = await res.json();
+
+      if (role === "user") {
+        navigate("/users/chats", { state: { openChatId: chat.id } });
+      } else {
+        navigate("/coach/chats", { state: { openChatId: chat.id } });
+      }
+
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -61,13 +95,13 @@ export const User = () => {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="m-0">Users</h1>
 
-        <div className="d-flex gap-2">
-          <button
-            className="d-flex gap-2 justify-content-md-end btn btn-primary"
-            onClick={() => navigate("/users/new")}
-          >
-            Create new user
-          </button>
+          <div className="d-flex gap-2">
+            <button
+              className="d-flex gap-2 justify-content-md-end btn btn-primary"
+              onClick={() => navigate("/users/new")}
+            >
+              Create new user
+            </button>
 
             <button
               className="btn btn-secondary"
@@ -83,7 +117,17 @@ export const User = () => {
           {users && users.map((user) => (
             <div key={user.id} className="col-md-4 mb-4">
               <div className="card h-100 shadow-sm">
-                <div className="card-body d-flex flex-column">
+                <div className="card-body d-flex flex-column mb-3">
+                  <img
+                    src={user.profile_picture || "https://via.placeholder.com/40"}
+                    alt="Profile"
+                    style={{
+                      width: "380px",
+                      height: "400px",
+                      objectFit: "cover",
+                      marginRight: "10px"
+                    }}
+                  />
                   <h5 className="card-title">
                     {user.name} {user.surname}
                   </h5>
@@ -111,7 +155,7 @@ export const User = () => {
                     >
                       Delete
                     </button>
-                    
+
                     <button
                       className="btn btn-outline-success btn-sm"
                       onClick={() => navigate(`/users/${user.id}/courses/select`)}
@@ -127,13 +171,17 @@ export const User = () => {
                       View courses
                     </button>
 
+                    <button onClick={() => handleCreateChat(user.id)}>
+                      Crear chat
+                    </button>
+
                   </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        
+
         <div className="d-flex justify-content-center mt-3">
           <button className="btn btn-primary" onClick={userFetch}>
             Reload

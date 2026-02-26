@@ -22,7 +22,7 @@ export default function CoachPrivate() {
   const coachId =
     store?.coach?.id ||
     Number(localStorage.getItem("coach_id")) ||
-    null; 
+    null;
 
   useEffect(() => {
     const restoreCoachId = async () => {
@@ -31,15 +31,15 @@ export default function CoachPrivate() {
 
       try {
         const res = await fetch(`${backendURL}/coach/private`, {
-          headers: { Authorization: `Bearer ${token}` }, 
+          headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
 
         if (res.ok && data?.coach?.id) {
-          localStorage.setItem("coach_id", data.coach.id); 
+          localStorage.setItem("coach_id", data.coach.id);
           dispatch({
-            type: "login-coach", 
-            payload: { token, coach: data.coach }, 
+            type: "login-coach",
+            payload: { token, coach: data.coach },
           });
         }
       } catch (e) {
@@ -47,7 +47,7 @@ export default function CoachPrivate() {
     };
 
     restoreCoachId();
-  }, [token]); 
+  }, [token]);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -57,7 +57,7 @@ export default function CoachPrivate() {
       try {
         if (!coachId) {
           setCoursesError("Missing coach id. Please login again.");
-          return; 
+          return;
         }
 
         const res = await fetch(`${backendURL}/coach/${coachId}/courses-students`, {
@@ -81,8 +81,8 @@ export default function CoachPrivate() {
       }
     };
 
-    if (token) fetchCourses(); 
-  }, [token, coachId, backendURL]); 
+    if (token) fetchCourses();
+  }, [token, coachId, backendURL]);
 
   const handleDelete = async (courseId) => {
     if (!window.confirm("Are you sure?")) return;
@@ -104,8 +104,9 @@ export default function CoachPrivate() {
 
   const handleLogout = () => {
     localStorage.removeItem("token-coach");
-    localStorage.removeItem("coach");  
-    localStorage.removeItem("coach_id"); 
+    localStorage.removeItem("coach");
+    localStorage.removeItem("coach_id");
+    localStorage.removeItem("role")
 
     dispatch({ type: "logout-coach" });
     navigate("/");
@@ -125,13 +126,13 @@ export default function CoachPrivate() {
 
     try {
       if (!coachId) {
-        alert("Missing coach id. Please login again."); 
-        return; 
+        alert("Missing coach id. Please login again.");
+        return;
       }
 
       const res = await fetch(`${backendURL}/coach/${coachId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }, 
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.ok) {
@@ -204,7 +205,12 @@ export default function CoachPrivate() {
           </div>
         </div>
 
-        <div className="d-flex gap-2">
+        <div className="d-flex gap-2"><button
+          className="btn btn-outline-primary"
+          onClick={() => navigate("/coach/appointments/my")}
+          type="button">
+          Reservations
+        </button>
           <button className="btn btn-danger" onClick={deleteAccount}>
             Delete Account
           </button>
@@ -220,6 +226,7 @@ export default function CoachPrivate() {
         <button className="btn btn-primary" onClick={() => navigate("/coach/create-course")}>
           + Create Course
         </button>
+        <button onClick={() => navigate("/coach/chats")}>Chats</button>
       </div>
 
       {loadingCourses && <p>Loading...</p>}
