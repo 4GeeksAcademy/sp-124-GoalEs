@@ -220,6 +220,7 @@ export default function CoachPrivate() {
         <button className="btn btn-primary" onClick={() => navigate("/coach/create-course")}>
           + Create Course
         </button>
+        <button onClick={() => navigate("/coach/chats")}>Chats</button>
       </div>
 
       {loadingCourses && <p>Loading...</p>}

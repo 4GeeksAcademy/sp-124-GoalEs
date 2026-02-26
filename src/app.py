@@ -59,7 +59,7 @@ app.register_blueprint(api, url_prefix='/api')
 
 
 #SEGURIDAD CON JWT
-app.config["JWT_SECRET_KEY"] = "super-secret-key-change-this"
+app.config["JWT_SECRET_KEY"] = os.urandom(32)
 jwt = JWTManager(app)
 
 #Stripe
@@ -1039,6 +1039,42 @@ def create_message_by_role(role):
     return jsonify(new_message.serialize()), 201
 
 
+@app.route('/chats', methods=['GET'])
+@jwt_required()
+def get_my_chats():
+
+    main_id = get_jwt_identity()
+
+    chats = Chat.query.filter(
+        (Chat.user_id == main_id) | (Chat.coach_id == main_id)
+    ).order_by(Chat.last_updated.desc()).all()
+
+    return jsonify([chat.serialize() for chat in chats]), 200
+
+
+@app.route('/chats/<int:chat_id>/messages', methods=['GET'])
+@jwt_required()
+def get_chat_messages(chat_id):
+
+    main_id = int(get_jwt_identity())
+
+    chat = Chat.query.get(chat_id)
+
+    if not chat:
+        return jsonify({"error": "Chat not found"}), 404
+
+    print("MAIN ID:", main_id)
+    print("CHAT USER:", chat.user_id)
+    print("CHAT COACH:", chat.coach_id)
+
+    if chat.user_id != main_id and chat.coach_id != main_id:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    messages = Message.query.filter_by(chat_id=chat_id)\
+                            .order_by(Message.id.asc())\
+                            .all()
+
+    return jsonify([m.serialize() for m in messages]), 200
     
 
 

@@ -18,7 +18,7 @@ import { User } from "./pages/User";
 import { UserDetails } from "./pages/UserDetails";
 import { CreateUser } from "./pages/CreateUser";
 import { EditUser } from "./pages/EditUser";
-import { UserChats } from "./pages/UserChat.jsx";
+import { ChatPage } from "./pages/ChatPage.jsx";
 
 import { Coaches } from "./pages/Coaches";
 import { CoachDetails } from "./pages/CoachDetails";
@@ -91,7 +91,7 @@ export const router = createBrowserRouter(
         <Route path="users/home" element={<PrivateUser />} />
         <Route path="users/profile" element={<CompleteProfileUser />} />
         <Route path="/users/faceanalyzer" element={<FaceAnalyzer />} />
-        <Route path="/users/chats" element={<UserChats />} />
+        <Route path="/users/chats" element={<ChatPage />} />
 
 
         {/* CRUD USERS (shared for user/admin) */}
@@ -110,6 +110,7 @@ export const router = createBrowserRouter(
         <Route path="coaches/profile" element={<CoachProfile />} />
         <Route path="coach/create-course" element={<CreateCourse />} />
         <Route path="coach/edit-course/:id" element={<EditCourse />} />
+        <Route path="/coach/chats" element={<ChatPage />} />
 
         {/* optional aliases */}
         <Route path="courses/new" element={<CreateCourse />} />
