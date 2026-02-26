@@ -18,7 +18,7 @@ export const PrivateAdmin = () => {
   const handleLogout = () => {
     localStorage.removeItem("token-admin");
     dispatch({ type: "logout_admin" });
-    navigate("/admin/login");
+    navigate("/");
   };
 
   if (isUnauthorized) {
@@ -69,6 +69,12 @@ export const PrivateAdmin = () => {
             <div className="col-12 col-md-6 col-lg-4">
               <button className="btn btn-primary w-100" onClick={() => navigate("/coaches")}>
                 Coaches
+              </button>
+            </div>
+
+            <div className="col-12 col-md-6 col-lg-4">
+              <button className="btn btn-primary w-100" onClick={() => navigate("/admin/appointments")}>
+                Appointments
               </button>
             </div>
 

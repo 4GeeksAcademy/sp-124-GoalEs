@@ -30,6 +30,13 @@ export const CreateCourse = () => {
 
   const isAdmin = !!localStorage.getItem("token-admin");
 
+  const handleBack = () => {
+    if (localStorage.getItem("token-admin")) navigate("/admin/home");
+    else navigate("/coach/private");
+  };
+
+
+
   useEffect(() => { 
     if (!isAdmin) return;
 
@@ -215,8 +222,8 @@ export const CreateCourse = () => {
         <button className="btn btn-secondary" onClick={() => navigate("/courses")}>
           Back to Courses
         </button>
-        <button className="btn btn-outline-secondary" onClick={() => navigate("/")}>
-          Home
+        <button className="btn btn-secondary" onClick={handleBack} type="button">
+          Back to Dashboard
         </button>
       </div>
     </div>
