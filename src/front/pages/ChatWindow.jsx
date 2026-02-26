@@ -52,19 +52,6 @@ export default function ChatWindow({ chat }) {
     };
   }, [chat]);
 
-  useEffect(() => {
-
-    socket.on("new_message", (message) => {
-      console.log("📩 MESSAGE RECEIVED VIA SOCKET:", message);
-      setMessages(prev => [...prev, message]);
-    });
-
-    return () => {
-      socket.off("new_message");
-    };
-
-  }, []);
-
   if (!chat) {
     return <div>Selecciona un chat</div>;
   }
