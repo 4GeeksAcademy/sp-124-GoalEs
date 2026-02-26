@@ -106,6 +106,49 @@ export const Home = () => {
   </div>
   </section> 
 
+  <section className="stats-section">
+  <div className="container">
+    <p className="section-eyebrow text-center">OUR NUMBERS SPEAK FOR THEMSELVES</p>
+    <h2 className="section-title text-center mb-5">Making a Real Difference</h2>
+    <div className="row text-center gy-4">
+
+      <div className="col-md-4">
+        <div className="stat-box">
+          <span className="stat-box-number">1.000+</span>
+          <span className="stat-box-label">Students Graduated</span>
+        </div>
+      </div>
+
+      <div className="col-md-4">
+        <div className="stat-box">
+          <span className="stat-box-number">4.8★</span>
+          <span className="stat-box-label">Average Rating</span>
+        </div>
+      </div>
+
+      <div className="col-md-4">
+        <div className="stat-box">
+          <span className="stat-box-number">3.500+</span>
+          <span className="stat-box-label">Sessions Completed</span>
+        </div>
+      </div>
+
+    </div>
+
+    {/* Chatbot mention */}
+    <div className="chatbot-mention">
+      <div className="chatbot-mention-inner">
+        <span className="chatbot-icon">💬</span>
+        <div>
+          <p className="chatbot-mention-title">Not sure where to start?</p>
+          <p className="chatbot-mention-text">Our AI assistant is available on the side of the page to help you find the perfect course for your goals.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 
     
       {isAdmin && (
