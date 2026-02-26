@@ -17,7 +17,7 @@
 }
 
 .goales-navbar .navbar-brand span {
-  color: green;
+  color: #e8a838;
 }
 
 .goales-navbar .nav-link {
@@ -404,4 +404,10 @@
   color: rgba(255,255,255,0.7);
   margin: 0;
   line-height: 1.6;
+}
+
+.our-story-section {
+  padding: 100px 0;
+  background: #faf9f7;
+  border-top: 1px solid #f0f0f0;
 }

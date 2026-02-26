@@ -149,6 +149,33 @@ export const Home = () => {
   </div>
 </section>
 
+<section className="our-story-section" id="our-story">
+  <div className="container">
+    <div className="row align-items-center gy-5">
+
+      <div className="col-lg-5">
+        <p className="section-eyebrow">WHO WE ARE</p>
+        <h2 className="section-title">Our Story</h2>
+      </div>
+
+      <div className="col-lg-6 offset-lg-1">
+        <p className="section-text">
+          GoalEs was born from a simple idea shared by three friends who believed 
+          that knowledge should be accessible to everyone. With backgrounds in 
+          technology, education, and wellness, we came together with one mission: 
+          to connect passionate experts with people who are ready to grow.
+        </p>
+        <p className="section-text">
+          We built this platform because we experienced firsthand how the right 
+          coach can change everything — a career, a mindset, a life. Today, GoalEs 
+          is more than a platform. It's a community where learning meets purpose.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 
     
       {isAdmin && (

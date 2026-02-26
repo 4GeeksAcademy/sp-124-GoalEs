@@ -25,7 +25,7 @@ export const Footer = () => {
           <div className="col-lg-2 col-md-3 mb-4 offset-lg-2">
             <h5 className="footer-title">Explore</h5>
             <ul className="footer-links">
-              <li><Link to="/">Our Story</Link></li>
+              <a className="nav-link" href="#our-story">Our Story</a>
               <li><Link to="/coaches">Our Coaches</Link></li>
               <li><Link to="/courses">Our Courses</Link></li>
               <li><Link to="/#contact">Contact Us</Link></li>
@@ -36,7 +36,7 @@ export const Footer = () => {
           <div className="col-lg-3 col-md-3 mb-4">
             <h5 className="footer-title">Information</h5>
             <ul className="footer-links">
-              <li><Link to="/#become-coach">How to become a Coach?</Link></li>
+              <a href="#become-coach">How to become a Coach?</a> 
               <li><Link to="/#privacy">Privacy Policy</Link></li>
               <li><Link to="/#terms">Terms of Service</Link></li>
             </ul>
