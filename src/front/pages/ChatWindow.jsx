@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 export default function ChatWindow({ chat }) {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const token = localStorage.getItem("token-user") || localStorage.getItem("token-coach");
+  const token =
+    localStorage.getItem("token-user") ||
+    localStorage.getItem("token-coach");
+
   const role = localStorage.getItem("role");
 
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -21,9 +24,13 @@ export default function ChatWindow({ chat }) {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Error fetching messages");
+        return res.json();
+      })
       .then(data => setMessages(data))
       .catch(err => console.error(err));
+
   }, [chat]);
 
   if (!chat) {
@@ -54,9 +61,10 @@ export default function ChatWindow({ chat }) {
       if (!res.ok) throw new Error("Error sending message");
 
       const data = await res.json();
-
       setMessages(prev => [...prev, data]);
       setNewMessage("");
+      console.log("message:", messages);
+      console.log("myId:", myId);
 
     } catch (error) {
       console.error(error);
@@ -66,9 +74,7 @@ export default function ChatWindow({ chat }) {
   return (
     <div>
       {messages.map(message => {
-        const isMine =
-          (role === "user" && message.user_id === myId) ||
-          (role === "coach" && message.coach_id === myId);
+       const isMine = message.sender_role === role;
 
         return (
           <div

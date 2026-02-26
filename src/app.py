@@ -954,45 +954,50 @@ def delete_chat(chat_id):
 @app.route('/chat/create/<string:role>', methods=['POST'])
 @jwt_required()
 def create_chat_by_role(role):
-    main_id = get_jwt_identity()
+
+    main_id = int(get_jwt_identity())
     secondary_id = request.get_json().get("secondary_id")
 
     if not secondary_id:
-        return jsonify({"msg": "Secondary id is required"}), 400
+        return jsonify({"error": "secondary_id required"}), 400
+
+    secondary_id = int(secondary_id)
 
     if role == "user":
-        # Crear chat desde el lado del usuario
-        new_chat = Chat(
-            user_id = main_id,
-            coach_id = secondary_id
-        )
+        #crear chat si eres user
+        user_id = main_id
+        coach_id = secondary_id
+    elif role == "coach":
+        #crear chat si eres coach
+        coach_id = main_id
+        user_id = secondary_id
+    else:
+        return jsonify({"error": "role must be user or coach"}), 400
 
-        db.session.add(new_chat)
-        db.session.commit()
-        return jsonify(
-            new_chat.serialize()
-        ), 200
+    #evitar duplicados
+    existing_chat = Chat.query.filter_by(
+        user_id=user_id,
+        coach_id=coach_id
+    ).first()
 
-    if role == "coach":
-        # Crear chat desde el lado del coach
-        new_chat = Chat(
-            coach_id = main_id,
-            user_id = secondary_id
-        )
+    if existing_chat:
+        return jsonify(existing_chat.serialize()), 200
 
-        db.session.add(new_chat)
-        db.session.commit()
-        return jsonify(
-            new_chat.serialize()
-        ), 200
+    new_chat = Chat(
+        user_id=user_id,
+        coach_id=coach_id
+    )
 
-    return jsonify ({"error": "role field must be user or coach"}), 400
+    db.session.add(new_chat)
+    db.session.commit()
+
+    return jsonify(new_chat.serialize()), 201
 
 @app.route('/message/create/<string:role>', methods=['POST'])
 @jwt_required()
 def create_message_by_role(role):
 
-    main_id = get_jwt_identity()
+    main_id = int(get_jwt_identity())
     data = request.get_json()
 
     secondary_id = data.get("secondary_id")
@@ -1000,6 +1005,8 @@ def create_message_by_role(role):
 
     if not secondary_id or not text:
         return jsonify({"error": "secondary_id and text required"}), 400
+
+    secondary_id = int(secondary_id)
 
     if role == "user":
         user_id = main_id
@@ -1024,14 +1031,13 @@ def create_message_by_role(role):
         db.session.flush()
 
     new_message = Message(
-        user_id=user_id,
-        coach_id=coach_id,
         chat_id=chat.id,
+        sender_id=main_id,
+        sender_role=role,
         text=text
     )
 
     db.session.add(new_message)
-
     chat.last_updated = datetime.now(timezone.utc)
 
     db.session.commit()
@@ -1062,10 +1068,6 @@ def get_chat_messages(chat_id):
 
     if not chat:
         return jsonify({"error": "Chat not found"}), 404
-
-    print("MAIN ID:", main_id)
-    print("CHAT USER:", chat.user_id)
-    print("CHAT COACH:", chat.coach_id)
 
     if chat.user_id != main_id and chat.coach_id != main_id:
         return jsonify({"error": "Unauthorized"}), 403

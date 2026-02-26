@@ -6,6 +6,7 @@ import { CoachMap } from "./CoachMap";
 export const Coaches = () => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+
   const navigate = useNavigate();
 
   const [coach, setCoach] = useState([]);
@@ -13,14 +14,15 @@ export const Coaches = () => {
   const [cargando, setCargando] = useState(false)
 
   const { store } = useGlobalReducer();
-  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach"); 
+  const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach");
+  const role = localStorage.getItem("role");
 
 
   const getAllCoaches = async () => {
     try {
       setCargando(true);
 
-      const res = await fetch(backendURL + "/coach"); 
+      const res = await fetch(backendURL + "/coach");
 
 
       if (!res.ok) throw new Error("We can’t get coaches right now");
@@ -37,7 +39,7 @@ export const Coaches = () => {
 
   const deletedCoach = async (id) => {
     try {
-      if (!token) throw new Error("Missing token, login as admin/coach"); 
+      if (!token) throw new Error("Missing token, login as admin/coach");
       const res = await fetch(`${backendURL}/coach/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
@@ -50,6 +52,34 @@ export const Coaches = () => {
     } catch (err) {
       alert(err.message);
       console.error(err);
+    }
+  };
+
+  const handleCreateChat = async (otherUserId) => {
+    try {
+      const res = await fetch(`${backendURL}/chat/create/${role}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          secondary_id: otherUserId,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Error creating chat");
+
+      const chat = await res.json();
+
+      if (role === "user") {
+        navigate("/users/chats", { state: { openChatId: chat.id } });
+      } else {
+        navigate("/coach/chats", { state: { openChatId: chat.id } });
+      }
+
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -70,39 +100,42 @@ export const Coaches = () => {
         }
         {!cargando && coach.map((coach) => (
           <div className="col-md-4 key={coach.id}">
-           <div className="card mt-3 shadow-sm">
-            <div className="card-body">
+            <div className="card mt-3 shadow-sm">
+              <div className="card-body">
                 <div className="d-flex align-items-center gap-3 mb-2">
-                    <img
-                        src={coach.profile_image || `https://ui-avatars.com/api/?name=${coach.name}`}
-                        alt="Profile"
-                        style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover" }}
-                    />
-                    <div>
-                        <h5 className="card-title mb-0">{coach.name} {coach.last_name}</h5>
-                        {coach.city && (
-                            <p className="text-muted mb-0 small">
-                                📍 {coach.city}, {coach.province}, {coach.country}
-                            </p>
-                        )}
-                    </div>
+                  <img
+                    src={coach.profile_image || `https://ui-avatars.com/api/?name=${coach.name}`}
+                    alt="Profile"
+                    style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover" }}
+                  />
+                  <div>
+                    <h5 className="card-title mb-0">{coach.name} {coach.last_name}</h5>
+                    {coach.city && (
+                      <p className="text-muted mb-0 small">
+                        📍 {coach.city}, {coach.province}, {coach.country}
+                      </p>
+                    )}
+                  </div>
+                  <button onClick={() => handleCreateChat(coach.id)}>
+                    Crear chat
+                  </button>
                 </div>
 
                 <CoachMap
-                    latitude={coach.latitude}
-                    longitude={coach.longitude}
-                    name={`${coach.name} ${coach.last_name}`}
+                  latitude={coach.latitude}
+                  longitude={coach.longitude}
+                  name={`${coach.name} ${coach.last_name}`}
                 />
 
                 <button
-                    className="btn btn-primary btn-sm mt-2 w-100"
-                    onClick={() => navigate(`/coaches-details/${coach.id}`)}>
-                    show profile
+                  className="btn btn-primary btn-sm mt-2 w-100"
+                  onClick={() => navigate(`/coaches-details/${coach.id}`)}>
+                  show profile
                 </button>
+              </div>
             </div>
-        </div>
-        </div>
-))}
+          </div>
+        ))}
 
         <button className="btn btn-primary mt-3" onClick={() => navigate("/coaches/new")}>
           New Coach

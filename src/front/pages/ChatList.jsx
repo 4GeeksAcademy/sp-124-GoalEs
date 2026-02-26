@@ -10,7 +10,7 @@ export default function ChatList({ chats, onSelectChat, selectedChat }) {
             padding: "10px",
             cursor: "pointer",
             backgroundColor:
-              selectedChat === chat.id ? "#eee" : "white",
+              selectedChat?.id === chat.id ? "#eee" : "white",
           }}
         >
           Chat #{chat.id}

@@ -44,11 +44,6 @@ class User(db.Model):
         cascade="all, delete-orphan"
     )
 
-    messages: Mapped[List["Message"]] = relationship(
-        back_populates="user",
-        cascade="all, delete-orphan"
-    )
-
     courses: Mapped[List["User_course"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan"
@@ -175,11 +170,6 @@ class Coach(db.Model):
 
     chats: Mapped[List["Chat"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
 
-    messages: Mapped[List["Message"]] = relationship(
-        back_populates="coach",
-        cascade="all, delete-orphan"
-    )
-
     courses: Mapped[List["Course"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
 
     def serialize(self):
@@ -271,6 +261,10 @@ class User_course(db.Model):
 class Chat(db.Model):
     __tablename__ = "chat"
 
+    __table_args__ = (
+    UniqueConstraint("user_id", "coach_id", name="unique_chat_pair"),
+)
+
     id: Mapped[int] = mapped_column(primary_key=True)
     last_updated: Mapped[datetime] = mapped_column(default=lambda:datetime.now(timezone.utc))
 
@@ -298,20 +292,30 @@ class Message(db.Model):
     __tablename__ = "message"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+
+    chat_id: Mapped[int] = mapped_column(
+        ForeignKey("chat.id"),
+        nullable=False,
+        index=True
+    )
+
+    sender_id: Mapped[int] = mapped_column(nullable=False)
+    sender_role: Mapped[str] = mapped_column(String(10), nullable=False)
+
     text: Mapped[str] = mapped_column(String(150), nullable=False)
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
-    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable=False)
-    chat_id: Mapped[int] = mapped_column(ForeignKey("chat.id"), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        default=lambda: datetime.now(timezone.utc)
+    )
 
-    user: Mapped["User"] = relationship(back_populates="messages")
-    coach: Mapped["Coach"] = relationship(back_populates="messages")
     chat: Mapped["Chat"] = relationship(back_populates="messages")
 
     def serialize(self):
         return {
             "id": self.id,
-            "user_id": self.user_id,
-            "coach_id": self.coach_id,
-            "text": self.text
+            "chat_id": self.chat_id,
+            "sender_id": self.sender_id,
+            "sender_role": self.sender_role,
+            "text": self.text,
+            "created_at": self.created_at
         }
