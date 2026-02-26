@@ -43,6 +43,7 @@ export const SignupUser = () => {
 
       localStorage.setItem("token-user", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("role", "user")
 
       dispatch({
         type: "login-user",
@@ -59,7 +60,7 @@ export const SignupUser = () => {
       }, 3000);
 
     } catch (error) {
-      console.error();
+      console.error(error);
     }
   };
 

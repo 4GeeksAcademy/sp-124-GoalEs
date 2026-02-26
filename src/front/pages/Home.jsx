@@ -73,6 +73,9 @@ export const Home = () => {
 			{(localStorage.getItem("token-user")) &&
 				<>
 					<button className="btn btn-success ms-3" onClick={() => navigate("/users/home")}> User Dashboard</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/users/profile")}>Edit Profile</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/courses")}>Go to courses</button>
+					<button className="btn btn-primary ms-3" onClick={() => navigate("/coaches")}>Go to Coaches</button>
 				</>
 			}
 

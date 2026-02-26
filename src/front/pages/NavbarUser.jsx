@@ -41,6 +41,7 @@ export const NavbarUser = ({ logout }) => {
                                     <li><button className="dropdown-item" onClick={() => navigate("/users/profile")}>Edit Profile</button></li>
                                     <li><button className="dropdown-item" onClick={() => navigate("/coaches")}>Coaches</button></li>
                                     <li><a className="dropdown-item" href="https://www.youtube.com/watch?v=-4GC_zrxDCk">More</a></li>
+                                    <li><button onClick={() => navigate("/")}>Go Home</button></li>
                                 </ul>
                             </li>
                             <li className="nav-item"><button className="btn btn-success" onClick={() => navigate("/users/faceanalyzer")}>Read Your Emotions By Your Face!</button></li>

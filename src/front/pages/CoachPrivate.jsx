@@ -106,6 +106,7 @@ export default function CoachPrivate() {
     localStorage.removeItem("token-coach");
     localStorage.removeItem("coach");
     localStorage.removeItem("coach_id");
+    localStorage.removeItem("role")
 
     dispatch({ type: "logout-coach" });
     navigate("/");
@@ -225,6 +226,7 @@ export default function CoachPrivate() {
         <button className="btn btn-primary" onClick={() => navigate("/coach/create-course")}>
           + Create Course
         </button>
+        <button onClick={() => navigate("/coach/chats")}>Chats</button>
       </div>
 
       {loadingCourses && <p>Loading...</p>}

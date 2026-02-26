@@ -1,27 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const back_url = import.meta.env.VITE_BACKEND_URL;
-
 export const User = () => {
   const navigate = useNavigate()
 
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
 
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+
+  const token =
+    localStorage.getItem("token-user") ||
+    localStorage.getItem("token-coach");
+
+  const role = localStorage.getItem("role");
+
   // GET
 
   const userFetch = async () => {
     try {
-      const res = await fetch(`${back_url}/users`, {
+      const res = await fetch(`${backendURL}/users`, {
         //added by arash
-        headers: { Authorization: `Bearer ${localStorage.getItem("token-user") || localStorage.getItem("token-admin")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Error to search users");
       const data = await res.json();
       setUsers(data.users);
     } catch (e) {
       setError(e.message);
+    }
+  };
+
+  const handleCreateChat = async (otherUserId) => {
+    try {
+      const res = await fetch(`${backendURL}/chat/create/${role}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          secondary_id: otherUserId,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Error creating chat");
+
+      const chat = await res.json();
+
+      if (role === "user") {
+        navigate("/users/chats", { state: { openChatId: chat.id } });
+      } else {
+        navigate("/coach/chats", { state: { openChatId: chat.id } });
+      }
+
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -135,6 +169,10 @@ export const User = () => {
                       onClick={() => navigate(`/users/${user.id}/courses`)}
                     >
                       View courses
+                    </button>
+
+                    <button onClick={() => handleCreateChat(user.id)}>
+                      Crear chat
                     </button>
 
                   </div>
