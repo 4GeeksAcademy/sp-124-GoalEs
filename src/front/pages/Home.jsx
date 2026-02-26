@@ -50,6 +50,62 @@ export const Home = () => {
           </div>
         </div>
       </section>
+      <section className="become-coach-section" id="become-coach">
+  <div className="container">
+    <div className="row align-items-center gy-5">
+
+      
+      <div className="col-lg-6">
+        <p className="section-eyebrow">JOIN OUR COMMUNITY</p>
+        <h2 className="section-title">How to Become a Coach?</h2>
+        <p className="section-text">
+          At GoalEs, we believe that quality education starts with exceptional coaches. 
+          That's why we are committed to partnering only with certified professionals 
+          who are passionate about helping others grow.
+        </p>
+        <p className="section-text">
+          Our coaches go through a careful selection process to ensure they meet our 
+          high standards — because our students deserve the best. Whether you specialize 
+          in Finance, Psychology, Software, or Nutrition, there's a place for you here.
+        </p>
+        <p className="section-text">
+          Ready to share your expertise? Sign up as a coach through our menu and start 
+          making a difference today.
+        </p>
+        <button className="btn-coach-cta" onClick={() => navigate("/coaches/new")}>
+          Become a Coach →
+        </button>
+      </div>
+
+      
+      <div className="col-lg-5 offset-lg-1">
+        <div className="coach-stats-card">
+          <div className="coach-stat">
+            <span className="stat-number">100+</span>
+            <span className="stat-label">Certified Coaches</span>
+          </div>
+          <div className="coach-stat-divider"></div>
+          <div className="coach-stat">
+            <span className="stat-number">4.9★</span>
+            <span className="stat-label">Average Rating</span>
+          </div>
+          <div className="coach-stat-divider"></div>
+          <div className="coach-stat">
+            <span className="stat-number">4</span>
+            <span className="stat-label">Areas of Expertise</span>
+          </div>
+          <p className="coach-card-quote">
+            "Joining GoalEs was the best decision for my coaching career. 
+            The platform is amazing and the community is incredibly supportive."
+          </p>
+          <p className="coach-card-author">— Maria García, Finance Coach</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </section> 
+
 
     
       {isAdmin && (
