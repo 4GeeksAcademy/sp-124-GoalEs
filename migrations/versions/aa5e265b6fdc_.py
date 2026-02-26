@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 9dbb22679f3d
+Revision ID: aa5e265b6fdc
 Revises: 
-Create Date: 2026-02-26 08:21:44.235840
+Create Date: 2026-02-26 11:47:42.042251
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9dbb22679f3d'
+revision = 'aa5e265b6fdc'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -76,6 +76,18 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
+    op.create_table('appointment',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('coach_id', sa.Integer(), nullable=False),
+    sa.Column('starts_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=False),
+    sa.Column('note', sa.String(length=300), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.ForeignKeyConstraint(['coach_id'], ['coach.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('chat',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('last_updated', sa.DateTime(), nullable=False),
@@ -83,7 +95,8 @@ def upgrade():
     sa.Column('coach_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['coach_id'], ['coach.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('user_id', 'coach_id', name='unique_chat_pair')
     )
     op.create_table('course',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -148,6 +161,7 @@ def downgrade():
     op.drop_table('course_tag')
     op.drop_table('course')
     op.drop_table('chat')
+    op.drop_table('appointment')
     op.drop_table('user')
     op.drop_table('tag')
     op.drop_table('coach')

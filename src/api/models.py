@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from typing import List
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship
 from datetime import date, datetime, timezone
@@ -50,6 +50,9 @@ class User(db.Model):
         back_populates="user",
         cascade="all, delete-orphan"
     )
+
+    appointments: Mapped[List["Appointment"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+
 
     def serialize(self):
         return {
@@ -181,6 +184,8 @@ class Coach(db.Model):
     courses: Mapped[List["Course"]] = relationship(
         back_populates="coach", cascade="all, delete-orphan")
 
+    appointments: Mapped[List["Appointment"]] = relationship(back_populates="coach", cascade="all, delete-orphan")
+
     def serialize(self):
         return {
             "id": self.id,
@@ -198,10 +203,40 @@ class Coach(db.Model):
             "gender": self.gender,
             "is_active": self.is_active
         }
+    
 
-# ADMIN
+# APPOINTMENT
+class Appointment(db.Model):
+    __tablename__ = "appointment"
 
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    coach_id: Mapped[int] = mapped_column(ForeignKey("coach.id"), nullable=False)
+
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
+    note: Mapped[str] = mapped_column(String(300), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column( DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+
+    # relationships
+    user: Mapped["User"] = relationship(back_populates="appointments")
+    coach: Mapped["Coach"] = relationship(back_populates="appointments")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "coach_id": self.coach_id,
+            "starts_at": self.starts_at.isoformat() if self.starts_at else None,
+            "status": self.status,
+            "note": self.note,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+#ADMIN
 class Admin(db.Model):
     __tablename__ = "admin"
 

@@ -117,7 +117,17 @@ export const User = () => {
           {users && users.map((user) => (
             <div key={user.id} className="col-md-4 mb-4">
               <div className="card h-100 shadow-sm">
-                <div className="card-body d-flex flex-column">
+                <div className="card-body d-flex flex-column mb-3">
+                  <img
+                    src={user.profile_picture || "https://via.placeholder.com/40"}
+                    alt="Profile"
+                    style={{
+                      width: "380px",
+                      height: "400px",
+                      objectFit: "cover",
+                      marginRight: "10px"
+                    }}
+                  />
                   <h5 className="card-title">
                     {user.name} {user.surname}
                   </h5>

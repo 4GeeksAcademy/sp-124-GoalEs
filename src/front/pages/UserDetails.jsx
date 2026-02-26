@@ -38,6 +38,16 @@ export const UserDetails = () => {
             <h1 className="mb-4">User details</h1>
             <div className="card shadow-sm">
                 <div className="card-body">
+                    <img
+                        src={users?.profile_picture || "https://via.placeholder.com/40"}
+                        alt="Profile"
+                        style={{
+                            width: "380px",
+                            height: "400px",
+                            objectFit: "cover",
+                            marginRight: "10px"
+                        }}
+                    />
                     <p><strong>Name:</strong>{users.name}</p>
                     <p><strong>Surname:</strong>{users.surname}</p>
                     <p><strong>Email:</strong>{users.email}</p>

@@ -11,6 +11,13 @@ export const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
 
+  const handleBack = () => {
+    if (localStorage.getItem("token-admin")) navigate("/admin/home");
+    else if (localStorage.getItem("token-coach")) navigate("/coach/private");
+    else if (localStorage.getItem("token-user")) navigate("/users/home");
+    else navigate("/")
+  };
+
   const { store } = useGlobalReducer(); 
   const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach");
 
@@ -59,9 +66,11 @@ export const Courses = () => {
           <button className="btn btn-primary mt-3" onClick={() => navigate("/courses/new")}>
             Create Course
           </button>
-          <button className="btn btn-secondary mt-3" onClick={() => navigate("/admin/home")}>
-            Back to Admin Dashboard
-          </button>
+          <button className="btn btn-secondary mt-3" onClick={handleBack} type="button">
+          Back to Dashboard
+        </button>
+
+
         </div>
       </div>
 

@@ -8,17 +8,20 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
-from api.models import db, User, Coach, Course, Chat, Message, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag
+from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag, Appointment, Chat
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
 from sqlalchemy import select
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt, verify_jwt_in_request
-from datetime import timedelta
+from datetime import timedelta, timezone, datetime
 from functools import wraps
+from zoneinfo import ZoneInfo
+from dateutil import parser as dtparser
 from datetime import datetime, timezone
 from flask_socketio import SocketIO, join_room
+
 
 
 # from models import Person
@@ -658,35 +661,50 @@ def put_coach(coach_id):
     body = request.get_json()
     if not body:
         return jsonify({"error": "No data provided to update"}), 400
-
-    if "name" in body:
+    
+    name = body.get("name")
+    last_name = body.get("last_name")
+    email = body.get("email")
+    password = body.get("password")
+    is_active = body.get("is_active")
+    gender = body.get("gender")
+    country = body.get("country")
+    province = body.get("province")
+    city = body.get("city")
+    latitude = body.get("latitude")
+    longitude = body.get("longitude")
+    phone = body.get("phone")
+    birthday = body.get("birthday")
+    profile_image = body.get("profile_image")
+    
+    if len(name)> 0:
         coach_update.name = body["name"]
-    if "last_name" in body:
+    if len(last_name)> 0:
         coach_update.last_name = body["last_name"]
-    if "email" in body:
+    if len(email)> 0:
         coach_update.email = body["email"]
-    if "password" in body:
+    if len(password)> 0:
         coach_update.password = body["password"]
-    if "is_active" in body:
+    if len(is_active) > 0:
         coach_update.is_active = body["is_active"]
-    if "gender" in body:
+    if len(gender)> 0:
         coach_update.gender = body["gender"]
-    if "country" in body:
+    if len(country)> 0:
         coach_update.country = body["country"]
-    if "province" in body:
+    if len(province) > 0:
         coach_update.province = body["province"]
-    if "city" in body:
+    if len(city) > 0:
         coach_update.city = body["city"]
-    if "latitude" in body:
+    if len(latitude) > 0:
         coach_update.latitude = body["latitude"]
-    if "longitude" in body:
+    if len(longitude) > 0:
         coach_update.longitude = body["longitude"]
-    if "phone" in body:
+    if len(phone) > 0:
         coach_update.phone = body["phone"]
-    if "birthday" in body:
+    if (birthday) > 0:
         coach_update.birthday = body["birthday"]
-    if "profile_image" in body:
-        coach_update.profile_image = body["profile_image"]
+    if len(profile_image) > 0:
+        coach_update.profile_image = body["profile_image"]    
 
     db.session.commit()
 
@@ -1628,6 +1646,174 @@ def delete_tag(tag_id):
     db.session.delete(tag)
     db.session.commit()
     return jsonify({"msg": "Tag deleted"}), 200
+
+
+#APPOINTMENTS
+#private, only for user and admin, but user can only create for himself
+@app.route("/appointments", methods=["POST"])
+@jwt_required()
+@role_required("user", "admin")
+def create_appointment():
+    role = current_role()
+
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    #  user_id logic
+    if role == "user":
+        user_id = int(get_jwt_identity())
+    else:  # admin
+        user_id = body.get("user_id")
+        if not user_id:
+            return jsonify({"error": "user_id is required for admin"}), 400
+        user_id = int(user_id)
+
+    coach_id = body.get("coach_id")
+    starts_at_raw = body.get("starts_at")
+    note = body.get("note")
+
+    if not coach_id or not starts_at_raw:
+        return jsonify({"error": "coach_id and starts_at are required"}), 400
+
+    #  validate user exists (recommended minimal)
+    user = db.session.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    coach = db.session.execute(select(Coach).where(Coach.id == int(coach_id))).scalar_one_or_none()
+    if not coach:
+        return jsonify({"error": "Coach not found"}), 404
+
+    # parse starts_at
+    try:
+        dt = dtparser.isoparse(starts_at_raw)
+    except Exception:
+        return jsonify({"error": "Invalid starts_at format. Use ISO8601"}), 400
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=ZoneInfo("Europe/Madrid"))
+
+    starts_at_utc = dt.astimezone(timezone.utc)
+    now_utc = datetime.now(timezone.utc)
+
+    if starts_at_utc <= now_utc:
+        return jsonify({"error": "starts_at must be in the future"}), 400
+
+    appt = Appointment(
+        user_id=user_id,
+        coach_id=int(coach_id),
+        starts_at=starts_at_utc,
+        status="pending",
+        note=note
+    )
+
+    db.session.add(appt)
+    db.session.commit()
+
+    return jsonify(appointment=appt.serialize()), 201
+
+#user can see only his appointments, admin can see all but should pass user_id as query param
+@app.route("/appointments/my", methods=["GET"])
+@jwt_required()
+@role_required("user","admin")
+def get_my_appointments():
+    role = current_role()
+
+    q = select(Appointment).order_by(Appointment.starts_at.desc())
+
+    if role == "user":
+        user_id = int(get_jwt_identity())
+        q = q.where(Appointment.user_id == user_id)
+
+    else:  # admin
+        user_id = request.args.get("user_id", type=int)
+        if user_id:
+            q = q.where(Appointment.user_id == user_id)
+        # else: no filter => all appointments
+
+    appts = db.session.execute(q).scalars().all()
+
+    return jsonify(appointments=[a.serialize() for a in appts]), 200
+
+
+#coach can see only his appointments, admin can see all but should pass coach_id as query param
+@app.route("/coach/appointments/my", methods=["GET"])
+@jwt_required()
+@role_required("coach", "admin")
+def get_my_coach_appointments():
+    role = current_role()
+
+    q = select(Appointment).order_by(Appointment.starts_at.desc())
+
+    if role == "coach":
+        coach_id = int(get_jwt_identity())
+        q = q.where(Appointment.coach_id == coach_id)
+
+    else:  # admin
+        coach_id = request.args.get("coach_id", type=int)
+        if coach_id:
+            q = q.where(Appointment.coach_id == coach_id)
+        # else: all appointments
+
+    appts = db.session.execute(q).scalars().all()
+    return jsonify(appointments=[a.serialize() for a in appts]), 200
+
+
+#admin can update status of any appointment, coach can update only his appointments
+@app.route("/coach/appointments/<int:appt_id>", methods=["PUT"])
+@jwt_required()
+@role_required("coach", "admin")
+def coach_update_appointment(appt_id):
+    role = current_role()
+    identity = int(get_jwt_identity())
+
+    appt = db.session.execute(select(Appointment).where(Appointment.id == appt_id)).scalar_one_or_none()
+    if not appt:
+        return jsonify({"error": "Appointment not found"}), 404
+
+    if role == "coach" and int(appt.coach_id) != identity:
+        return jsonify({"error": "Forbidden: not your appointment"}), 403
+
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    status = body.get("status")
+    if status not in ["approved", "rejected", "canceled"]:
+        return jsonify({"error": "status must be one of: approved, rejected, canceled"}), 400
+
+    appt.status = status
+    db.session.commit()
+
+    return jsonify(appointment=appt.serialize()), 200
+
+
+#user can cancel only his appointments and only if coach hasn't approved/rejected yet
+@app.route("/appointments/<int:appt_id>", methods=["PUT"])
+@jwt_required()
+@role_required("user", "admin")
+def user_cancel_appointment(appt_id):
+    role = current_role()
+    identity = int(get_jwt_identity())
+
+    appt = db.session.execute(select(Appointment).where(Appointment.id == appt_id)).scalar_one_or_none()
+    if not appt:
+        return jsonify({"error": "Appointment not found"}), 404
+
+    if role == "user" and int(appt.user_id) != identity:
+        return jsonify({"error": "Forbidden: not your appointment"}), 403
+
+    body = request.get_json() or {}
+    action = body.get("action")
+
+    if action != "cancel":
+        return jsonify({"error": "Use action: cancel"}), 400
+
+    appt.status = "canceled"
+    db.session.commit()
+
+    return jsonify(appointment=appt.serialize()), 200
 
 
 # this only runs if `$ python src/main.py` is executed

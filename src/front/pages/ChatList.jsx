@@ -1,8 +1,11 @@
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ChatList({ chats, onSelectChat, selectedChat, onDeleteChat }) {
 
   const role = localStorage.getItem("role");
+
+  const navigate = useNavigate();
 
   const formatSmartDate = (dateString) => {
     if (!dateString) return "";
@@ -112,7 +115,7 @@ export default function ChatList({ chats, onSelectChat, selectedChat, onDeleteCh
               {isMine && (
                 <span style={{
                   fontSize: "0.8rem",
-                  color: "#4fc3f7",
+                  color: "grey",
                   marginLeft: "6px"
                 }}>
                   ✓✓
@@ -136,6 +139,7 @@ export default function ChatList({ chats, onSelectChat, selectedChat, onDeleteCh
           </div>
         );
       })}
+      <button className="btn btn-primary mt-3" onClick={() => navigate("/users/home")}>Dashboard User</button>
     </div>
   );
 }
