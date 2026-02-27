@@ -11,7 +11,7 @@ export const User = () => {
 
   const token =
     localStorage.getItem("token-user") ||
-    localStorage.getItem("token-coach");
+    localStorage.getItem("token-coach") || localStorage.getItem("token-admin")
 
   const role = localStorage.getItem("role");
 

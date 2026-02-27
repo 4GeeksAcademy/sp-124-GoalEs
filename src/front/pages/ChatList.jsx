@@ -139,7 +139,12 @@ export default function ChatList({ chats, onSelectChat, selectedChat, onDeleteCh
           </div>
         );
       })}
-      <button className="btn btn-primary mt-3" onClick={() => navigate("/users/home")}>Dashboard User</button>
+      {role == "user" &&
+        <button className="btn btn-primary mt-3" onClick={() => navigate("/users/home")}>Dashboard User</button>
+      }
+      {role == "coach" &&
+        <button className="btn btn-primary mt-3" onClick={() => navigate("/coach/private")}>Dashboard Coach</button>
+      }
     </div>
   );
 }

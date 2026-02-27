@@ -66,7 +66,7 @@ app.register_blueprint(api, url_prefix='/api')
 
 
 # SEGURIDAD CON JWT
-app.config["JWT_SECRET_KEY"] = os.urandom(32)
+app.config["JWT_SECRET_KEY"] = "super-secret-key"
 jwt = JWTManager(app)
 
 # Stripe
