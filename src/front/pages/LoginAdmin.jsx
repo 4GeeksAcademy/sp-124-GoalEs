@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { AuthSplitLayout } from "./Layouts/AuthSplitLayout";
 
 export const LoginAdmin = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -45,10 +46,14 @@ export const LoginAdmin = () => {
     }
   };
 
-  return (
-    <div className="container py-4" style={{ maxWidth: 520 }}>
-      <h1>Login Admin</h1>
-
+    return (
+    <AuthSplitLayout
+      title="Login Admin"
+      subtitle="Sign in with your admin account"
+      bottomText="Don't have an admin account?"
+      bottomLinkText="Create Admin Account"
+      bottomLinkTo="/admin/signup"
+    >
       {error && <div className="alert alert-danger">{error}</div>}
       {welcome && <div className="alert alert-success">Welcome Boss!</div>}
 
@@ -68,28 +73,18 @@ export const LoginAdmin = () => {
           onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
         />
 
-        <button className="btn btn-success" type="submit">
+        <button className="btn btn-success w-100" type="submit">
           Login
         </button>
 
-        <div className="mt-3">
-          <p>Don't have an admin account?</p>
-          <button
-            className="btn btn-outline-primary"
-            type="button"
-            onClick={() => navigate("/admin/signup")}
-          >
-            Create Admin Account
-          </button>
-          <button
-            className="m-2 btn btn-outline-secondary"
-            type="button"
-            onClick={() => navigate("/")}
-          >
-            Back Home
-          </button>
-        </div>
+        <button
+          className="btn btn-outline-secondary w-100 mt-2"
+          type="button"
+          onClick={() => navigate("/")}
+        >
+          Back Home
+        </button>
       </form>
-    </div>
+    </AuthSplitLayout>
   );
 };

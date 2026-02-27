@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { AuthSplitLayout } from "./Layouts/AuthSplitLayout";
 
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 export default function CoachLogin() {
-const navigate = useNavigate();
-const { dispatch, store } = useGlobalReducer();
+  const navigate = useNavigate();
+  const { dispatch, store } = useGlobalReducer();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,18 +27,18 @@ const { dispatch, store } = useGlobalReducer();
       const data = await resp.json();
 
       if (!resp.ok) {
-        
+
         setMsg(data.error || "Login failed");
         return;
       }
 
-      
+
       localStorage.setItem("token-coach", data.token);
       localStorage.setItem("coach", JSON.stringify(data.coach));
       localStorage.setItem("role", "coach")
 
       dispatch({
-        type: "login-coach", 
+        type: "login-coach",
         payload: {
           token: localStorage.getItem("token-coach"),
           coach: data.coach,
@@ -46,7 +47,7 @@ const { dispatch, store } = useGlobalReducer();
 
       navigate("/coaches/profile");
 
-    
+
     } catch (err) {
       setMsg("Error to login (fetch failed)");
     }
@@ -54,17 +55,20 @@ const { dispatch, store } = useGlobalReducer();
 
   useEffect(() => {
     console.log(store.token)
-  },[store.token])
- 
+  }, [store.token])
+
 
   return (
-<>
-   <div className="container py-4" style={{ maxWidth: 720 }}>
-      <h1 className="mb-4">Coach Login</h1>
-
+    <AuthSplitLayout
+      title="Coach Login"
+      subtitle="Sign in to manage your courses and reservations"
+      bottomText="Don't have an account?"
+      bottomLinkText="Create Coach Account"
+      bottomLinkTo="/coaches/new"
+    >
       {msg && <div className="alert alert-danger">{msg}</div>}
 
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin} className="mt-3">
         <input
           className="form-control mb-3"
           value={email}
@@ -81,21 +85,14 @@ const { dispatch, store } = useGlobalReducer();
           type="password"
         />
 
-        <div className="d-flex gap-2">
-          <button className="btn btn-primary" type="submit">
-            Login
-          </button>
+        <button className="btn btn-success w-100" type="submit">
+          Login
+        </button>
 
-          <button
-            className="btn btn-secondary"
-            type="button"
-            onClick={() => navigate("/")}
-          >
-            Back to home
-          </button>
-        </div>
+        <button className="btn btn-outline-secondary w-100 mt-2" type="button" onClick={() => navigate("/")}>
+          Back to Home
+        </button>
       </form>
-    </div>
-    </>
+    </AuthSplitLayout>
   );
 }
