@@ -1,0 +1,97 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.auth-radial-bg {
+  background-color: #0b1220;
+  background-image:
+    radial-gradient(
+      650px circle at 0% 0%,
+      rgba(245, 158, 11, 0.35) 10%,
+      rgba(15, 23, 42, 0.9) 45%,
+      rgba(11, 18, 32, 1) 75%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1250px circle at 100% 100%,
+      rgba(251, 191, 36, 0.28) 10%,
+      rgba(15, 23, 42, 0.9) 45%,
+      rgba(11, 18, 32, 1) 80%,
+      transparent 100%
+    );
+}
+
+/* yellow shapes */
+#auth-shape-1 {
+  height: 220px;
+  width: 220px;
+  top: -60px;
+  left: -130px;
+  background: radial-gradient(circle at 30% 30%, #fbbf24, #f59e0b);
+  opacity: 0.95;
+  overflow: hidden;
+}
+
+#auth-shape-2 {
+  border-radius: 38% 62% 63% 37% / 70% 33% 67% 30%;
+  bottom: -60px;
+  right: -110px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle at 30% 30%, #fbbf24, #f59e0b);
+  opacity: 0.85;
+  overflow: hidden;
+}
+
+/* glass card */
+.auth-glass {
+  background-color: rgba(31, 41, 55, 0.75) !important; /* grey */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: saturate(180%) blur(14px);
+  border-radius: 16px;
+  color: #fff;
+}
+
+.auth-left-title {
+  color: #fbbf24;
+}
+.auth-left-text {
+  color: #ffffffd7;
+}
+
+.auth-form-title {
+  color: #fff;
+  font-weight: 700;
+}
+
+.auth-form-subtitle {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.auth-glass .form-control,
+.auth-glass .form-select {
+  background: rgba(148, 163, 184, 0.18);  /* grey input */
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.auth-glass .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.55); /* placeholder should be light, not black */
+}
+
+.auth-bottom {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.auth-bottom-link {
+  color: #fbbf24;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-bottom-link:hover {
+  color: #f59e0b;
+  text-decoration: underline;
+}

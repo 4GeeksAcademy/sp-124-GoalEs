@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthSplitLayout } from "./Layouts/AuthSplitLayout";
 
 const SignupAdmin = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -54,9 +55,13 @@ const SignupAdmin = () => {
   };
 
   return (
-    <div className="container py-4" style={{ maxWidth: 520 }}>
-      <h1 className="mb-3">Signup Admin</h1>
-
+    <AuthSplitLayout
+      title="Signup Admin"
+      subtitle="Create a new admin account"
+      bottomText="Already have an account?"
+      bottomLinkText="Login"
+      bottomLinkTo="/admin/login"
+    >
       {error && <div className="alert alert-danger">{error}</div>}
       {welcome && <div className="alert alert-success">Account Created!</div>}
 
@@ -69,17 +74,12 @@ const SignupAdmin = () => {
         <button type="submit" className="btn btn-success w-100" disabled={loading}>
           {loading ? "Creating..." : "Create Admin Account"}
         </button>
-      </form>
 
-      <div className="mt-4 d-flex gap-2">
-        <button className="btn btn-secondary" type="button" onClick={() => navigate("/admin/login")}>
-          Back to Admin Login
-        </button>
-        <button className="btn btn-outline-secondary" type="button" onClick={() => navigate("/")}>
+        <button className="btn btn-outline-secondary w-100 mt-2" type="button" onClick={() => navigate("/")}>
           Back Home
         </button>
-      </div>
-    </div>
+      </form>
+    </AuthSplitLayout>
   );
 };
 

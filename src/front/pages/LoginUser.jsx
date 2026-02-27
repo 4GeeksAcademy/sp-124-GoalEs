@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { AuthSplitLayout } from "./Layouts/AuthSplitLayout";
 
 
 export const LoginUser = () => {
@@ -71,53 +72,45 @@ export const LoginUser = () => {
   };
 
   return (
-    <>
-      <div className="container py-4">
-        <h1>Login User</h1>
+    <AuthSplitLayout
+      title="Login User"
+      subtitle="Sign in to start your learning journey"
+      bottomText="Don't have an account?"
+      bottomLinkText="Create Account"
+      bottomLinkTo="/users/signup"
+    >
+      {error && <div className="alert alert-danger">{error}</div>}
 
-        {error && <div className="alert alert-danger" role="alert">{error}</div>}
-
-        {welcome && (
-          <div className="alert alert-success" role="alert">
-            Bienvenido {store.user.name}
-          </div>
-        )}
-
-        <form onSubmit={login} className="mt-3">
-
-          <input
-            className="form-control mb-2"
-            placeholder="email"
-            value={form.email}
-            onChange={(e) => setForm((form) => ({ ...form, email: e.target.value }))}
-          />
-
-          <input
-            className="form-control mb-3"
-            type="password"
-            placeholder="password"
-            value={form.password}
-            onChange={(e) => setForm((form) => ({ ...form, password: e.target.value }))}
-          />
-
-          <button type="submit" className="btn btn-success">Login</button>
-        </form>
-
-        <div className="mt-4 d-flex gap-2">
-          <button className="btn btn-secondary" onClick={() => navigate("/users")}>
-            Back to Users
-          </button>
-          <button className="btn btn-outline-secondary" onClick={() => navigate("/")}>
-            Back to Home
-          </button>
+      {welcome && (
+        <div className="alert alert-success" role="alert">
+          Bienvenido {store.user.name}
         </div>
+      )}
 
-        <div>
-          <p className="mt-3">Do you not have a account?</p>
-          <button className="btn btn-outline-primary" onClick={() => navigate("/users/signup")}>Create Account</button>
-        </div>
+      <form onSubmit={login} className="mt-3">
+        <input
+          className="form-control mb-2"
+          placeholder="email"
+          value={form.email}
+          onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+        />
 
-      </div>
-    </>
-  )
+        <input
+          className="form-control mb-3"
+          type="password"
+          placeholder="password"
+          value={form.password}
+          onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+        />
+
+        <button type="submit" className="btn btn-success w-100">
+          Login
+        </button>
+
+        <button className="btn btn-outline-secondary w-100 mt-2" type="button" onClick={() => navigate("/")}>
+          Back Home
+        </button>
+      </form>
+    </AuthSplitLayout>
+  );
 }

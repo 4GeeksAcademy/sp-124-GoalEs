@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer"; 
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import { AuthSplitLayout } from "./Layouts/AuthSplitLayout";
 
 export const SingUpCoach = () => {
 
@@ -59,71 +60,27 @@ export const SingUpCoach = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Sing Coach</h2>
+    <AuthSplitLayout
+      title="Coach Signup"
+      subtitle="Create your coach account"
+      bottomText="Already have an account?"
+      bottomLinkText="Login"
+      bottomLinkTo="/coaches/login"
+    >
+      <form onSubmit={createCoach} className="mt-3">
+        <input type="text" name="name" placeholder="Name" className="form-control mb-3" value={form.name} onChange={handleChange} />
+        <input type="text" name="last_name" placeholder="Last Name" className="form-control mb-3" value={form.last_name} onChange={handleChange} />
+        <input type="email" name="email" placeholder="Email" className="form-control mb-3" value={form.email} onChange={handleChange} />
+        <input type="password" name="password" placeholder="Password" className="form-control mb-3" value={form.password} onChange={handleChange} />
 
-      <form onSubmit={createCoach} className="col-md-6">
-
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          className="form-control mb-3"
-          value={form.name}
-          onChange={handleChange}
-        />
-
-        <input
-          type="text"
-          name="last_name"
-          placeholder="Last Name"
-          className="form-control mb-3"
-          value={form.last_name}
-          onChange={handleChange}
-        />
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          className="form-control mb-3"
-          value={form.email}
-          onChange={handleChange}
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          className="form-control mb-3"
-          value={form.password}
-          onChange={handleChange}
-        />
-
-        <button type="submit" className="btn btn-success">Create Coach</button>
-        <button
-          type="button"
-          className="btn btn-secondary ms-2"
-          onClick={() => navigate("/main")}
-        >
-          Cancel
+        <button type="submit" className="btn btn-success w-100">
+          Create Coach
         </button>
 
-        <div className="mt-4 d-flex gap-2">
-          <button
-            className="btn btn-outline-secondary"
-            onClick={() => navigate("/")}
-          >
-            Back to Home
-          </button>
-        </div>
-
-        <div>
-          <p className="mt-3">Do you have an account?</p>
-          <button className="btn btn-outline-primary" onClick={() => navigate("/coaches/login")}>Go to login</button>
-        </div>
-
+        <button type="button" className="btn btn-outline-secondary w-100 mt-2" onClick={() => navigate("/")}>
+          Back to Home
+        </button>
       </form>
-    </div>
+    </AuthSplitLayout>
   );
 };
