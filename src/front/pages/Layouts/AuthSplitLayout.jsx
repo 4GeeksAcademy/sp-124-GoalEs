@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/auth.css";
-import logo from "../../assets/img/logo g azul amarillo.png";
 
 export const AuthSplitLayout = ({
   title = "Welcome",

@@ -1,11 +1,54 @@
-export const Footer = () => (
-	<footer className="footer mt-auto py-3 text-center">
-		<p>
-			Check the <a target="_blank" href="https://4geeks.com/docs/start/react-flask-template">template documentation</a> <i className="fa-solid fa-file"></i> for help.
-		</p>
-		<p>
-			Made with <i className="fa fa-heart text-danger" /> by{" "}
-			<a href="http://www.4geeksacademy.com">4Geeks Academy</a>
-		</p>
-	</footer>
-);
+import { Link } from "react-router-dom";
+
+
+export const Footer = () => {
+	return (
+    <footer className="goales-footer">
+      <div className="container">
+        <div className="row py-5">
+
+        
+          <div className="col-lg-4 col-md-6 mb-4">
+            <h5 className="footer-title">Address</h5>
+            <p className="footer-text">Calle Gran Via 45, 28013 Madrid, España</p>
+            <p className="footer-text">+34 (91) 123-4567 (9am - 6pm CET, Mon - Fri)</p>
+            <p className="footer-text">goales@gmail.com</p>
+            <div className="footer-socials mt-3">
+              <a href="#"><i className="fa-brands fa-facebook"></i></a>
+              <a href="#"><i className="fa-brands fa-x-twitter"></i></a>
+              <a href="#"><i className="fa-brands fa-instagram"></i></a>
+              <a href="#"><i className="fa-brands fa-linkedin"></i></a>
+            </div>
+          </div>
+
+          
+          <div className="col-lg-2 col-md-3 mb-4 offset-lg-2">
+            <h5 className="footer-title">Explore</h5>
+            <ul className="footer-links">
+              <a className="nav-link" href="#our-story">Our Story</a>
+              <li><Link to="/coaches">Our Coaches</Link></li>
+              <li><Link to="/courses">Our Courses</Link></li>
+              <li><Link to="/#contact">Contact Us</Link></li>
+            </ul>
+          </div>
+
+          
+          <div className="col-lg-3 col-md-3 mb-4">
+            <h5 className="footer-title">Information</h5>
+            <ul className="footer-links">
+              <a href="#become-coach">How to become a Coach?</a> 
+              <li><Link to="/#privacy">Privacy Policy</Link></li>
+              <li><Link to="/#terms">Terms of Service</Link></li>
+            </ul>
+          </div>
+
+        </div>
+
+     
+        <div className="footer-bottom">
+          <p>© 2025 GoalEs. All Rights Reserved</p>
+        </div>
+      </div>
+    </footer>
+  );
+};
