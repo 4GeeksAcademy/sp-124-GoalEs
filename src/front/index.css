@@ -1,0 +1,413 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap");
+
+/*navbar*/
+.goales-navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 0;
+  font-family: "DM Sans", sans-serif;
+}
+
+.goales-navbar .navbar-brand {
+  font-family: "Playfair Display", serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  letter-spacing: -0.5px;
+}
+
+.goales-navbar .navbar-brand span {
+  color: #e8a838;
+}
+
+.goales-navbar .nav-link {
+  color: #444 !important;
+  font-size: 0.92rem;
+  font-weight: 500;
+  padding: 6px 14px !important;
+  transition: color 0.2s;
+}
+
+.goales-navbar .nav-link:hover {
+  color: #1a1a2e !important;
+}
+
+.goales-navbar .dropdown-menu {
+  border: none;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 160px;
+}
+
+.goales-navbar .dropdown-item {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #444;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+
+.goales-navbar .dropdown-item:hover {
+  background: #f7f3ec;
+  color: #1a1a2e;
+}
+
+.btn-login {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #1a1a2e !important;
+  border: 1.5px solid #ddd;
+  border-radius: 50px;
+  padding: 7px 20px !important;
+  transition: all 0.2s;
+}
+
+.btn-login:hover {
+  border-color: #1a1a2e;
+}
+
+.btn-signup {
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: #1a1a2e;
+  color: #fff !important;
+  border-radius: 50px;
+  padding: 8px 22px !important;
+  transition: all 0.2s;
+}
+
+.btn-signup:hover {
+  background: #e8a838;
+  color: #1a1a2e !important;
+}
+/*footer*/
+
+.goales-footer {
+  background: #12121f;
+  color: #aaa;
+  font-family: "DM Sans", sans-serif;
+}
+
+.goales-footer .footer-title {
+  font-family: "Playfair Display", serif;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.goales-footer .footer-text {
+  font-size: 0.88rem;
+  color: #aaa;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.goales-footer .footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.goales-footer .footer-links li {
+  margin-bottom: 10px;
+}
+
+.goales-footer .footer-links a {
+  font-size: 0.88rem;
+  color: #aaa;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.goales-footer .footer-links a:hover {
+  color: #e8a838;
+}
+
+.goales-footer .footer-socials {
+  display: flex;
+  gap: 16px;
+}
+
+.goales-footer .footer-socials a {
+  color: #aaa;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.goales-footer .footer-socials a:hover {
+  color: #e8a838;
+}
+
+.goales-footer .footer-bottom {
+  border-top: 1px solid #2a2a3a;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.goales-footer .footer-bottom p {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+/* home */
+
+.home-hero {
+  position: relative;
+  background-image: url('https://img.freepik.com/fotos-premium/aluno-estudando-na-biblioteca_1421-7997.jpg');
+  background-size: cover;
+  background-position: center top;
+  min-height: 90vh;
+  margin-top: 15px;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(10,10,30,0.75) 40%, rgba(10,10,30,0.1) 100%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #e8a838;
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.hero-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.7;
+  margin-bottom: 36px;
+  max-width: 480px;
+}
+
+.btn-hero-primary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  background: #e8a838;
+  color: #1a1a2e;
+  padding: 13px 28px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+
+.btn-hero-primary:hover {
+  background: #fff;
+  color: #1a1a2e;
+  text-decoration: none;
+}
+
+.btn-hero-secondary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  background: transparent;
+  color: #ffffff;
+  padding: 13px 28px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  text-decoration: none;
+  transition: all 0.25s;
+}
+
+.btn-hero-secondary:hover {
+  border-color: #fff;
+  color: #fff;
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+}
+
+
+.become-coach-section {padding: 100px 0; background: #faf9f7;
+}
+
+.section-eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #e8a838;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.25;
+  margin-bottom: 24px;
+}
+
+.section-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.btn-coach-cta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.25s;
+}
+
+.btn-coach-cta:hover {background: #e8a838; color: #1a1a2e;
+}
+
+.coach-stats-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+}
+
+.coach-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.stat-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #e8a838;
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #999;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.coach-stat-divider {height: 1px; background: #f0f0f0;width: 100%;
+}
+
+.coach-card-quote {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.7;
+  font-style: italic;
+  margin-top: 28px;
+  margin-bottom: 8px;
+}
+
+.coach-card-author {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+
+.stats-section {padding: 100px 0;background: #ffffff;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  border-radius: 16px;
+  background: #faf9f7;
+  transition: transform 0.2s;
+}
+
+.stat-box:hover { transform: translateY(-4px);}
+
+.stat-box-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #e8a838;
+  line-height: 1;
+}
+
+.stat-box-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #999;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+.chatbot-mention {
+  margin-top: 60px;
+  background: #1a1a2e;
+  border-radius: 16px;
+  padding: 32px 40px;
+}
+
+.chatbot-mention-inner {display: flex; align-items: center; gap: 24px;}
+
+.chatbot-icon { font-size: 2.5rem; flex-shrink: 0;}
+
+.chatbot-mention-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.chatbot-mention-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.7);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.our-story-section {
+  padding: 100px 0;
+  background: #faf9f7;
+  border-top: 1px solid #f0f0f0;
+}
