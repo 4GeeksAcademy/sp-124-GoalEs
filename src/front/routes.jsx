@@ -54,6 +54,13 @@ import { MyAppointmentsUser } from "./pages/MyAppointmentsUser";
 import { MyAppointmentsCoach } from "./pages/MyAppointmentsCoach";
 import { AdminAppointments } from "./pages/AdminAppointments.jsx";
 
+import { About } from "./pages/public/About.jsx";
+import { Features } from "./pages/public/Features.jsx";
+import { FAQ } from "./pages/public/FAQ.jsx";
+import { Contact } from "./pages/public/Contact.jsx";
+import { LegalPrivacy } from "./pages/public/LegalPrivacy.jsx";
+import { LegalTerms } from "./pages/public/LegalTerms.jsx";
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found</h1>}>
@@ -79,6 +86,13 @@ export const router = createBrowserRouter(
         <Route path="courses/:id" element={<CourseDetail />} />
 
         <Route path="messages" element={<Message />} />
+
+        <Route path="about" element={<About />} />
+        <Route path="features" element={<Features />} />
+        <Route path="faq" element={<FAQ />} />
+        <Route path="contact" element={<Contact />} />
+        <Route path="legal-privacy" element={<LegalPrivacy />} />
+        <Route path="legal-terms" element={<LegalTerms />} />
       </Route>
 
       {/* ADMIN PRIVATE (only dashboard pages here) */}
