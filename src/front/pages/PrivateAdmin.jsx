@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import "../dashboardadmin.css"
+import "./styles/dashboardadmin.css"
 import User from "./User";
 import { Coaches } from "./Coaches";
 import { Courses } from "./Courses";
