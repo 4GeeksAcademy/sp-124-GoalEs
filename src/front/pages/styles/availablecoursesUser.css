@@ -1,0 +1,116 @@
+.courses-layout {
+  min-height: 100vh;
+  background-color: #f4f4f6;
+  padding: 3rem 1rem;
+}
+
+.courses-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.courses-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.course-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.25s ease;
+  border: 1px solid #eee;
+}
+
+.course-card:hover {
+  transform: translateY(-6px);
+}
+
+.course-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.course-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-title {
+  color: #1a1a2e;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+}
+
+.course-description {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.course-price {
+  font-weight: 600;
+  color: #e8a838;
+  margin-bottom: 0.8rem;
+}
+
+.course-meta {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 0.3rem;
+}
+
+.course-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.8rem;
+}
+
+.course-btn-outline {
+  flex: 1;
+  background: transparent;
+  border: 2px solid #1a1a2e;
+  color: #1a1a2e;
+  padding: 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.course-btn-outline:hover {
+  background-color: #1a1a2e;
+  color: white;
+}
+
+.course-btn-primary {
+  flex: 1;
+  background-color: #1a1a2e;
+  color: white;
+  border: 2px solid #1a1a2e;
+  padding: 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.course-btn-primary:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+  border-color: #e8a838;
+}
+
+.course-payment-section {
+  margin-top: 3rem;
+}

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import "./styles/completeProfileUser.css"
 
 export const UploadImagesUser = ({ onUpload }) => {
 
@@ -68,21 +69,29 @@ export const UploadImagesUser = ({ onUpload }) => {
     };
 
     return (
-        <>
-            {loading && <p>Uploading...</p>}
+        <div className="profile-image-section">
 
-            {imageUrl && (
-                <img
-                    src={imageUrl}
-                    alt="Profile"
-                    style={{ width: "200px", borderRadius: "30%", margin: "10px" }}
-                />
-            )}
-            <input
-                type="file"
-                accept="image/png, image/jpeg"
-                onChange={(event) => uploadImage(event.target.files[0])}
+            {loading && <p className="profile-uploading">Uploading...</p>}
+
+            <img
+                className="profile-avatar"
+                src={
+                    imageUrl ||
+                    `https://ui-avatars.com/api/?name=${store.user?.name}+${store.user?.surname}&background=random&color=fff&size=256`
+                }
+                alt="Profile"
             />
-        </>
+
+            <label className="profile-upload-btn">
+                Select Image
+                <input
+                    className="profile-file-input"
+                    type="file"
+                    accept="image/png, image/jpeg"
+                    onChange={(event) => uploadImage(event.target.files?.[0])}
+                />
+            </label>
+
+        </div>
     );
 };

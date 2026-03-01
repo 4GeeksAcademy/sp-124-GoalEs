@@ -1,0 +1,125 @@
+
+.profile-layout {
+  min-height: 100vh;
+  background-color: #f4f4f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.profile-container {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  padding: 3rem;
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+
+.profile-title {
+  text-align: center;
+  color: #1a1a2e;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.profile-error {
+  background-color: #ffe5e5;
+  color: #c0392b;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.profile-input,
+.profile-select {
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.profile-input:focus,
+.profile-select:focus {
+  border-color: #e8a838;
+  box-shadow: 0 0 0 4px rgba(232, 168, 56, 0.15);
+}
+
+.profile-submit-btn {
+  margin-top: 1rem;
+  background-color: #1a1a2e;
+  color: white;
+  padding: 1rem;
+  border-radius: 14px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.profile-submit-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 25px rgba(232, 168, 56, 0.35);
+}
+
+.profile-image-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.profile-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #e8a838;
+  margin-bottom: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+
+.profile-file-input {
+  display: none;
+}
+
+.profile-upload-btn {
+  background-color: #1a1a2e;
+  color: white;
+  padding: 0.8rem 1.8rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.profile-upload-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(232, 168, 56, 0.25);
+}
+
+.profile-uploading {
+  font-size: 0.85rem;
+  color: #777;
+  margin-bottom: 0.5rem;
+}

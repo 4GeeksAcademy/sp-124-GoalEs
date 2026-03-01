@@ -1,0 +1,127 @@
+.appointments-layout {
+  min-height: 100vh;
+  background-color: #f4f4f6;
+  padding: 3rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.appointments-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.appointments-title {
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.appointments-loading {
+  color: #777;
+}
+
+.appointments-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  border: 1px solid #eee;
+}
+
+.appointments-section-title {
+  margin-bottom: 1.5rem;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.appointments-empty {
+  color: #888;
+}
+
+.appointments-table-wrapper {
+  overflow-x: auto;
+}
+
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.appointments-table th {
+  text-align: left;
+  padding: 0.8rem;
+  font-size: 0.85rem;
+  color: #666;
+  border-bottom: 2px solid #eee;
+}
+
+.appointments-table td {
+  padding: 0.8rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.appointments-table tr:hover {
+  background-color: #fafafa;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.appointments-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.appointments-badge.success {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+.appointments-badge.secondary {
+  background-color: #1a1a2e;
+  color: white;
+}
+
+.appointments-primary-btn {
+  background-color: #1a1a2e;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.appointments-primary-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+.appointments-outline-btn {
+  background: transparent;
+  border: 2px solid #1a1a2e;
+  color: #1a1a2e;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.appointments-outline-btn:hover {
+  background-color: #1a1a2e;
+  color: white;
+}
+
+.appointments-error,
+.appointments-warning {
+  background-color: #ffe5e5;
+  color: #c0392b;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}

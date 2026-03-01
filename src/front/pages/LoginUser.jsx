@@ -82,7 +82,7 @@ export const LoginUser = () => {
       {error && <div className="alert alert-danger">{error}</div>}
 
       {welcome && (
-        <div className="alert alert-success" role="alert">
+        <div className="alert-login" role="alert">
           Bienvenido {store.user.name}
         </div>
       )}

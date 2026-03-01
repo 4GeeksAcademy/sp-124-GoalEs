@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import "./styles/appointmentsUser.css"
+
 
 export const MyAppointmentsUser = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -108,9 +110,14 @@ export const MyAppointmentsUser = () => {
 
   if (!token) {
     return (
-      <div className="container py-4">
-        <div className="alert alert-warning">User token not found. Please login again.</div>
-        <button className="btn btn-primary" onClick={() => navigate("/users/login")}>
+      <div className="appointments-layout">
+        <div className="appointments-warning">
+          User token not found. Please login again.
+        </div>
+        <button
+          className="appointments-primary-btn"
+          onClick={() => navigate("/users/login")}
+        >
           Go to Login
         </button>
       </div>
@@ -118,107 +125,115 @@ export const MyAppointmentsUser = () => {
   }
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h1 className="mb-0">My Reservations</h1>
+    <div className="appointments-layout">
+
+      <div className="appointments-header">
+        <h1 className="appointments-title">My Reservations</h1>
       </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
+      {error && (
+        <div className="appointments-error">
+          {error}
+        </div>
+      )}
 
       {loading ? (
-        <p>Loading...</p>
+        <p className="appointments-loading">Loading...</p>
       ) : (
         <>
           {/* UPCOMING */}
-          <div className="card mb-3">
-            <div className="card-body">
-              <h5 className="card-title mb-3">
-                Upcoming reservations ({upcoming.length})
-              </h5>
+          <div className="appointments-card">
 
-              {upcoming.length === 0 ? (
-                <div className="text-muted">No upcoming reservations.</div>
-              ) : (
-                <div className="table-responsive">
-                  <table className="table table-striped align-middle mb-0">
-                    <thead>
-                      <tr>
-                        <th style={{ width: 90 }}>ID</th>
-                        <th>Starts at</th>
-                        <th style={{ width: 120 }}>Coach</th>
-                        <th>Note</th>
-                        <th style={{ width: 150 }}>Status</th>
-                        <th style={{ width: 180 }} className="text-end">
-                          Actions
-                        </th>
+            <h5 className="appointments-section-title">
+              Upcoming reservations ({upcoming.length})
+            </h5>
+
+            {upcoming.length === 0 ? (
+              <div className="appointments-empty">
+                No upcoming reservations.
+              </div>
+            ) : (
+              <div className="appointments-table-wrapper">
+                <table className="appointments-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Starts at</th>
+                      <th>Coach</th>
+                      <th>Note</th>
+                      <th>Status</th>
+                      <th className="text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {upcoming.map((a) => (
+                      <tr key={a.id}>
+                        <td>{a.id}</td>
+                        <td>{fmt(a.starts_at)}</td>
+                        <td>{a.coach_id}</td>
+                        <td>{a.note || "—"}</td>
+                        <td>
+                          <span className="appointments-badge success">
+                            {a.status}
+                          </span>
+                        </td>
+                        <td className="text-right">
+                          <button
+                            className="appointments-outline-btn"
+                            onClick={() => cancelAppointment(a.id)}
+                          >
+                            Cancel
+                          </button>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {upcoming.map((a) => (
-                        <tr key={a.id}>
-                          <td>{a.id}</td>
-                          <td>{fmt(a.starts_at)}</td>
-                          <td>{a.coach_id}</td>
-                          <td>{a.note || <span className="text-muted">—</span>}</td>
-                          <td>
-                            <span className="badge text-bg-success">{a.status}</span>
-                          </td>
-                          <td className="text-end">
-                            <button
-                              className="btn btn-outline-danger btn-sm"
-                              type="button"
-                              onClick={() => cancelAppointment(a.id)}
-                            >
-                              Cancel
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
-          {/* HISTORY / CLOSED */}
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title mb-3">
-                Past / Closed reservations ({history.length})
-              </h5>
+          {/* HISTORY */}
+          <div className="appointments-card">
 
-              {history.length === 0 ? (
-                <div className="text-muted">No history yet.</div>
-              ) : (
-                <div className="table-responsive">
-                  <table className="table table-striped align-middle mb-0">
-                    <thead>
-                      <tr>
-                        <th style={{ width: 90 }}>ID</th>
-                        <th>Starts at</th>
-                        <th style={{ width: 120 }}>Coach</th>
-                        <th>Note</th>
-                        <th style={{ width: 150 }}>Status</th>
+            <h5 className="appointments-section-title">
+              Past / Closed reservations ({history.length})
+            </h5>
+
+            {history.length === 0 ? (
+              <div className="appointments-empty">
+                No history yet.
+              </div>
+            ) : (
+              <div className="appointments-table-wrapper">
+                <table className="appointments-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Starts at</th>
+                      <th>Coach</th>
+                      <th>Note</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {history.map((a) => (
+                      <tr key={a.id}>
+                        <td>{a.id}</td>
+                        <td>{fmt(a.starts_at)}</td>
+                        <td>{a.coach_id}</td>
+                        <td>{a.note || "—"}</td>
+                        <td>
+                          <span className="appointments-badge secondary">
+                            {a.status}
+                          </span>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {history.map((a) => (
-                        <tr key={a.id}>
-                          <td>{a.id}</td>
-                          <td>{fmt(a.starts_at)}</td>
-                          <td>{a.coach_id}</td>
-                          <td>{a.note || <span className="text-muted">—</span>}</td>
-                          <td>
-                            <span className="badge text-bg-secondary">{a.status}</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </>
       )}
