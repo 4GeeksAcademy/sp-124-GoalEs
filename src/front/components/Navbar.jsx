@@ -1,81 +1,179 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import "../pages/styles/navbar.css"
 
 export const Navbar = () => {
 
-	return (
-		<>
-		 <nav className="navbar navbar-expand-lg goales-navbar">
-        <div className="container">
+  const { store, dispatch } = useGlobalReducer();
+  const navigate = useNavigate();
 
-          
-          <Link className="navbar-brand" to="/">
-            Goal<span>Es</span>
-          </Link>
+  const token = store.token || localStorage.getItem("token-user");
+  const isLogged = !!token;
 
-         
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarContent"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
+  const isAdmin = !!localStorage.getItem("token-admin");
+  const isUser = !!localStorage.getItem("token-user");
+  const isCoach = !!localStorage.getItem("token-coach") || !!localStorage.getItem("coach");
+  const isPublic = !isAdmin && !isUser && !isCoach;
 
-          <div className="collapse navbar-collapse" id="navbarContent">
+  const logout = () => {
+    dispatch({ type: "logout-user" });
+    localStorage.removeItem("token-user");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
 
-           
-            <ul className="navbar-nav mx-auto gap-1">
-              <li className="nav-item">
-                <a className="nav-link" href="#our-story">Our Story</a>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/coaches">Our Coaches</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/courses">Our Courses</Link>
-              </li>
-            </ul>
+    navigate("/", { state: { logoutMessage: true } });
+  };
 
-           
-            <ul className="navbar-nav gap-2 align-items-center">
+  return (
+    <nav className="navbar navbar-expand-lg goales-navbar">
+      <div className="container">
 
-              
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link btn-login dropdown-toggle"
-                  href="#"
-                  data-bs-toggle="dropdown"
+        <Link className="navbar-brand" to="/">
+          Goal<span>Es</span>
+        </Link>
+
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarContent">
+
+
+          <ul className="navbar-nav mx-auto gap-1">
+            <li className="nav-item">
+              <a className="nav-link" href="#our-story">Our Story</a>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/coaches">Our Coaches</Link>
+            </li>
+          </ul>
+
+
+          <ul className="navbar-nav gap-2 align-items-center">
+
+            {isAdmin && (
+              <div className="role-dashboard-wrapper">
+                <button
+                  className="role-dashboard-btn"
+                  onClick={() => navigate("/admin/home")}
                 >
-                  Log in
-                </a>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li><Link className="dropdown-item" to="/users/login">User</Link></li>
-                  <li><Link className="dropdown-item" to="/coaches/login">Coach</Link></li>
-                  <li><Link className="dropdown-item" to="/admin/login">Admin</Link></li>
-                </ul>
-              </li>
+                  Admin Dashboard
+                </button>
+              </div>
+            )}
 
-              
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link btn-signup dropdown-toggle"
-                  href="#"
-                  data-bs-toggle="dropdown"
+            {isUser && (
+              <div className="role-dashboard-wrapper">
+                <button
+                  className="role-dashboard-btn"
+                  onClick={() => navigate("/users/home")}
                 >
-                  Sign up
-                </a>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li><Link className="dropdown-item" to="/users/signup">User</Link></li>
-                  <li><Link className="dropdown-item" to="/coaches/new">Coach</Link></li>
-                  <li><Link className="dropdown-item" to="/admin/signup">Admin</Link></li>
-                </ul>
-              </li>
+                  Dashboard
+                </button>
+              </div>
+            )}
 
-            </ul>
-          </div>
+            {isCoach && (
+              <div className="role-dashboard-wrapper">
+                <button
+                  className="role-dashboard-btn"
+                  onClick={() => navigate("/coach/private")}
+                >
+                  Coach Dashboard
+                </button>
+              </div>
+            )}
+
+            {!isLogged ? (
+              <>
+                <li className="nav-item dropdown">
+                  <a
+                    className="nav-link btn-login dropdown-toggle"
+                    href="#"
+                    data-bs-toggle="dropdown"
+                  >
+                    Log in
+                  </a>
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <li><Link className="dropdown-item" to="/users/login">User</Link></li>
+                    <li><Link className="dropdown-item" to="/coaches/login">Coach</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/login">Admin</Link></li>
+                  </ul>
+                </li>
+
+                <li className="nav-item dropdown">
+                  <a
+                    className="nav-link btn-signup dropdown-toggle"
+                    href="#"
+                    data-bs-toggle="dropdown"
+                  >
+                    Sign up
+                  </a>
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <li><Link className="dropdown-item" to="/users/signup">User</Link></li>
+                    <li><Link className="dropdown-item" to="/coaches/new">Coach</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/signup">Admin</Link></li>
+                  </ul>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="nav-item dropdown d-flex align-items-center">
+
+                  <img
+                    src={store.user?.profile_picture || "https://via.placeholder.com/40"}
+                    alt="Profile"
+                    className="navbar-avatar"
+                  />
+
+                  <a
+                    className="nav-link dropdown-toggle"
+                    href="#"
+                    data-bs-toggle="dropdown"
+                  >
+                    {store.user?.name}
+                  </a>
+
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => navigate("/users/profile")}
+                      >
+                        Edit Profile
+                      </button>
+                    </li>
+
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => navigate("/")}
+                      >
+                        Home
+                      </button>
+                    </li>
+
+                    <li>
+                      <button
+                        className="dropdown-item text-danger"
+                        onClick={logout}
+                      >
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                </li>
+              </>
+            )}
+
+          </ul>
         </div>
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 };

@@ -6,63 +6,93 @@ import { CoursesFavoritesUser } from "./CoursesFavoritesUser";
 import { MyCoursesUser } from "./MyCoursesUser";
 import { NavbarUser } from "./NavbarUser";
 import { MyAppointmentsUser } from "./MyAppointmentsUser";
+import "./styles/privatePageUser.css"
 
 export const PrivateUser = () => {
-
-    const backendURL = import.meta.env.VITE_BACKEND_URL
 
     const { store, dispatch } = useGlobalReducer();
     const navigate = useNavigate();
 
     const [goodbye, setGoodBye] = useState(false);
+    const [activeSection, setActiveSection] = useState("available");
 
     const token = store.token || localStorage.getItem("token-user");
-    const isUnauthorized = !token; // added by arash
+    const isUnauthorized = !token;
 
     useEffect(() => {
         if (isUnauthorized) {
             const timer = setTimeout(() => {
                 navigate("/users/login");
             }, 3000);
-
             return () => clearTimeout(timer);
         }
     }, [isUnauthorized, navigate]);
 
-    const logout = () => {
-
-        setGoodBye(true)
-
-        setTimeout(() => {
-            dispatch({ type: "logout-user" });
-            localStorage.removeItem("token-user");
-            localStorage.removeItem("user");
-            localStorage.removeItem("role")
-            navigate("/users/login");
-        }, 3000)
-    };
-
     if (isUnauthorized) {
         return (
-            <div className="container py-4">
-                <div className="alert alert-danger" role="alert">
-                    You can not enter this page
-                </div>
+            <div className="user-unauthorized">
+                You can not enter this page
             </div>
         );
     }
 
     return (
         <>
-            <NavbarUser logout={logout} />
-            <div className="container py-4">
-                {goodbye && <div className="alert alert-success">We hope to see you back soon!</div>}
-                <h1>Dashboard</h1>
-                <AvailableCoursesUser />
-                <CoursesFavoritesUser />
-                <MyCoursesUser />
-                <MyAppointmentsUser />
-                <button onClick={() => navigate("/users/chats")}>Chats</button>
+
+            <div className="user-dashboard-layout">
+
+                <aside className="user-sidebar">
+
+                    <h2 className="user-sidebar-title">User Panel</h2>
+
+                    <button
+                        className="user-sidebar-btn"
+                        onClick={() => setActiveSection("available")}
+                    >
+                        Available Courses
+                    </button>
+
+                    <button
+                        className="user-sidebar-btn"
+                        onClick={() => setActiveSection("favorites")}
+                    >
+                        Favorites
+                    </button>
+
+                    <button
+                        className="user-sidebar-btn"
+                        onClick={() => setActiveSection("mycourses")}
+                    >
+                        My Courses
+                    </button>
+
+                    <button
+                        className="user-sidebar-btn"
+                        onClick={() => setActiveSection("appointments")}
+                    >
+                        My Appointments
+                    </button>
+
+                    <button
+                        className="user-sidebar-btn"
+                        onClick={() => navigate("/users/chats")}
+                    >
+                        Chats
+                    </button>
+
+                </aside>
+
+                <main className="user-main-content">
+
+                    <h1 className="user-dashboard-title">Dashboard</h1>
+
+                    {activeSection === "available" && <AvailableCoursesUser />}
+                    {activeSection === "favorites" && <CoursesFavoritesUser />}
+                    {activeSection === "mycourses" && <MyCoursesUser />}
+                    {activeSection === "appointments" && <MyAppointmentsUser />}
+
+                </main>
+
             </div>
         </>
     );

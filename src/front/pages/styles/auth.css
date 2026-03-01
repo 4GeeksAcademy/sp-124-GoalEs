@@ -145,3 +145,11 @@
 .auth-page .row {
   min-height: 70vh;
 }
+.alert-login {
+  background-color: #e8a838;
+  color: #1a1a2e;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
