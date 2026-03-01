@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { CoachUploadImage } from "./CoachUploadImage";
 import { LocationAutocomplete } from "../components/LocationAutocomplete";
+import "./styles/completeprofileCoach.css"
 
 export const CoachProfile = () => {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -106,118 +107,140 @@ export const CoachProfile = () => {
     };
 
 
-    return (
-        <div className="container py-4">
-            <h1>Complete Your Profile</h1>
+return (
+  <div className="coach-profile-layout">
 
-            {error && <div className="alert alert-danger">{error}</div>}
+    <div className="coach-profile-container">
 
-            <CoachUploadImage
-                uploadPhoto={(photo) =>
-                    setForm(prev => ({ ...prev, profile_image: photo }))
-                }
-            />
+      <h1 className="coach-profile-title">
+        Complete Your Profile
+      </h1>
 
-            <form onSubmit={updateCoachProfile}>
+      {error && (
+        <div className="coach-profile-error">
+          {error}
+        </div>
+      )}
 
-                <input
-                    className="form-control mb-2"
-                    placeholder="Name"
-                    value={form.name}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, name: event.target.value }))
-                    }
-                />
+      <CoachUploadImage
+        uploadPhoto={(photo) =>
+          setForm(prev => ({ ...prev, profile_image: photo }))
+        }
+      />
 
-                <input
-                    className="form-control mb-2"
-                    placeholder="Last Name"
-                    value={form.last_name}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, last_name: event.target.value }))
-                    }
-                />
+      <form
+        className="coach-profile-form"
+        onSubmit={updateCoachProfile}
+      >
 
-                <input
-                    className="form-control mb-2"
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, email: event.target.value }))
-                    }
-                />
-                <input
-                    className="form-control mb-2"
-                    type="date"
-                    placeholder="YYYY/MM/DD"
-                    value={form.birthday}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, birthday: event.target.value }))
-                    }
-                />
-                <LocationAutocomplete
-                    onPlaceSelected={(place) =>
-                        setForm(prev => ({
-                            ...prev,
-                            city: place.city,
-                            province: place.province,
-                            country: place.country,
-                            latitude: place.latitude,
-                            longitude: place.longitude,
-                        }))
-                    }
-                />
+        <input
+          className="coach-input"
+          placeholder="Name"
+          value={form.name}
+          onChange={(event) =>
+            setForm(prev => ({ ...prev, name: event.target.value }))
+          }
+        />
 
-                {form.city && (
-                    <p className="text-muted mt-1">
-                        📍 {form.city}, {form.province}, {form.country}
-                    </p>
-                )}
+        <input
+          className="coach-input"
+          placeholder="Last Name"
+          value={form.last_name}
+          onChange={(event) =>
+            setForm(prev => ({ ...prev, last_name: event.target.value }))
+          }
+        />
 
-                <input
-                    className="form-control mb-2"
-                    placeholder="Phone"
-                    value={form.phone}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, phone: event.target.value }))
-                    }
-                />
+        <input
+          className="coach-input"
+          placeholder="Email"
+          value={form.email}
+          onChange={(event) =>
+            setForm(prev => ({ ...prev, email: event.target.value }))
+          }
+        />
 
-                <input
-                    className="form-control mb-3"
-                    type="password"
-                    placeholder="New Password"
-                    value={form.password}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, password: event.target.value }))
-                    }
-                />
+        <input
+          className="coach-input"
+          type="date"
+          value={form.birthday}
+          onChange={(event) =>
+            setForm(prev => ({ ...prev, birthday: event.target.value }))
+          }
+        />
 
-                <select
-                    className="form-control mb-3"
-                    value={form.gender}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, gender: event.target.value }))
-                    }
-                >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
+        <div className="coach-location-wrapper">
+          <LocationAutocomplete
+            onPlaceSelected={(place) =>
+              setForm(prev => ({
+                ...prev,
+                city: place.city,
+                province: place.province,
+                country: place.country,
+                latitude: place.latitude,
+                longitude: place.longitude,
+              }))
+            }
+          />
 
+          {form.city && (
+            <p className="coach-location-display">
+              📍 {form.city}, {form.province}, {form.country}
+            </p>
+          )}
+        </div>
 
-                <div className="modal-footer">
-                    <button className="btn btn-primary">
-                        Save Profile
-                    </button>
-                    
-                    <button className="btn btn-secondary" onClick={() => navigate("/coach/private")}>
-                        Back to Dashboard
-                    </button>
-                </div>
-            </form>
+        <input
+          className="coach-input"
+          placeholder="Phone"
+          value={form.phone}
+          onChange={(event) =>
+            setForm(prev => ({ ...prev, phone: event.target.value }))
+          }
+        />
+
+        <input
+          className="coach-input"
+          type="password"
+          placeholder="New Password"
+          value={form.password}
+          onChange={(event) =>
+            setForm(prev => ({ ...prev, password: event.target.value }))
+          }
+        />
+
+        <select
+          className="coach-select"
+          value={form.gender}
+          onChange={(event) =>
+            setForm(prev => ({ ...prev, gender: event.target.value }))
+          }
+        >
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <div className="coach-form-actions">
+
+          <button className="coach-primary-btn">
+            Save Profile
+          </button>
+
+          <button
+            type="button"
+            className="coach-secondary-btn"
+            onClick={() => navigate("/coach/private")}
+          >
+            Back to Dashboard
+          </button>
 
         </div>
-    );
+
+      </form>
+
+    </div>
+  </div>
+);
 };
