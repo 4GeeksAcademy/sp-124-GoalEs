@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./styles/faceanalyzer.css"
 
 export const FaceAnalyzer = () => {
 
@@ -60,53 +61,89 @@ export const FaceAnalyzer = () => {
 
 
     return (
-        <>
-            {!imagePreview &&
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => analyzeFace(e.target.files[0])}
-                />
-            }
+        <div className="emotion-layout">
 
-            {imagePreview && (
-                <div className="mt-3 text-center">
-                    <img
-                        src={imagePreview}
-                        alt="Uploaded"
-                        style={{
-                            width: "250px",
-                            borderRadius: "10px"
-                        }}
-                    />
-                </div>
-            )}
+            <div className="emotion-container">
 
-            {analysis && (
-                <div className="alert alert-info mt-3">
-                    <p><strong>Dominant Emotion:</strong> {analysis.dominantEmotion}</p>
+                <h1 className="emotion-title">
+                    Face Emotion Analyzer
+                </h1>
 
-                    {analysis.emotions && (
-                        <div className="mt-3">
-                            <h5>Emotion breakdown:</h5>
-                            {Object.entries(analysis.emotions)
-                                .sort((a, b) => b[1] - a[1])
-                                .map(([key, value]) => (
-                                    <p key={key}>
-                                        <strong>{key}:</strong> {value.toFixed(2)}%
-                                    </p>
-                                ))}
-                        </div>
-                    )}
+                {!imagePreview && (
+                    <label className="emotion-upload-btn">
+                        Upload Your Photo
+                        <input
+                            className="emotion-file-input"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => analyzeFace(e.target.files[0])}
+                        />
+                    </label>
+                )}
 
-                    <button
-                        className="btn btn-primary mt-2"
-                        onClick={() => navigate("/users/home")}
-                    >
-                        Dashboard
-                    </button>
-                </div>
-            )}
-        </>
+                {imagePreview && (
+                    <div className="emotion-image-wrapper">
+                        <img
+                            src={imagePreview}
+                            alt="Uploaded"
+                            className="emotion-image"
+                        />
+                    </div>
+                )}
+
+                {analysis && (
+                    <div className="emotion-results">
+
+                        <p className="emotion-dominant">
+                            Dominant Emotion:
+                            <span className="emotion-highlight">
+                                {analysis.dominantEmotion}
+                            </span>
+                        </p>
+
+                        {analysis.emotions && (
+                            <div className="emotion-breakdown">
+
+                                <h5 className="emotion-breakdown-title">
+                                    Emotion Breakdown
+                                </h5>
+
+                                {Object.entries(analysis.emotions)
+                                    .sort((a, b) => b[1] - a[1])
+                                    .map(([key, value]) => (
+                                        <div key={key} className="emotion-bar-item">
+                                            <span className="emotion-bar-label">
+                                                {key}
+                                            </span>
+
+                                            <div className="emotion-bar">
+                                                <div
+                                                    className="emotion-bar-fill"
+                                                    style={{ width: `${value}%` }}
+                                                />
+                                            </div>
+
+                                            <span className="emotion-bar-value">
+                                                {value.toFixed(2)}%
+                                            </span>
+                                        </div>
+                                    ))}
+
+                            </div>
+                        )}
+
+                        <button
+                            className="emotion-back-btn"
+                            onClick={() => navigate("/users/home")}
+                        >
+                            Back to Dashboard
+                        </button>
+
+                    </div>
+                )}
+
+            </div>
+
+        </div>
     );
 };

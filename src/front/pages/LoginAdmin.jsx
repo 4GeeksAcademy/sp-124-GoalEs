@@ -55,7 +55,7 @@ export const LoginAdmin = () => {
       bottomLinkTo="/admin/signup"
     >
       {error && <div className="alert alert-danger">{error}</div>}
-      {welcome && <div className="alert alert-success">Welcome Boss!</div>}
+      {welcome && <div className="alert-login">Welcome Boss!</div>}
 
       <form onSubmit={loginAdmin} className="mt-3">
         <input

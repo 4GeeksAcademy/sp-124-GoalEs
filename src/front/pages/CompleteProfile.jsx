@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { UploadImagesUser } from "./UploadImagesUser";
+import "./styles/completeProfileUser.css"
 
 export const CompleteProfileUser = () => {
 
@@ -86,84 +87,85 @@ export const CompleteProfileUser = () => {
     };
 
     return (
-        <div className="container py-4">
-            <h1>Your Profile</h1>
+        <div className="profile-layout">
+            <div className="profile-container">
+                <h1 className="profile-title">Your Profile</h1>
 
-            {error && <div className="alert alert-danger">{error}</div>}
+                {error && <div className="profile-error">{error}</div>}
 
-            <UploadImagesUser
-                onUpload={(url) =>
-                    setForm(prev => ({ ...prev, profile_picture: url }))
-                }
-            />
-
-            <form onSubmit={updateProfileUser}>
-
-                <input
-                    className="form-control mb-2"
-                    placeholder="Name"
-                    value={form.name}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, name: event.target.value }))
+                <UploadImagesUser
+                    onUpload={(url) =>
+                        setForm(prev => ({ ...prev, profile_picture: url }))
                     }
                 />
 
-                <input
-                    className="form-control mb-2"
-                    placeholder="Surname"
-                    value={form.surname}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, surname: event.target.value }))
-                    }
-                />
+                <form className="profile-form" onSubmit={updateProfileUser}>
 
-                <input
-                    className="form-control mb-2"
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, email: event.target.value }))
-                    }
-                />
+                    <input
+                        className="profile-input"
+                        placeholder="Name"
+                        value={form.name}
+                        onChange={(event) =>
+                            setForm(prev => ({ ...prev, name: event.target.value }))
+                        }
+                    />
 
-                <input
-                    className="form-control mb-3"
-                    type="password"
-                    placeholder="New Password"
-                    value={form.password}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, password: event.target.value }))
-                    }
-                />
+                    <input
+                        className="profile-input"
+                        placeholder="Surname"
+                        value={form.surname}
+                        onChange={(event) =>
+                            setForm(prev => ({ ...prev, surname: event.target.value }))
+                        }
+                    />
 
-                <input
-                    className="form-control mb-3"
-                    type="number"
-                    placeholder="Age"
-                    value={form.age}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, age: event.target.value }))
-                    }
-                />
+                    <input
+                        className="profile-input"
+                        placeholder="Email"
+                        value={form.email}
+                        onChange={(event) =>
+                            setForm(prev => ({ ...prev, email: event.target.value }))
+                        }
+                    />
 
-                <select
-                    className="form-control mb-3"
-                    value={form.gender}
-                    onChange={(event) =>
-                        setForm(prev => ({ ...prev, gender: event.target.value }))
-                    }
-                >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
+                    <input
+                        className="profile-input"
+                        type="password"
+                        placeholder="New Password"
+                        value={form.password}
+                        onChange={(event) =>
+                            setForm(prev => ({ ...prev, password: event.target.value }))
+                        }
+                    />
 
-                <button className="btn btn-primary">
-                    Save Profile
-                </button>
-            </form>
+                    <input
+                        className="profile-input"
+                        type="number"
+                        placeholder="Age"
+                        value={form.age}
+                        onChange={(event) =>
+                            setForm(prev => ({ ...prev, age: event.target.value }))
+                        }
+                    />
 
+                    <select
+                        className="profile-select"
+                        value={form.gender}
+                        onChange={(event) =>
+                            setForm(prev => ({ ...prev, gender: event.target.value }))
+                        }
+                    >
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <button className="profile-submit-btn">
+                        Save Profile
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };

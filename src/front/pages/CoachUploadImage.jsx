@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-
+import "./styles/completeprofileCoach.css"
 
 export const CoachUploadImage = ({ uploadPhoto }) => {
 
@@ -30,9 +30,9 @@ export const CoachUploadImage = ({ uploadPhoto }) => {
 
             const res = await fetch(
                 "https://api.cloudinary.com/v1_1/db3f4alnp/image/upload", {
-                    method: "POST",
-                    body: formAdd
-                }
+                method: "POST",
+                body: formAdd
+            }
             );
 
             if (!res.ok) {
@@ -65,22 +65,32 @@ export const CoachUploadImage = ({ uploadPhoto }) => {
     };
 
     return (
-        <>
-            {loading && <p>Waiting for upload</p>}
+        <div className="coach-image-section">
+
+            {loading && (
+                <p className="coach-image-loading">
+                    Waiting for upload...
+                </p>
+            )}
 
             {img && (
                 <img
                     src={img}
                     alt="Profile picture"
-                    style={{ width: "100px", borderRadius: "50%", marginTop: "8px" }}
+                    className="coach-avatar"
                 />
             )}
 
-            <input
-                type="file"
-                accept="image/jpeg, image/png"
-                onChange={(event) => sendImage(event.target.files[0])}
-            />
-        </>
+            <label className="coach-upload-btn">
+                Select Image
+                <input
+                    className="coach-file-input"
+                    type="file"
+                    accept="image/jpeg, image/png"
+                    onChange={(event) => sendImage(event.target.files[0])}
+                />
+            </label>
+
+        </div>
     );
 };

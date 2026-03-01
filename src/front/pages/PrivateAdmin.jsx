@@ -1,12 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import "./styles/dashboardadmin.css"
+import User from "./User";
+import { Coaches } from "./Coaches";
+import { Courses } from "./Courses";
+import Message from "./Message";
+import UserCourseFavorite from "./UserFavorites";
+import { Categories } from "./Categories";
+import { Tags } from "./Tags";
+import { AdminAppointments } from "./AdminAppointments";
 
 export const PrivateAdmin = () => {
   const { store, dispatch } = useGlobalReducer();
   const navigate = useNavigate();
 
   const isUnauthorized = !store.isAuthenticated || store.role !== "Admin";
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
     if (isUnauthorized) {
@@ -36,80 +46,92 @@ export const PrivateAdmin = () => {
   }
 
   return (
-    <div className="container py-4">
-      <div className="card shadow-sm">
-        <div className="card-body">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div className="admin-layout">
+      <aside className="admin-sidebar">
+        <div className="sidebar-header">
+          <h2 className="sidebar-title">Admin</h2>
+          <h2 className="sidebar-title">Dashboard</h2>
+        </div>
+
+        <nav className="sidebar-nav">
+          <button className="sidebar-btn" onClick={() => setActiveSection("appointments")}>
+            Appointments
+          </button>
+
+          <button className="sidebar-btn" onClick={() => setActiveSection("messages")}>
+            Messages
+          </button>
+
+          <button className="sidebar-btn" onClick={() => setActiveSection("favorites")}>
+            User Favorites
+          </button>
+
+          <button className="sidebar-btn" onClick={() => setActiveSection("categories")}>
+            Categories
+          </button>
+
+          <button className="sidebar-btn" onClick={() => setActiveSection("tags")}>
+            Tags
+          </button>
+        </nav>
+
+        <div className="sidebar-footer">
+          <button className="sidebar-btn secondary" onClick={() => navigate("/")}>
+            Back Home
+          </button>
+
+          <button className="sidebar-btn danger" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </aside>
+
+      <main className="admin-main">
+        <div className="admin-card">
+          <div className="admin-header">
             <div>
-              <h1 className="h4 mb-1">Admin Dashboard</h1>
-              <p className="mb-0 text-muted">
+              <h1 className="admin-title">
                 Welcome {store.user?.name} {store.user?.last_name}
+              </h1>
+              <p className="admin-subtitle">
+                Select a main section to manage core resources
               </p>
             </div>
-
-            <div className="d-flex gap-2">
-              <button className="btn btn-outline-secondary" onClick={() => navigate("/")}>
-                Back Home
-              </button>
-              <button className="btn btn-danger" onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
           </div>
+          
+          <div className="admin-primary-actions">
+            <button
+              className="primary-action-btn"
+              onClick={() => navigate("/users")}
+            >
+              Users
+            </button>
 
-          <hr className="my-4" />
+            <button
+              className="primary-action-btn"
+              onClick={() => navigate("/coaches")}
+            >
+              Coaches
+            </button>
 
-          <div className="row g-3">
-            <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/users")}>
-                Users
-              </button>
-            </div>
-
-            <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/coaches")}>
-                Coaches
-              </button>
-            </div>
-
-            <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/admin/appointments")}>
-                Appointments
-              </button>
-            </div>
-
-            <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/courses")}>
-                Courses
-              </button>
-            </div>
-
-            <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/messages")}>
-                Messages
-              </button>
-            </div>
-
-            <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/UserCourseFavorite")}>
-                User Favorites
-              </button>
-            </div>
-
-            <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/admin/categories")}>
-                Categories
-              </button>
-            </div>
-
-            <div className="col-12 col-md-6 col-lg-4">
-              <button className="btn btn-primary w-100" onClick={() => navigate("/admin/tags")}>
-                Tags
-              </button>
-            </div>
+            <button
+              className="primary-action-btn"
+              onClick={() => navigate("/courses")}
+            >
+              Courses
+            </button>
           </div>
         </div>
-      </div>
+
+        {activeSection === "users" && <User />}
+        {activeSection === "coaches" && <Coaches />}
+        {activeSection === "appointments" && <AdminAppointments />}
+        {activeSection === "courses" && <Courses />}
+        {activeSection === "messages" && <Message />}
+        {activeSection === "favorites" && <UserCourseFavorite />}
+        {activeSection === "categories" && <Categories />}
+        {activeSection === "tags" && <Tags />}
+      </main>
     </div>
   );
 };

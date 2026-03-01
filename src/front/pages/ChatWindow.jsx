@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import socket from "../socket";
+import "./styles/chat.css"
 
 export default function ChatWindow({ chat }) {
 
@@ -87,62 +88,58 @@ export default function ChatWindow({ chat }) {
   };
 
   return (
-    <div>
-      <h3>{otherName}</h3>
+    <div className="chat-window">
 
-      {[...messages]
-        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-        .map(message => {
+      <div className="chat-header">
+        <h3>{otherName}</h3>
+      </div>
 
-          const isMine = message.sender_role === role;
+      <div className="chat-messages">
+        {[...messages]
+          .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+          .map(message => {
 
-          return (
-            <div
-              key={message.id}
-              style={{
-                display: "flex",
-                justifyContent: isMine ? "flex-end" : "flex-start"
-              }}
-            >
-              <div style={{
-                backgroundColor: isMine ? "#DCF8C6" : "white",
-                padding: "10px",
-                borderRadius: "12px",
-                maxWidth: "60%"
-              }}>
-                <div>{message.text}</div>
+            const isMine = message.sender_role === role;
 
-                <div style={{
-                  fontSize: "0.7rem",
-                  color: "#777",
-                  marginTop: "4px",
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "4px"
-                }}>
-                  {new Date(message.created_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                  })}
+            return (
+              <div
+                key={message.id}
+                className={`chat-message-row ${isMine ? "mine" : "other"}`}
+              >
+                <div className="chat-bubble">
+                  <div>{message.text}</div>
 
-                  {isMine && (
-                    <span style={{ color: "grey" }}>
-                      ✓✓
-                    </span>
-                  )}
+                  <div className="chat-meta">
+                    {new Date(message.created_at).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    })}
+
+                    {isMine && <span>✓✓</span>}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-
-      <div style={{ marginTop: "10px" }}>
-        <input
-          value={newMessage}
-          onChange={event => setNewMessage(event.target.value)}
-        />
-        <button onClick={handleSendMessage}>Enviar</button>
+            );
+          })}
       </div>
+
+      <div className="chat-input-area">
+        <div className="chat-input-wrapper">
+          <input
+            className="chat-input"
+            value={newMessage}
+            onChange={event => setNewMessage(event.target.value)}
+            placeholder="Type a message..."
+          />
+          <button
+            className="chat-send-btn"
+            onClick={handleSendMessage}
+          >
+            Send
+          </button>
+        </div>
+      </div>
+
     </div>
   );
 }

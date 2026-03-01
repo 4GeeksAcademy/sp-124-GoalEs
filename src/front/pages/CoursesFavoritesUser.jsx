@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import "./styles/favoritescoursesUser.css"
 
 export const CoursesFavoritesUser = () => {
 
@@ -17,12 +18,12 @@ export const CoursesFavoritesUser = () => {
     const loadFavorites = async () => {
         try {
             const res = await fetch(`${backendURL}/users/${userId}/favorites`, {
-                headers: {Authorization: `Bearer ${store.token}`},
+                headers: { Authorization: `Bearer ${store.token}` },
             });
-            
+
 
             if (!res.ok) throw new Error("Error loading favorites");
-            
+
 
             const data = await res.json();
 
@@ -36,9 +37,10 @@ export const CoursesFavoritesUser = () => {
         try {
             const res = await fetch(
                 `${backendURL}/users/${userId}/favorites/${courseId}`,
-                { method: "DELETE" ,
-                    headers: {Authorization: `Bearer ${store.token}`},
-        });
+                {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${store.token}` },
+                });
 
             if (!res.ok) throw new Error("Error removing favorite");
 
@@ -53,45 +55,76 @@ export const CoursesFavoritesUser = () => {
     }, [userId]);
 
     return (
-        <div className="container py-4">
-            <h1 className="mb-4">My Favorite Courses</h1>
+        <div className="favorites-layout">
 
-            {error && <div className="alert alert-danger">{error}</div>}
+            <div className="favorites-container">
 
-            {favorites.length === 0 && (
-                <p>No favorite courses yet.</p>
-            )}
+                <h1 className="favorites-title">My Favorite Courses</h1>
 
-            <div className="row">
-                {favorites.map(favorites => (
-                    <div key={favorites.id} className="col-md-4 mb-4">
-                        <div className="card h-100 shadow-sm">
+                {error && (
+                    <div className="favorites-error">
+                        {error}
+                    </div>
+                )}
+
+                {favorites.length === 0 && (
+                    <p className="favorites-empty">
+                        No favorite courses yet.
+                    </p>
+                )}
+
+                <div className="favorites-grid">
+
+                    {favorites.map(fav => (
+                        <div key={fav.id} className="favorite-card">
+
+                            <div className="favorite-heart-badge">
+                                ❤️
+                            </div>
+
                             <img
-                                src={favorites.course?.image_url || "https://picsum.photos/400/200"}
-                                className="card-img-top"
+                                src={fav.course?.image_url || "https://picsum.photos/400/200"}
+                                className="favorite-image"
                                 alt="course"
                             />
-                            <div className="card-body d-flex flex-column">
-                                <h5 className="card-title">{favorites.course.title}</h5>
-                                <p className="card-text">{favorites.course.description}</p>
-                                <p className="fw-bold">${favorites.course.cost}</p>
-                                <p className="text-muted mb-1"> Category: {favorites.course.category?.name || "—"} </p>
-                                <p className="text-muted mb-1"> Tags: {favorites.course.tags?.map(t => t.name).join(", ") || "—"} </p>
 
-                                <div className="mt-auto">
+                            <div className="favorite-content">
+
+                                <h5 className="favorite-title">
+                                    {fav.course.title}
+                                </h5>
+
+                                <p className="favorite-description">
+                                    {fav.course.description}
+                                </p>
+
+                                <p className="favorite-price">
+                                    ${fav.course.cost}
+                                </p>
+
+                                <p className="favorite-meta">
+                                    Category: {fav.course.category?.name || "—"}
+                                </p>
+
+                                <p className="favorite-meta">
+                                    Tags: {fav.course.tags?.map(t => t.name).join(", ") || "—"}
+                                </p>
+
+                                <div className="favorite-actions">
                                     <button
-                                        className="btn btn-danger w-100"
-                                        onClick={() =>
-                                            removeFavorite(favorites.course.id)
-                                        }>
+                                        className="favorite-remove-btn"
+                                        onClick={() => removeFavorite(fav.course.id)}
+                                    >
                                         Remove from Favorites
                                     </button>
                                 </div>
 
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+
+                </div>
+
             </div>
         </div>
     );

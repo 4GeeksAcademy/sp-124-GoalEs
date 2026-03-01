@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
 import socket from "../socket";
+import "./styles/chat.css"
 
 export const ChatPage = () => {
 
@@ -45,7 +46,7 @@ export const ChatPage = () => {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+    <div className="chat-layout">
       <ChatList
         chats={chats}
         onSelectChat={setSelectedChat}
