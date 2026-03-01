@@ -83,14 +83,10 @@ export const PrivateUser = () => {
                 </aside>
 
                 <main className="user-main-content">
-
-                    <h1 className="user-dashboard-title">Dashboard</h1>
-
                     {activeSection === "available" && <AvailableCoursesUser />}
                     {activeSection === "favorites" && <CoursesFavoritesUser />}
                     {activeSection === "mycourses" && <MyCoursesUser />}
                     {activeSection === "appointments" && <MyAppointmentsUser />}
-
                 </main>
 
             </div>

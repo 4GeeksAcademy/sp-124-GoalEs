@@ -1,0 +1,107 @@
+.favorites-layout {
+  min-height: 100vh;
+  background-color: #f4f4f6;
+  padding: 3rem 1rem;
+}
+
+.favorites-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.favorites-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.favorites-error {
+  background-color: #ffe5e5;
+  color: #c0392b;
+  padding: 0.8rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.favorites-empty {
+  text-align: center;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.favorite-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #eee;
+  transition: transform 0.25s ease;
+}
+
+.favorite-card:hover {
+  transform: translateY(-6px);
+}
+
+.favorite-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.favorite-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.favorite-title {
+  color: #1a1a2e;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+}
+
+.favorite-description {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.favorite-price {
+  font-weight: 600;
+  color: #e8a838;
+  margin-bottom: 0.8rem;
+}
+
+.favorite-meta {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 0.3rem;
+}
+
+.favorite-actions {
+  margin-top: auto;
+}
+
+.favorite-remove-btn {
+  width: 100%;
+  background-color: transparent;
+  border: 2px solid #1a1a2e;
+  color: #1a1a2e;
+  padding: 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.favorite-remove-btn:hover {
+  background-color: #1a1a2e;
+  color: white;
+}
