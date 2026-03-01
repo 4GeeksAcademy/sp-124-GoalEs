@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import "./styles/chat.css"
 
 export default function ChatList({ chats, onSelectChat, selectedChat, onDeleteChat }) {
 
@@ -45,106 +46,88 @@ export default function ChatList({ chats, onSelectChat, selectedChat, onDeleteCh
   }, [chats]);
 
   return (
-    <div style={{ width: "30%", borderRight: "1px solid #ccc" }}>
-      <h3>Chats</h3>
+    <div className="chat-sidebar">
+
+      <h3 className="chat-sidebar-title">Chats</h3>
+
+    <div className="chat-list-scroll">
 
       {sortedChats.map(chat => {
-
+        
         const otherName =
-          role === "user"
-            ? chat.coach_name
-            : chat.user_name;
-
+        role === "user"
+        ? chat.coach_name
+        : chat.user_name;
+        
         const lastMessage =
-          chat.messages && chat.messages.length > 0
-            ? chat.messages[chat.messages.length - 1]
-            : null;
-
+        chat.messages && chat.messages.length > 0
+        ? chat.messages[chat.messages.length - 1]
+        : null;
+        
         const isMine =
-          lastMessage &&
-          lastMessage.sender_role === role;
-
+        lastMessage &&
+        lastMessage.sender_role === role;
+        
         return (
           <div
-            key={chat.id}
-            style={{
-              padding: "10px",
-              cursor: "pointer",
-              backgroundColor:
-                selectedChat?.id === chat.id ? "#eee" : "white",
-              borderBottom: "1px solid #ddd"
-            }}
+          key={chat.id}
+          className={`chat-item ${selectedChat?.id === chat.id ? "active" : ""}`}
           >
             <div
               onClick={() => onSelectChat(chat)}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-              }}
-            >
+              className="chat-item-top"
+              >
               <strong>{otherName}</strong>
 
-              <span style={{
-                fontSize: "0.8rem",
-                color: "#999"
-              }}>
+              <span className="chat-item-date">
                 {lastMessage
                   ? formatSmartDate(lastMessage.created_at)
                   : ""}
               </span>
             </div>
 
-            <div style={{
-              fontSize: "0.9rem",
-              color: "#666",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              marginTop: "4px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
-            }}>
-              <span onClick={() => onSelectChat(chat)}>
+            <div className="chat-item-preview">
+              <span>
                 {lastMessage
                   ? lastMessage.text
                   : "Sin mensajes aún"}
               </span>
 
-              {isMine && (
-                <span style={{
-                  fontSize: "0.8rem",
-                  color: "grey",
-                  marginLeft: "6px"
-                }}>
-                  ✓✓
-                </span>
-              )}
+              {isMine && <span className="chat-check">✓✓</span>}
             </div>
 
             <button
               onClick={() => onDeleteChat(chat.id)}
-              style={{
-                marginTop: "6px",
-                fontSize: "0.75rem",
-                color: "red",
-                background: "none",
-                border: "none",
-                cursor: "pointer"
-              }}
-            >
+              className="chat-delete-btn"
+              >
               Eliminar chat
             </button>
+
           </div>
         );
       })}
-      {role == "user" &&
-        <button className="btn btn-primary mt-3" onClick={() => navigate("/users/home")}>Dashboard User</button>
-      }
-      {role == "coach" &&
-        <button className="btn btn-primary mt-3" onClick={() => navigate("/coach/private")}>Dashboard Coach</button>
-      }
+      </div>
+
+      <div className="chat-dashboard-btn-wrapper">
+        {role === "user" && (
+          <button
+            className="chat-dashboard-btn"
+            onClick={() => navigate("/users/home")}
+          >
+            Dashboard User
+          </button>
+        )}
+
+        {role === "coach" && (
+          <button
+            className="chat-dashboard-btn"
+            onClick={() => navigate("/coach/private")}
+          >
+            Dashboard Coach
+          </button>
+        )}
+      </div>
+
     </div>
   );
 }
