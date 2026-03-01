@@ -62,7 +62,7 @@ export const Navbar = () => {
                   className="role-dashboard-btn"
                   onClick={() => navigate("/admin/home")}
                 >
-                  Admin Dashboard
+                  Dashboard Admin
                 </button>
               </div>
             )}
@@ -84,7 +84,7 @@ export const Navbar = () => {
                   className="role-dashboard-btn"
                   onClick={() => navigate("/coach/private")}
                 >
-                  Coach Dashboard
+                  Dashboard
                 </button>
               </div>
             )}
@@ -123,19 +123,20 @@ export const Navbar = () => {
               </>
             ) : (
               <>
+              {!isAdmin && 
                 <li className="nav-item dropdown d-flex align-items-center">
 
                   <img
                     src={store.user?.profile_picture || "https://via.placeholder.com/40"}
                     alt="Profile"
                     className="navbar-avatar"
-                  />
+                    />
 
                   <a
                     className="nav-link dropdown-toggle"
                     href="#"
                     data-bs-toggle="dropdown"
-                  >
+                    >
                     {store.user?.name}
                   </a>
 
@@ -144,7 +145,7 @@ export const Navbar = () => {
                       <button
                         className="dropdown-item"
                         onClick={() => navigate("/users/profile")}
-                      >
+                        >
                         Edit Profile
                       </button>
                     </li>
@@ -153,7 +154,7 @@ export const Navbar = () => {
                       <button
                         className="dropdown-item"
                         onClick={() => navigate("/")}
-                      >
+                        >
                         Home
                       </button>
                     </li>
@@ -162,12 +163,13 @@ export const Navbar = () => {
                       <button
                         className="dropdown-item text-danger"
                         onClick={logout}
-                      >
+                        >
                         Logout
                       </button>
                     </li>
                   </ul>
                 </li>
+                }
               </>
             )}
 

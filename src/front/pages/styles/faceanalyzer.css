@@ -1,0 +1,131 @@
+/* ===== LAYOUT ===== */
+
+.emotion-layout {
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    #1a1a2e 0%,
+    #232347 100%
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.emotion-container {
+  background: white;
+  width: 100%;
+  max-width: 600px;
+  padding: 3rem;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.emotion-title {
+  color: #1a1a2e;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.emotion-file-input {
+  display: none;
+}
+
+.emotion-upload-btn {
+  background-color: #1a1a2e;
+  color: white;
+  padding: 0.9rem 2rem;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  display: inline-block;
+}
+
+.emotion-upload-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+.emotion-image-wrapper {
+  margin: 2rem 0;
+}
+
+.emotion-image {
+  width: 250px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.emotion-results {
+  margin-top: 1.5rem;
+}
+
+.emotion-dominant {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.emotion-highlight {
+  margin-left: 0.5rem;
+  color: #e8a838;
+  font-weight: 600;
+}
+
+.emotion-breakdown {
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.emotion-breakdown-title {
+  margin-bottom: 1rem;
+  color: #1a1a2e;
+}
+
+.emotion-bar-item {
+  margin-bottom: 0.8rem;
+}
+
+.emotion-bar-label {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.emotion-bar {
+  height: 8px;
+  background: #eee;
+  border-radius: 10px;
+  margin: 0.3rem 0;
+  overflow: hidden;
+}
+
+.emotion-bar-fill {
+  height: 100%;
+  background-color: #e8a838;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.emotion-bar-value {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.emotion-back-btn {
+  margin-top: 2rem;
+  background-color: #1a1a2e;
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.emotion-back-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}

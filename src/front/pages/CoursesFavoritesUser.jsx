@@ -78,6 +78,10 @@ export const CoursesFavoritesUser = () => {
                     {favorites.map(fav => (
                         <div key={fav.id} className="favorite-card">
 
+                            <div className="favorite-heart-badge">
+                                ❤️
+                            </div>
+
                             <img
                                 src={fav.course?.image_url || "https://picsum.photos/400/200"}
                                 className="favorite-image"

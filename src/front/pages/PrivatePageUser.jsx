@@ -79,6 +79,12 @@ export const PrivateUser = () => {
                     >
                         Chats
                     </button>
+                    <button
+                        className="user-sidebar-btn"
+                        onClick={() => navigate("/users/faceanalyzer")}
+                    >
+                        Read Your Emotions!
+                    </button>
 
                 </aside>
 
