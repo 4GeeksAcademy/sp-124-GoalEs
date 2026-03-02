@@ -123,7 +123,6 @@ export const Navbar = () => {
                   <ul className="dropdown-menu dropdown-menu-end">
                     <li><Link className="dropdown-item" to="/users/login">User</Link></li>
                     <li><Link className="dropdown-item" to="/coaches/login">Coach</Link></li>
-                    <li><Link className="dropdown-item" to="/admin/login">Admin</Link></li>
                   </ul>
                 </li>
 
@@ -138,7 +137,6 @@ export const Navbar = () => {
                   <ul className="dropdown-menu dropdown-menu-end">
                     <li><Link className="dropdown-item" to="/users/signup">User</Link></li>
                     <li><Link className="dropdown-item" to="/coaches/new">Coach</Link></li>
-                    <li><Link className="dropdown-item" to="/admin/signup">Admin</Link></li>
                   </ul>
                 </li>
               </>

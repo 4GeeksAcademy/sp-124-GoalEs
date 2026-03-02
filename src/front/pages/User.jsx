@@ -70,7 +70,7 @@ export const User = () => {
     try {
       setError("");
 
-      const res = await fetch(`${back_url}/users/${id}`, {
+      const res = await fetch(`${backendURL}/users/${id}`, {
         method: "DELETE",
         //added by arash
         headers: { Authorization: `Bearer ${localStorage.getItem("token-user") || localStorage.getItem("token-admin")}` },

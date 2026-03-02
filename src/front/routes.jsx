@@ -72,7 +72,7 @@ export const router = createBrowserRouter(
         <Route path="single/:theid" element={<Single />} />
         <Route path="demo" element={<Demo />} />
 
-        <Route path="admin/signup" element={<SignupAdmin />} />
+        <Route path="admin" element={<SignupAdmin />} />
         <Route path="admin/login" element={<LoginAdmin />} />
 
         <Route path="users/signup" element={<SignupUser />} />
