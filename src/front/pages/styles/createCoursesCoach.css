@@ -163,16 +163,19 @@
 }
 
 .course-upload-btn {
+  display: inline-block;
   background-color: #1a1a2e;
-  color: white;
+  color: #ffffff !important;
   padding: 0.8rem 1.8rem;
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
+  border: none;
+  text-align: center;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .course-upload-btn:hover {
   background-color: #e8a838;
-  color: #1a1a2e;
+  color: #1a1a2e !important;
 }

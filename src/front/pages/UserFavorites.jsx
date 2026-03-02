@@ -86,13 +86,6 @@ const UserCourseFavorite = () => {
             User Course Favorites
           </h1>
 
-          <button
-            className="admin-secondary-btn"
-            onClick={() => navigate("/admin/home")}
-          >
-            Back to Admin Dashboard
-          </button>
-
         </div>
 
         {users.map(user => (
