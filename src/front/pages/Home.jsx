@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect,useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
@@ -6,6 +6,8 @@ import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 export const Home = () => {
   const navigate = useNavigate();
   const { store, dispatch } = useGlobalReducer();
+
+  const [visibleMessage, setVisibleMessage] = useState(false);
 
   const location = useLocation();
   const showMessage = location.state?.logoutMessage;
@@ -30,9 +32,21 @@ export const Home = () => {
   const isCoach = !!localStorage.getItem("token-coach") || !!localStorage.getItem("coach");
   const isPublic = !isAdmin && !isUser && !isCoach;
 
+  useEffect(() => {
+  if (location.state?.logoutMessage) {
+    setVisibleMessage(true);
+
+    const timer = setTimeout(() => {
+      setVisibleMessage(false);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }
+}, [location.state]);
+
   return (
     <>
-      {showMessage && (
+      {visibleMessage && (
         <div className="logout-message">
           We hope to see you back soon!
         </div>
