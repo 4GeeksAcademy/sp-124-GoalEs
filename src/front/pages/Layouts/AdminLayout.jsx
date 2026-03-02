@@ -1,4 +1,3 @@
-// src/front/pages/Layouts/AdminLayout.jsx
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
@@ -10,7 +9,7 @@ export default function AdminLayout() {
     setAllowed(!!tokenAdmin);
   }, []);
 
-  if (allowed === null) return null; // یا Loading...
+  if (allowed === null) return null; 
   if (!allowed) return <Navigate to="/admin/login" replace />;
 
    return <Outlet context={{ base: "/admin" }} />;

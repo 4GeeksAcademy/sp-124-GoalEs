@@ -51,6 +51,15 @@ export const Navbar = () => {
             <li className="nav-item">
               <Link className="nav-link" to="/coaches">Our Coaches</Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/about">About</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/features">Features</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/contact">Contact</Link>
+            </li>
           </ul>
 
 
@@ -123,52 +132,52 @@ export const Navbar = () => {
               </>
             ) : (
               <>
-              {!isAdmin && 
-                <li className="nav-item dropdown d-flex align-items-center">
+                {!isAdmin &&
+                  <li className="nav-item dropdown d-flex align-items-center">
 
-                  <img
-                    src={store.user?.profile_picture || "https://via.placeholder.com/40"}
-                    alt="Profile"
-                    className="navbar-avatar"
+                    <img
+                      src={store.user?.profile_picture || "https://via.placeholder.com/40"}
+                      alt="Profile"
+                      className="navbar-avatar"
                     />
 
-                  <a
-                    className="nav-link dropdown-toggle"
-                    href="#"
-                    data-bs-toggle="dropdown"
+                    <a
+                      className="nav-link dropdown-toggle"
+                      href="#"
+                      data-bs-toggle="dropdown"
                     >
-                    {store.user?.name}
-                  </a>
+                      {store.user?.name}
+                    </a>
 
-                  <ul className="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <button
-                        className="dropdown-item"
-                        onClick={() => navigate("/users/profile")}
+                    <ul className="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => navigate("/users/profile")}
                         >
-                        Edit Profile
-                      </button>
-                    </li>
+                          Edit Profile
+                        </button>
+                      </li>
 
-                    <li>
-                      <button
-                        className="dropdown-item"
-                        onClick={() => navigate("/")}
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => navigate("/")}
                         >
-                        Home
-                      </button>
-                    </li>
+                          Home
+                        </button>
+                      </li>
 
-                    <li>
-                      <button
-                        className="dropdown-item text-danger"
-                        onClick={logout}
+                      <li>
+                        <button
+                          className="dropdown-item text-danger"
+                          onClick={logout}
                         >
-                        Logout
-                      </button>
-                    </li>
-                  </ul>
-                </li>
+                          Logout
+                        </button>
+                      </li>
+                    </ul>
+                  </li>
                 }
               </>
             )}

@@ -7,11 +7,11 @@ export default function UserLayout() {
 
   useEffect(() => {
     const tokenUser = localStorage.getItem("token-user");
-    const tokenAdmin = localStorage.getItem("token-admin"); // اگر admin هم دسترسی داشته باشد
+    const tokenAdmin = localStorage.getItem("token-admin");
     setAllowed(!!(tokenUser || tokenAdmin));
   }, []);
 
-  if (allowed === null) return null; // یا Loading...
+  if (allowed === null) return null;
   if (!allowed) return <Navigate to="/users/login" replace />;
 
   return <Outlet />;
