@@ -1,0 +1,166 @@
+.admin-categories-layout {
+  min-height: 100vh;
+  background-color: #f4f4f6;
+  padding: 3rem 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.admin-categories-container {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.admin-categories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.admin-categories-title {
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.admin-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  margin-bottom: 2.5rem;
+}
+
+.admin-section-title {
+  margin-bottom: 1.5rem;
+  color: #1a1a2e;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+}
+
+.admin-input {
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.admin-input:focus {
+  border-color: #e8a838;
+  box-shadow: 0 0 0 4px rgba(232,168,56,0.15);
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 1rem 0.8rem;
+  border-bottom: 2px solid #eee;
+  color: #1a1a2e;
+}
+
+.admin-table td {
+  padding: 0.8rem;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.admin-table-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.admin-table-actions-header {
+  text-align: right;
+}
+
+.admin-status.active {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.admin-status.inactive {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+.admin-primary-btn {
+  background-color: #1a1a2e;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin-secondary-btn {
+  background-color: #e8a838;
+  color: #1a1a2e;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin-outline-btn {
+  background: transparent;
+  border: 2px solid #1a1a2e;
+  color: #1a1a2e;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin-delete-btn {
+  background: transparent;
+  border: 2px solid #c0392b;
+  color: #c0392b;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin-success-btn {
+  background-color: #1a1a2e;
+  color: white;
+  border: none;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.small {
+  font-size: 0.8rem;
+}
+
+.admin-warning {
+  background-color: #fff3cd;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.admin-error {
+  background-color: #ffe5e5;
+  color: #c0392b;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.admin-muted {
+  color: #888;
+}

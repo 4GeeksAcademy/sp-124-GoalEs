@@ -115,9 +115,9 @@
 
 .coach-students-btn {
   margin-top: 1rem;
-  background-color: #1a1a2e;
-  color: white;
-  border: none;
+  background-color: transparent;
+  color: black;
+  border: #1a1a2e solid;
   padding: 0.6rem;
   border-radius: 10px;
   cursor: pointer;
@@ -125,8 +125,9 @@
 }
 
 .coach-students-btn:hover {
-  background-color: #e8a838;
-  color: #1a1a2e;
+  background-color: #1a1a2e;
+  color: white;
+  transition: all 0.1s ease-out;
 }
 
 .coach-course-actions {
@@ -138,12 +139,17 @@
 
 .coach-edit-btn {
   flex: 1;
-  background-color: #e8a838;
-  color: #1a1a2e;
-  border: none;
+  background-color: transparent;
+  color: #e8a838;
+  border: #e8a838 solid;
   padding: 0.6rem;
   border-radius: 10px;
   cursor: pointer;
+}
+.coach-edit-btn:hover{
+  background-color: #e8a838;
+  color:white;
+  transition: all 0.1s ease-out;
 }
 
 .coach-delete-btn {
@@ -154,4 +160,118 @@
   padding: 0.6rem;
   border-radius: 10px;
   cursor: pointer;
+}
+.coach-delete-btn:hover{
+  background-color: #c0392b;
+  color:white;
+  transition: all 0.1s ease-out;
+}
+
+.coach-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.coach-modal {
+  background: white;
+  width: 90%;
+  max-width: 700px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+  animation: slideUp 0.25s ease;
+}
+
+.coach-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background-color: #1a1a2e;
+  color: white;
+}
+
+.coach-modal-close {
+  background: none;
+  border: none;
+  color: #e8a838;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.coach-modal-body {
+  padding: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.coach-students-table-wrapper {
+  overflow-x: auto;
+}
+
+.coach-students-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.coach-students-table thead {
+  background-color: #f4f4f6;
+}
+
+.coach-students-table th,
+.coach-students-table td {
+  padding: 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.coach-students-table th {
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.coach-students-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.coach-modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.coach-modal-btn {
+  background-color: #1a1a2e;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.coach-modal-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+/* Intentar animaciones para la modal */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }

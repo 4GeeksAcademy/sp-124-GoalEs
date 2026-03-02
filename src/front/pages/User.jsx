@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./styles/users.css"
 
 export const User = () => {
   const navigate = useNavigate()
@@ -88,107 +89,128 @@ export const User = () => {
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   return (
-    <>
+    <div className="admin-users-layout">
 
-      <div className="container py-4">
+      <div className="admin-users-container">
+
         {/* HEADER */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="m-0">Users</h1>
+        <div className="admin-users-header">
 
-          <div className="d-flex gap-2">
+          <h1 className="admin-users-title">
+            Users
+          </h1>
+
+          <div className="admin-users-actions">
+
             <button
-              className="d-flex gap-2 justify-content-md-end btn btn-primary"
+              className="admin-primary-btn"
               onClick={() => navigate("/users/new")}
             >
-              Create new user
+              Create New User
             </button>
 
             <button
-              className="btn btn-secondary"
+              className="admin-secondary-btn"
               onClick={() => navigate("/admin/home")}
             >
               Back to Admin Dashboard
             </button>
+
           </div>
+
         </div>
 
-        {/* CARDS */}
-        <div className="row">
+        {/* GRID */}
+        <div className="admin-users-grid">
+
           {users && users.map((user) => (
-            <div key={user.id} className="col-md-4 mb-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body d-flex flex-column mb-3">
-                  <img
-                    src={user.profile_picture || "https://via.placeholder.com/40"}
-                    alt="Profile"
-                    style={{
-                      width: "380px",
-                      height: "400px",
-                      objectFit: "cover",
-                      marginRight: "10px"
-                    }}
-                  />
-                  <h5 className="card-title">
-                    {user.name} {user.surname}
-                  </h5>
 
-                  <p className="card-text text-muted">{user.email}</p>
+            <div key={user.id} className="admin-user-card">
 
-                  <div className="mt-auto d-flex gap-2">
-                    <button
-                      className="btn btn-outline-primary btn-sm"
-                      onClick={() => navigate(`/users/${user.id}`)}
-                    >
-                      View details
-                    </button>
-
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => navigate(`/users/${user.id}/edit`)}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => deleteUser(user.id)}
-                    >
-                      Delete
-                    </button>
-
-                    <button
-                      className="btn btn-outline-success btn-sm"
-                      onClick={() => navigate(`/users/${user.id}/courses/select`)}
-                    >
-                      Add courses
-                    </button>
-
-
-                    <button
-                      className="btn btn-outline-secondary btn-sm"
-                      onClick={() => navigate(`/users/${user.id}/courses`)}
-                    >
-                      View courses
-                    </button>
-
-                    <button onClick={() => handleCreateChat(user.id)}>
-                      Crear chat
-                    </button>
-
-                  </div>
-                </div>
+              <div className="admin-user-image-wrapper">
+                <img
+                  src={user.profile_picture || "https://via.placeholder.com/400"}
+                  alt="Profile"
+                  className="admin-user-image"
+                />
               </div>
+
+              <div className="admin-user-content">
+
+                <h3 className="admin-user-name">
+                  {user.name} {user.surname}
+                </h3>
+
+                <p className="admin-user-email">
+                  {user.email}
+                </p>
+
+                <div className="admin-user-card-actions">
+
+                  <button
+                    className="admin-outline-btn small"
+                    onClick={() => navigate(`/users/${user.id}`)}
+                  >
+                    View
+                  </button>
+
+                  <button
+                    className="admin-primary-btn small"
+                    onClick={() => navigate(`/users/${user.id}/edit`)}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className="admin-delete-btn small"
+                    onClick={() => deleteUser(user.id)}
+                  >
+                    Delete
+                  </button>
+
+                  <button
+                    className="admin-outline-btn small"
+                    onClick={() => navigate(`/users/${user.id}/courses/select`)}
+                  >
+                    Add Courses
+                  </button>
+
+                  <button
+                    className="admin-outline-btn small"
+                    onClick={() => navigate(`/users/${user.id}/courses`)}
+                  >
+                    View Courses
+                  </button>
+
+                  <button
+                    className="admin-outline-btn small"
+                    onClick={() => handleCreateChat(user.id)}
+                  >
+                    Chat
+                  </button>
+
+                </div>
+
+              </div>
+
             </div>
+
           ))}
+
         </div>
 
-        <div className="d-flex justify-content-center mt-3">
-          <button className="btn btn-primary" onClick={userFetch}>
+        <div className="admin-users-footer">
+          <button
+            className="admin-primary-btn"
+            onClick={userFetch}
+          >
             Reload
           </button>
         </div>
+
       </div>
-    </>
+
+    </div>
   );
 };
 

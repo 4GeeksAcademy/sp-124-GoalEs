@@ -1,0 +1,99 @@
+.edit-user-layout {
+  min-height: 100vh;
+  background-color: #f4f4f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.edit-user-container {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
+}
+
+.edit-user-title {
+  text-align: center;
+  color: #1a1a2e;
+  margin-bottom: 2.5rem;
+  font-weight: 600;
+}
+
+.edit-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.edit-user-input {
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.edit-user-input:focus {
+  border-color: #e8a838;
+  box-shadow: 0 0 0 4px rgba(232, 168, 56, 0.15);
+}
+
+.edit-user-save-btn {
+  margin-top: 1rem;
+  background-color: #1a1a2e;
+  color: white;
+  padding: 1rem;
+  border-radius: 14px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.edit-user-save-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+.edit-user-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.edit-user-secondary-btn {
+  background-color: #1a1a2e;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.edit-user-secondary-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+.edit-user-outline-btn {
+  background: transparent;
+  border: 2px solid #1a1a2e;
+  color: #1a1a2e;
+  padding: 0.7rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.edit-user-outline-btn:hover {
+  background-color: #1a1a2e;
+  color: white;
+}

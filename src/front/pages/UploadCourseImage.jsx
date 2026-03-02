@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./styles/createCoursesCoach.css"
 
 
 export const UploadCourseImage = ({ initialUrl = "", onUpload }) => {
@@ -50,22 +51,32 @@ export const UploadCourseImage = ({ initialUrl = "", onUpload }) => {
   };
 
   return (
-    <>
-      {loading && <p>Uploading...</p>}
+    <div className="course-image-section">
+
+      {loading && (
+        <p className="course-image-loading">
+          Uploading...
+        </p>
+      )}
 
       {imageUrl && (
         <img
           src={imageUrl}
           alt="Course"
-          style={{ height: "25rem", objectFit: "contain" }}
+          className="course-preview-image"
         />
       )}
 
-      <input
-        type="file"
-        accept="image/png, image/jpeg"
-        onChange={(e) => uploadImage(e.target.files?.[0])}
-      />
-    </>
+      <label className="course-upload-btn">
+        Select Course Image
+        <input
+          className="course-file-input"
+          type="file"
+          accept="image/png, image/jpeg"
+          onChange={(e) => uploadImage(e.target.files?.[0])}
+        />
+      </label>
+
+    </div>
   );
 };
