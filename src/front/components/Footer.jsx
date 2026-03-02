@@ -2,12 +2,12 @@ import { Link } from "react-router-dom";
 
 
 export const Footer = () => {
-	return (
+  return (
     <footer className="goales-footer">
       <div className="container">
         <div className="row py-5">
 
-        
+
           <div className="col-lg-4 col-md-6 mb-4">
             <h5 className="footer-title">Address</h5>
             <p className="footer-text">Calle Gran Via 45, 28013 Madrid, España</p>
@@ -21,30 +21,31 @@ export const Footer = () => {
             </div>
           </div>
 
-          
+
           <div className="col-lg-2 col-md-3 mb-4 offset-lg-2">
             <h5 className="footer-title">Explore</h5>
             <ul className="footer-links">
               <a className="nav-link" href="#our-story">Our Story</a>
               <li><Link to="/coaches">Our Coaches</Link></li>
               <li><Link to="/courses">Our Courses</Link></li>
-              <li><Link to="/#contact">Contact Us</Link></li>
+              <li><Link to="/contact">Contact Us</Link></li>
             </ul>
           </div>
 
-          
+
           <div className="col-lg-3 col-md-3 mb-4">
             <h5 className="footer-title">Information</h5>
             <ul className="footer-links">
-              <a href="#become-coach">How to become a Coach?</a> 
-              <li><Link to="/#privacy">Privacy Policy</Link></li>
-              <li><Link to="/#terms">Terms of Service</Link></li>
+              <a href="#become-coach">How to become a Coach?</a>
+              <li><Link to="/faq">FAQ</Link></li>
+              <li><Link to="/legal-privacy">Privacy Policy</Link></li>
+              <li><Link to="/legal-terms">Terms of Service</Link></li>
             </ul>
           </div>
 
         </div>
 
-     
+
         <div className="footer-bottom">
           <p>© 2025 GoalEs. All Rights Reserved</p>
         </div>
