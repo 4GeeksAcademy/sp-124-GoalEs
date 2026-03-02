@@ -29,8 +29,7 @@ export const SignupUser = () => {
       const response = await fetch(`${backendURL}/signup`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${store.token}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(form),
       });
