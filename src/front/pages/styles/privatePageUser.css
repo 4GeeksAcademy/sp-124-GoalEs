@@ -60,3 +60,41 @@
   color: #c0392b;
   font-weight: 600;
 }
+
+.pay-button {
+    background: #e8a838;
+    color: #1a1a2e;
+    border: 2px solid #e8a838;
+    border-radius: 8px;
+    padding: 12px 32px;
+    margin-top: 5px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pay-button:hover {
+    background: #1a1a2e;
+    color: #e8a838;
+    border-color: #1a1a2e;
+}
+
+.pay-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #e8a838;
+    color: #1a1a2e;
+}
+
+.payment-success {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    background: #fff8ec;
+    border: 2px solid #e8a838;
+    border-radius: 10px;
+}

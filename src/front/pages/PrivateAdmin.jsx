@@ -5,7 +5,6 @@ import "./styles/dashboardadmin.css"
 import User from "./User";
 import { Coaches } from "./Coaches";
 import { Courses } from "./Courses";
-import Message from "./Message";
 import UserCourseFavorite from "./UserFavorites";
 import { Categories } from "./Categories";
 import { Tags } from "./Tags";
@@ -101,21 +100,21 @@ return (
         <div className="admin-primary-actions">
           <button
             className="primary-action-btn"
-            onClick={() => navigate("/users")}
+            onClick={() => setActiveSection("users")}
           >
             Users
           </button>
 
           <button
             className="primary-action-btn"
-            onClick={() => navigate("/coaches")}
+            onClick={() => setActiveSection("coaches")}
           >
             Coaches
           </button>
 
           <button
             className="primary-action-btn"
-            onClick={() => navigate("/courses")}
+            onClick={() => setActiveSection("courses")}
           >
             Courses
           </button>

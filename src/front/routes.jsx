@@ -19,6 +19,7 @@ import { UserDetails } from "./pages/UserDetails";
 import { CreateUser } from "./pages/CreateUser";
 import { EditUser } from "./pages/EditUser";
 import { ChatPage } from "./pages/ChatPage.jsx";
+import { AvailableCoursesUser } from "./pages/AvailableCoursesUser.jsx";
 
 import { Coaches } from "./pages/Coaches";
 import { CoachDetails } from "./pages/CoachDetails";
@@ -114,6 +115,8 @@ export const router = createBrowserRouter(
         <Route path="coaches/:id/reserve" element={<ReserveCoach />} />
         <Route path="appointments/my" element={<MyAppointmentsUser />} />
         <Route path="/users/chats" element={<ChatPage />} />
+        <Route path="/users/courses-available" element={<AvailableCoursesUser />} />
+
 
         {/* CRUD USERS (shared for user/admin) */}
         <Route path="users" element={<User />} />

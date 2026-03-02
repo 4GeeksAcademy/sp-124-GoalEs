@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { StripeWrapper } from "../hooks/StripeWrapper"
 import "./styles/availablecoursesUser.css"
+import PaymentPage from "./PaymentPage";
 
 export const AvailableCoursesUser = () => {
 
@@ -30,8 +31,6 @@ export const AvailableCoursesUser = () => {
             console.error(err);
         }
     }
-
-    console.log(store.user)
 
     const addFavorite = async (courseId) => {
         try {
@@ -154,7 +153,7 @@ export const AvailableCoursesUser = () => {
 
                 {selectedCourse && (
                     <div className="course-payment-section">
-                        <StripeWrapper course={selectedCourse} />
+                        <PaymentPage course={selectedCourse} />
                     </div>
                 )}
 

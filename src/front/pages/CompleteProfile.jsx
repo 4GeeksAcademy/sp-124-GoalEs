@@ -33,8 +33,6 @@ export const CompleteProfileUser = () => {
                 profile_picture: store.user.profile_picture || "",
                 id: store.user.id
             }));
-
-            console.log(form)
         }
     }, [store.user]);
 
