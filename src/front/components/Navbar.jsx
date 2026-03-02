@@ -139,7 +139,9 @@ export const Navbar = () => {
                   <li className="nav-item dropdown d-flex align-items-center">
 
                     <img
-                      src={store.user?.profile_picture || store.coach?.profile_image || "https://via.placeholder.com/40"}
+                      src={store.user?.profile_picture || store.coach?.profile_image 
+                        || `https://ui-avatars.com/api/?name=${store.user?.name}+${store.user?.surname}&background=random&color=fff&size=256` 
+                        || `https://ui-avatars.com/api/?name=${store.coach?.name}+${store.coach?.surname}&background=random&color=fff&size=256`}
                       alt="Profile"
                       className="navbar-avatar"
                     />
@@ -154,12 +156,22 @@ export const Navbar = () => {
 
                     <ul className="dropdown-menu dropdown-menu-end">
                       <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={() => navigate("/users/profile")}
-                        >
-                          Edit Profile
-                        </button>
+                        {isUser &&
+                          <button
+                            className="dropdown-item"
+                            onClick={() => navigate("/users/profile")}
+                          >
+                            Edit Profile
+                          </button>
+                        }
+                        {isCoach &&
+                          <button
+                            className="dropdown-item"
+                            onClick={() => navigate("/coaches/profile")}
+                          >
+                            Edit Profile
+                          </button>
+                        }
                       </li>
 
                       <li>

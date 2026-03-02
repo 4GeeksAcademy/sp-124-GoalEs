@@ -227,7 +227,7 @@ export default function CoachPrivate() {
 
         <div className="coach-dashboard-header">
           <h2>
-            {store.coach.name} Dashboard
+            Your Courses
           </h2>
         </div>
 

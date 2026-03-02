@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { CoachMap } from "./CoachMap";
+import "./styles/coaches.css"
 
 export const Coaches = () => {
 
@@ -12,6 +13,10 @@ export const Coaches = () => {
   const [coach, setCoach] = useState([]);
 
   const [cargando, setCargando] = useState(false)
+
+  const isAdmin = !!localStorage.getItem("token-admin");
+  const isUser = !!localStorage.getItem("token-user");
+  const isCoach = !!localStorage.getItem("token-coach") || !!localStorage.getItem("coach");
 
   const { store } = useGlobalReducer();
   const token = store.token || localStorage.getItem("token-admin") || localStorage.getItem("token-coach");
@@ -94,56 +99,98 @@ export const Coaches = () => {
   }, []);
 
   return (
-    <div className="container">
-      <div className="row">
-        {cargando &&
-          <div className="card">
-            <div className="card-body">
-              Loading...
-            </div>
+    <div className="coaches-layout">
+
+      <div className="coaches-container">
+
+        <h1 className="coaches-title">
+          Our Coaches
+        </h1>
+
+        {cargando && (
+          <div className="coaches-loading">
+            Loading...
           </div>
-        }
-        {!cargando && coach.map((coach) => (
-          <div className="col-md-4 key={coach.id}">
-            <div className="card mt-3 shadow-sm">
-              <div className="card-body">
-                <div className="d-flex align-items-center gap-3 mb-2">
-                    
-                    <div>
-                        <h5 className="card-title mb-0">{coach.name} {coach.last_name}</h5>
-                        {coach.city && (
-                            <p className="text-muted mb-0 small">
-                                📍 {coach.city}, {coach.province}, {coach.country}
-                            </p>
-                        )}
-                    </div>
-                </div>
+        )}
+
+        <div className="coaches-grid">
+
+          {!cargando && coach.map((coach) => (
+            <div className="coach-card" key={coach.id}>
+
+              <div className="coach-image-wrapper">
                 <img
-                        src={coach.profile_image || `https://ui-avatars.com/api/?name=${coach.name}`}
-                        alt="Profile"
-                        style={{ width: "380px", height: "500px", objectFit: "cover" }}
-                    />
-
-                <button
-                  className="btn btn-primary btn-sm mt-2 w-100"
-                  onClick={() => navigate(`/coaches-details/${coach.id}`)}>
-                  show profile
-                </button>
-                <button onClick={() => handleCreateChat(coach.id)}>
-                    Crear chat
-                  </button> 
+                  src={
+                    coach.profile_image ||
+                    `https://ui-avatars.com/api/?name=${coach.name}`
+                  }
+                  alt="Profile"
+                  className="coach-image"
+                />
               </div>
-            </div>
-          </div>
-        ))}
 
-        <button className="btn btn-primary mt-3" onClick={() => navigate("/coaches/new")}>
-          New Coach
-        </button>
-        <button className="btn btn-secondary mt-3" onClick={handleBack} type="button">
-          Back to Dashboard
-        </button>
+              <div className="coach-card-content">
+
+                <h3 className="coach-name">
+                  {coach.name} {coach.last_name}
+                </h3>
+
+                {coach.city && (
+                  <p className="coach-location">
+                    📍 {coach.city}, {coach.province}, {coach.country}
+                  </p>
+                )}
+
+                <div className="coach-card-actions">
+
+                  <button
+                    className="coach-view-btn"
+                    onClick={() =>
+                      navigate(`/coaches-details/${coach.id}`)
+                    }
+                  >
+                    View Profile
+                  </button>
+
+                  {isUser && (
+                    <button
+                      className="coach-chat-btn"
+                      onClick={() => handleCreateChat(coach.id)}
+                    >
+                      Start Chat
+                    </button>
+                  )}
+
+                </div>
+
+              </div>
+
+            </div>
+          ))}
+
+        </div>
+
+        <div className="coaches-footer-actions">
+
+          <button
+            className="coach-primary-btn"
+            onClick={() => navigate("/coaches/new")}
+          >
+            Do you want to be one?
+          </button>
+
+          <button
+            className="coach-secondary-btn"
+            onClick={handleBack}
+            type="button"
+          >
+            Back to Dashboard
+          </button>
+
+        </div>
+
       </div>
+
     </div>
   );
 };

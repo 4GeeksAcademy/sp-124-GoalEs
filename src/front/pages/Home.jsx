@@ -38,7 +38,7 @@ export const Home = () => {
 
     const timer = setTimeout(() => {
       setVisibleMessage(false);
-    }, 5000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }
@@ -65,7 +65,6 @@ export const Home = () => {
               </p>
               <div className="d-flex gap-3 flex-wrap">
                 <button className="btn-hero-primary" onClick={() => navigate("/courses")}>Explore Courses</button>
-                <button className="btn-hero-secondary" onClick={() => navigate("/coaches")}>Meet Our Coaches</button>
               </div>
             </div>
           </div>
