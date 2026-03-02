@@ -523,7 +523,7 @@ def coach_students(coach_id):
 
         course_data = course.serialize()
         course_data['enrolled_students'] = enrolled_count
-        result.apiend(course_data)
+        result.append(course_data)
 
     return jsonify(result), 200
 

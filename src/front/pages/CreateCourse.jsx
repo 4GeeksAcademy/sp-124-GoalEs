@@ -29,7 +29,7 @@ export const CreateCourse = () => {
     localStorage.getItem("token-admin") ||
     localStorage.getItem("token-coach");
 
-  const isAdmin = !!localStorage.getItem("token-admin");
+  const isAdmin = localStorage.getItem("token-admin");
 
   const handleBack = () => {
     if (localStorage.getItem("token-admin")) navigate("/admin/home");
@@ -140,21 +140,22 @@ export const CreateCourse = () => {
           className="create-course-form"
           onSubmit={createCourse}
         >
-
-          <select
-            className="course-select"
-            value={form.coach_id}
-            onChange={(e) =>
-              setForm(p => ({ ...p, coach_id: e.target.value }))
-            }
-          >
-            <option value="">Select coach</option>
-            {coaches.map(c => (
-              <option key={c.id} value={c.id}>
-                {c.name} {c.last_name} (id: {c.id})
-              </option>
-            ))}
-          </select>
+          {isAdmin &&
+            <select
+              className="course-select"
+              value={form.coach_id}
+              onChange={(e) =>
+                setForm(p => ({ ...p, coach_id: e.target.value }))
+              }
+            >
+              <option value="">Select coach</option>
+              {coaches.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.name} {c.last_name} (id: {c.id})
+                </option>
+              ))}
+            </select>
+          }
 
           <select
             className="course-select"
