@@ -1,0 +1,145 @@
+.coach-edit-course-layout {
+  min-height: 100vh;
+  background-color: #f4f4f6;
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.coach-edit-course-container {
+  width: 100%;
+  max-width: 650px;
+}
+
+.coach-edit-course-title {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.coach-edit-course-form {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 22px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.coach-edit-course-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.coach-edit-course-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.coach-edit-course-input,
+.coach-edit-course-select,
+.coach-edit-course-textarea {
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.coach-edit-course-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.coach-edit-course-input:focus,
+.coach-edit-course-select:focus,
+.coach-edit-course-textarea:focus {
+  border-color: #e8a838;
+  box-shadow: 0 0 0 4px rgba(232,168,56,0.15);
+}
+
+.coach-edit-course-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.coach-edit-course-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.coach-edit-course-tag:hover {
+  background-color: #f0f0f0;
+}
+
+.coach-edit-course-save-btn {
+  margin-top: 1rem;
+  background-color: #1a1a2e;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.coach-edit-course-save-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+.coach-edit-course-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.coach-edit-course-secondary-btn {
+  background-color: #1a1a2e;
+  color: white;
+  padding: 0.8rem 1.6rem;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.coach-edit-course-secondary-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+.coach-edit-course-outline-btn {
+  background: transparent;
+  border: 2px solid #1a1a2e;
+  color: #1a1a2e;
+  padding: 0.8rem 1.6rem;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.coach-edit-course-outline-btn:hover {
+  background-color: #1a1a2e;
+  color: white;
+}
+
+.coach-edit-course-muted {
+  font-size: 0.85rem;
+  color: #888;
+}
