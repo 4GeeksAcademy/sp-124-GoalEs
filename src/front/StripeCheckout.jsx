@@ -2,6 +2,7 @@ import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js"
 import { useState } from "react";
 import useGlobalReducer from "./hooks/useGlobalReducer";
 import "./pages/styles/privatePageUser.css";
+import { useNavigate } from "react-router-dom";
 
 export const CheckoutForm = ({ course }) => {
 
@@ -12,6 +13,7 @@ export const CheckoutForm = ({ course }) => {
 
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
     const [success, setSuccess] = useState(false);
 
     const handleSubmit = async (e) => {
@@ -40,8 +42,8 @@ export const CheckoutForm = ({ course }) => {
                 }),
             });
             setSuccess(true);
+            setTimeout(() => navigate("/users/home"), 2000);
         }
-
         setLoading(false);
     };
 

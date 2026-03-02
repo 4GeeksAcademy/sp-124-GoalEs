@@ -2,9 +2,9 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { StripeWrapper } from "../hooks/StripeWrapper"
+
 import "./styles/availablecoursesUser.css"
-import PaymentPage from "./PaymentPage";
+
 
 export const AvailableCoursesUser = () => {
 

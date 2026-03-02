@@ -47,8 +47,12 @@ export default function PaymentPage() {
     }
 
     return (
-        <Elements stripe={stripePromise} options={{ clientSecret }}>
-            <CheckoutForm course={course} />
-        </Elements>
-    );
+    <div style={{ display: "flex", justifyContent: "center", padding: "40px 16px" }}>
+        <div style={{ width: "100%", maxWidth: "480px", backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", padding: "32px" }}>
+            <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <CheckoutForm course={course} />
+            </Elements>
+        </div>
+    </div>
+);
 }
