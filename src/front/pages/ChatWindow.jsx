@@ -49,8 +49,15 @@ export default function ChatWindow({ chat }) {
   }, [chat]);
 
   if (!chat) {
-    return <div>Selecciona un chat</div>;
-  }
+  return (
+    <div className="chat-window chat-empty">
+      <div className="chat-empty-inner">
+        <h4>Select a chat</h4>
+        <p>Pick a conversation from the left to start messaging.</p>
+      </div>
+    </div>
+  );
+}
 
   const otherName =
     role === "user"
@@ -129,6 +136,9 @@ export default function ChatWindow({ chat }) {
             className="chat-input"
             value={newMessage}
             onChange={event => setNewMessage(event.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSendMessage();
+            }}
             placeholder="Type a message..."
           />
           <button
