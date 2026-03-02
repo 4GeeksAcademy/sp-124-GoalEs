@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import "./styles/userCoursesAdmin.css"
 
 
 export const UserCourses = () => {
@@ -75,68 +76,94 @@ export const UserCourses = () => {
     }, []);
 
     return (
-        <div className="container py-4">
-            <div className="d-flex justify-content-between mb-4">
-                <h1>User Courses</h1>
+  <div className="user-courses-layout">
 
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => navigate("/users")} 
-                >
-                    Back to users
-                </button>
-            </div>
+    <div className="user-courses-container">
 
-            <div className="row">
-                {userCourses.length === 0 ? (
-                    <h2>Este usuario no tiene cursos</h2>
-                ) : (
-                    userCourses.map(userCourse => {
-                    const course = coursesById[userCourse.course_id];
+      <div className="user-courses-header">
+        <h1 className="user-courses-title">
+          User Courses
+        </h1>
 
-                    return (
-                        <div key={userCourse.id} className="col-md-4 mb-3">
-                        <div className="card h-100 shadow-sm">
+        <button
+          className="user-courses-secondary-btn"
+          onClick={() => navigate("/users")}
+        >
+          Back to Users
+        </button>
+      </div>
 
-                            <img
-                            src={course?.image_url || "https://picsum.photos/400/200"}
-                            class="img-thumbnail"
-                            alt={course?.title || "course"}
-                            style={{ height: "25rem", objectFit: "contain" }}
-                            />
+      {userCourses.length === 0 ? (
 
-                            <div className="card-body d-flex flex-column">
-                            <h5 className="card-title mb-2">
-                                {course?.title || `Course #${userCourse.course_id}`}
-                            </h5>
-
-                            <p className="card-text text-muted">
-                                {course?.description || "Loading course details..."}
-                            </p>
-
-                            <p>
-                                <strong>Status:</strong> {userCourse.active ? "Active" : "Inactive"}
-                            </p>
-                            <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
-                            <p className="text-muted mb-1"> Tags: {course.tags?.map(t => t.name).join(", ") || "—"} </p>
-
-                            <div className="mt-auto">
-                                <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => deleteUserCourse(userCourse.id)}
-                                >
-                                Remove course
-                                </button>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    );
-                    })
-                )}
-            </div>
+        <div className="user-courses-empty">
+          This user has no courses assigned
         </div>
-    );
+
+      ) : (
+
+        <div className="user-courses-grid">
+
+          {userCourses.map(userCourse => {
+
+            const course = coursesById[userCourse.course_id];
+
+            return (
+              <div key={userCourse.id} className="user-courses-card">
+
+                <div className="user-courses-image-wrapper">
+                  <img
+                    src={course?.image_url || "https://picsum.photos/400/200"}
+                    alt={course?.title || "course"}
+                    className="user-courses-image"
+                  />
+                </div>
+
+                <div className="user-courses-content">
+
+                  <h3 className="user-courses-name">
+                    {course?.title || `Course #${userCourse.course_id}`}
+                  </h3>
+
+                  <p className="user-courses-description">
+                    {course?.description || "Loading course details..."}
+                  </p>
+
+                  <div className="user-courses-meta">
+                    <span className={`user-courses-status ${userCourse.active ? "active" : "inactive"}`}>
+                      {userCourse.active ? "Active" : "Inactive"}
+                    </span>
+
+                    <span className="user-courses-category">
+                      {course?.category?.name || "—"}
+                    </span>
+                  </div>
+
+                  <p className="user-courses-tags">
+                    {course?.tags?.map(t => t.name).join(", ") || "—"}
+                  </p>
+
+                  <button
+                    className="user-courses-delete-btn"
+                    onClick={() => deleteUserCourse(userCourse.id)}
+                  >
+                    Remove Course
+                  </button>
+
+                </div>
+
+              </div>
+            );
+
+          })}
+
+        </div>
+
+      )}
+
+    </div>
+
+  </div>
+);
 };
 
 export default UserCourses;

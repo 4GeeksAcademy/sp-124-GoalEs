@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import "./styles/userCoursesSelectedByAdmin.css"
 
 
 export const UserCourseSelect = () => {
@@ -57,53 +58,86 @@ export const UserCourseSelect = () => {
     }, []);
 
     return (
-        <div className="container py-4">
-            <div className="d-flex justify-content-between mb-4">
-                
-                <h1>Select courses</h1>
+        <div className="assign-course-layout">
 
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => navigate("/users")} 
-                >
-                    Back to users
-                </button>
-            </div>
-            <div className="row">
+            <div className="assign-course-container">
+
+                <div className="assign-course-header">
+
+                    <h1 className="assign-course-title">
+                        Select Courses
+                    </h1>
+
+                    <button
+                        className="assign-course-secondary-btn"
+                        onClick={() => navigate("/users")}
+                    >
+                        Back to Users
+                    </button>
+
+                </div>
+
                 {courses.length === 0 ? (
-                    <h2>No courses available</h2>
+                    <div className="assign-course-empty">
+                        No courses available
+                    </div>
                 ) : (
-                    courses.map(course => (
-                        <div key={course.id} className="col-md-4 mb-3">
-                            <div className="card h-100 shadow-sm">
-                                <div className="card-body d-flex flex-column">
+                    <div className="assign-course-grid">
+
+                        {courses.map(course => (
+
+                            <div key={course.id} className="assign-course-card">
+
+                                <div className="assign-course-image-wrapper">
                                     <img
                                         src={course?.image_url || "https://picsum.photos/400/200"}
-                                        class="img-thumbnail"
                                         alt={course?.title || "course"}
-                                        style={{ height: "25rem", objectFit: "contain" }}
-                                        />
-
-                                    <h5>{course.title}</h5>
-                                    <p className="text-muted">{course.description}</p>
-                                    <p><strong>€ {course.cost}</strong></p>
-                                    <p className="text-muted mb-1"> Category: {course.category?.name || "—"} </p>
-                                    <p className="text-muted mb-1"> Tags: {course.tags?.map(t => t.name).join(", ") || "—"} </p>
-
-                                    <div className="mt-auto">
-                                        <button
-                                            className="btn btn-success btn-sm"
-                                            onClick={() => addCourseToUser(course.id)}
-                                        >
-                                            Assign course
-                                        </button>
-                                    </div>
+                                        className="assign-course-image"
+                                    />
                                 </div>
+
+                                <div className="assign-course-content">
+
+                                    <h3 className="assign-course-name">
+                                        {course.title}
+                                    </h3>
+
+                                    <p className="assign-course-description">
+                                        {course.description}
+                                    </p>
+
+                                    <div className="assign-course-meta">
+                                        <span className="assign-course-price">
+                                            € {course.cost}
+                                        </span>
+
+                                        <span className="assign-course-category">
+                                            {course.category?.name || "—"}
+                                        </span>
+                                    </div>
+
+                                    <p className="assign-course-tags">
+                                        {course.tags?.map(t => t.name).join(", ") || "—"}
+                                    </p>
+
+                                    <button
+                                        className="assign-course-btn"
+                                        onClick={() => addCourseToUser(course.id)}
+                                    >
+                                        Assign Course
+                                    </button>
+
+                                </div>
+
                             </div>
-                        </div>
-                    ))
+
+                        ))}
+
+                    </div>
                 )}
+
             </div>
+
         </div>
     );
 };

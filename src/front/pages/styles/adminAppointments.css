@@ -1,0 +1,143 @@
+.admin-appointments-layout {
+  min-height: 100vh;
+  background-color: #f4f4f6;
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.admin-appointments-container {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.admin-appointments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.admin-appointments-title {
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.admin-appointments-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.admin-create-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  margin-bottom: 3rem;
+}
+
+.admin-section-title {
+  margin-bottom: 1.5rem;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.admin-create-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.admin-input {
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.admin-input:focus {
+  border-color: #e8a838;
+  box-shadow: 0 0 0 4px rgba(232,168,56,0.15);
+}
+
+.admin-primary-btn {
+  background-color: #1a1a2e;
+  color: white;
+  padding: 0.8rem 1.6rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.admin-outline-btn {
+  background: transparent;
+  border: 2px solid #1a1a2e;
+  color: #1a1a2e;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.admin-secondary-btn {
+  background-color: #e8a838;
+  color: #1a1a2e;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.admin-success-btn {
+  background-color: #1a1a2e;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem;
+  cursor: pointer;
+}
+
+.admin-approve-btn {
+  background-color: #e8a838;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin-reject-btn {
+  background: transparent;
+  border: 2px solid #c0392b;
+  color: #c0392b;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.admin-cancel-btn {
+  background: transparent;
+  border: 2px solid #e8a838;
+  color: #e8a838;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.admin-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+}
+
+.admin-error {
+  background-color: #ffe5e5;
+  color: #c0392b;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.admin-warning {
+  background-color: #fff3cd;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}

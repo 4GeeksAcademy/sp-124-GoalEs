@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./styles/userFavoritesFromAdmin.css"
 
 const UserCourseFavorite = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -75,35 +76,55 @@ const UserCourseFavorite = () => {
   };
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between mb-4">
-        <h1>User Course Favorites</h1>
-        <button className="btn btn-secondary" onClick={() => navigate("/admin/home")}>
-          Back to Admin Dashboard
-        </button>
-      </div>
+    <div className="admin-favorites-layout">
 
-      {users.map(user => (
-        <div key={user.id} className="card mb-4 shadow-sm">
-          <div className="card-body">
-            <h4>
-              {user.name} {user.surname}
-            </h4>
+      <div className="admin-favorites-container">
 
-            {/* Favorites list */}
-            <div className="d-flex flex-wrap gap-2 mb-3">
+        <div className="admin-favorites-header">
+
+          <h1 className="admin-favorites-title">
+            User Course Favorites
+          </h1>
+
+          <button
+            className="admin-secondary-btn"
+            onClick={() => navigate("/admin/home")}
+          >
+            Back to Admin Dashboard
+          </button>
+
+        </div>
+
+        {users.map(user => (
+
+          <div key={user.id} className="admin-user-card">
+
+            <div className="admin-user-header">
+              <h3>
+                {user.name} {user.surname}
+              </h3>
+            </div>
+
+            {/* ===== FAVORITES LIST ===== */}
+            <div className="admin-favorites-list">
+
               {favoritesByUser[user.id]?.length === 0 && (
-                <span className="text-muted">No favorites</span>
+                <span className="admin-muted">
+                  No favorites
+                </span>
               )}
 
               {favoritesByUser[user.id]?.map(fav => (
                 <div
                   key={fav.id}
-                  className="border rounded px-3 py-2 d-flex align-items-center gap-2"
+                  className="admin-favorite-item"
                 >
-                  <span>{fav.course.title}</span>
+                  <span className="admin-favorite-title">
+                    {fav.course.title}
+                  </span>
+
                   <button
-                    className="btn btn-sm btn-danger"
+                    className="admin-remove-btn"
                     onClick={() =>
                       deleteFavorite(user.id, fav.course.id)
                     }
@@ -112,11 +133,12 @@ const UserCourseFavorite = () => {
                   </button>
                 </div>
               ))}
+
             </div>
 
-            {/* Add favorite */}
+            {/* ===== ADD FAVORITE ===== */}
             <select
-              className="form-select"
+              className="admin-select"
               onChange={(e) => {
                 if (e.target.value !== "") {
                   addFavorite(user.id, e.target.value);
@@ -124,16 +146,23 @@ const UserCourseFavorite = () => {
                 }
               }}
             >
-              <option value="">➕ Add course to favorites</option>
+              <option value="">
+                ➕ Add course to favorites
+              </option>
+
               {courses.map(course => (
                 <option key={course.id} value={course.id}>
                   {course.title}
                 </option>
               ))}
+
             </select>
+
           </div>
-        </div>
-      ))}
+
+        ))}
+
+      </div>
     </div>
   );
 };
