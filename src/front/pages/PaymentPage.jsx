@@ -3,11 +3,13 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckoutForm } from "../StripeCheckout";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { useLocation } from "react-router-dom";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-export default function PaymentPage({ course }) {
-
+export default function PaymentPage() {
+    const { state } = useLocation();
+    const course = state?.course;
     const backendURL = import.meta.env.VITE_BACKEND_URL;
     const { store } = useGlobalReducer();
     const user = store.user;
