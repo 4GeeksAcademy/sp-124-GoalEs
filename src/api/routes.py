@@ -7,7 +7,6 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
 from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag, Appointment, Chat
-from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
@@ -26,6 +25,9 @@ CORS(api)
 # ======================
 # TEST
 # ======================
+
+# API KEY DE STRIPE
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 
 @api.route("/hello", methods=["GET", "POST"])
@@ -116,13 +118,6 @@ def course_owner_or_admin_required(course_coach_id: int):
         return jsonify({"msg": "Forbidden: not course owner"}), 403
 
     return None
-
-
-# socketio
-@socketio.on("join_chat")
-def handle_join_chat(data):
-    chat_id = data.get("chat_id")
-    join_room(f"chat_{chat_id}")
 
 # admin only
 
