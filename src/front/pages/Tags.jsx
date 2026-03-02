@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./styles/categories.css"
 
 export const Tags = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -163,95 +164,109 @@ export const Tags = () => {
   };
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h1 className="mb-0">Manage Tags</h1>
+    <div className="admin-categories-layout">
 
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate("/admin/home")}
-          type="button"
-        >
-          Back to Admin Dashboard
-        </button>
-      </div>
+      <div className="admin-categories-container">
 
-      {!isAdmin && (
-        <div className="alert alert-warning">
-          You must be logged in as <strong>Admin</strong> to manage tags.
+        {/* HEADER */}
+        <div className="admin-categories-header">
+
+          <h1 className="admin-categories-title">
+            Manage Tags
+          </h1>
+
         </div>
-      )}
 
-      {error && <div className="alert alert-danger">{error}</div>}
+        {!isAdmin && (
+          <div className="admin-warning">
+            You must be logged in as <strong>Admin</strong> to manage tags.
+          </div>
+        )}
 
-      {/* Add new */}
-      <div className="card mb-4">
-        <div className="card-body">
-          <h5 className="card-title">Add new tag</h5>
+        {error && (
+          <div className="admin-error">
+            {error}
+          </div>
+        )}
 
-          <form onSubmit={addTag} className="row g-2">
-            <div className="col-md-4">
-              <input
-                className="form-control"
-                placeholder="Name (required)"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={!isAdmin}
-              />
-            </div>
-            <div className="col-md-6">
-              <input
-                className="form-control"
-                placeholder="Description (optional)"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                disabled={!isAdmin}
-              />
-            </div>
-            <div className="col-md-2 d-grid">
-              <button className="btn btn-success" disabled={!isAdmin}>
-                Add
-              </button>
-            </div>
+        {/* ADD TAG */}
+        <div className="admin-card">
+
+          <h2 className="admin-section-title">
+            Add New Tag
+          </h2>
+
+          <form onSubmit={addTag} className="admin-form-grid">
+
+            <input
+              className="admin-input"
+              placeholder="Name (required)"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={!isAdmin}
+            />
+
+            <input
+              className="admin-input"
+              placeholder="Description (optional)"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              disabled={!isAdmin}
+            />
+
+            <button
+              className="admin-success-btn"
+              disabled={!isAdmin}
+            >
+              Add
+            </button>
+
           </form>
-        </div>
-      </div>
 
-      {/* List */}
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title mb-3">Tags</h5>
+        </div>
+
+        {/* LIST */}
+        <div className="admin-card">
+
+          <h2 className="admin-section-title">
+            Tags
+          </h2>
 
           {loading ? (
             <p>Loading...</p>
           ) : tags.length === 0 ? (
-            <p className="text-muted">No tags found.</p>
+            <p className="admin-muted">No tags found.</p>
           ) : (
-            <div className="table-responsive">
-              <table className="table table-striped align-middle">
+
+            <div className="admin-table-wrapper">
+
+              <table className="admin-table">
+
                 <thead>
                   <tr>
-                    <th style={{ width: 80 }}>ID</th>
+                    <th>ID</th>
                     <th>Name</th>
                     <th>Description</th>
-                    <th style={{ width: 110 }}>Active</th>
-                    <th style={{ width: 220 }} className="text-end">
+                    <th>Active</th>
+                    <th className="admin-table-actions-header">
                       Actions
                     </th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {tags.map((tag) => {
                     const isEditing = editingId === tag.id;
 
                     return (
                       <tr key={tag.id}>
+
                         <td>{tag.id}</td>
 
                         <td>
                           {isEditing ? (
                             <input
-                              className="form-control"
+                              className="admin-input"
                               value={editName}
                               onChange={(e) => setEditName(e.target.value)}
                             />
@@ -263,78 +278,93 @@ export const Tags = () => {
                         <td>
                           {isEditing ? (
                             <input
-                              className="form-control"
+                              className="admin-input"
                               value={editDescription}
                               onChange={(e) => setEditDescription(e.target.value)}
                             />
                           ) : (
-                            tag.description || <span className="text-muted">—</span>
+                            tag.description || <span className="admin-muted">—</span>
                           )}
                         </td>
 
                         <td>
                           {isEditing ? (
                             <select
-                              className="form-select"
+                              className="admin-input"
                               value={editIsActive ? "true" : "false"}
-                              onChange={(e) => setEditIsActive(e.target.value === "true")}
+                              onChange={(e) =>
+                                setEditIsActive(e.target.value === "true")
+                              }
                             >
                               <option value="true">true</option>
                               <option value="false">false</option>
                             </select>
                           ) : (
-                            String(tag.is_active ?? true)
+                            <span className={`admin-status ${tag.is_active ? "active" : "inactive"}`}>
+                              {String(tag.is_active ?? true)}
+                            </span>
                           )}
                         </td>
 
-                        <td className="text-end">
+                        <td className="admin-table-actions">
+
                           {!isAdmin ? (
-                            <span className="text-muted">—</span>
+                            <span className="admin-muted">—</span>
                           ) : isEditing ? (
-                            <div className="d-flex justify-content-end gap-2">
+                            <>
                               <button
-                                className="btn btn-primary btn-sm"
+                                className="admin-primary-btn small"
                                 onClick={() => saveEdit(tag.id)}
                                 type="button"
                               >
                                 Save
                               </button>
+
                               <button
-                                className="btn btn-secondary btn-sm"
+                                className="admin-secondary-btn small"
                                 onClick={cancelEdit}
                                 type="button"
                               >
                                 Cancel
                               </button>
-                            </div>
+                            </>
                           ) : (
-                            <div className="d-flex justify-content-end gap-2">
+                            <>
                               <button
-                                className="btn btn-outline-primary btn-sm"
+                                className="admin-outline-btn small"
                                 onClick={() => startEdit(tag)}
                                 type="button"
                               >
                                 Edit
                               </button>
+
                               <button
-                                className="btn btn-danger btn-sm"
+                                className="admin-delete-btn small"
                                 onClick={() => deleteTag(tag.id)}
                                 type="button"
                               >
                                 Delete
                               </button>
-                            </div>
+                            </>
                           )}
+
                         </td>
+
                       </tr>
                     );
                   })}
                 </tbody>
+
               </table>
+
             </div>
+
           )}
+
         </div>
+
       </div>
+
     </div>
   );
 };

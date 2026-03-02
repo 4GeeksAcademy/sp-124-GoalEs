@@ -15,11 +15,23 @@ export const Navbar = () => {
   const isCoach = !!localStorage.getItem("token-coach") || !!localStorage.getItem("coach");
   const isPublic = !isAdmin && !isUser && !isCoach;
 
-  const logout = () => {
+  const coach = store.coach?.profile_image || ""
+  const data_coach = coach.coach;
+
+  const logout_user = () => {
     dispatch({ type: "logout-user" });
     localStorage.removeItem("token-user");
     localStorage.removeItem("user");
     localStorage.removeItem("role");
+
+    navigate("/", { state: { logoutMessage: true } });
+  };
+  const logout_coach = () => {
+    dispatch({ type: "logout-coach" });
+    localStorage.removeItem("token-coach");
+    localStorage.removeItem("coach");
+    localStorage.removeItem("role");
+    localStorage.removeItem("coach_id");
 
     navigate("/", { state: { logoutMessage: true } });
   };
@@ -136,7 +148,9 @@ export const Navbar = () => {
                   <li className="nav-item dropdown d-flex align-items-center">
 
                     <img
-                      src={store.user?.profile_picture || "https://via.placeholder.com/40"}
+                      src={store.user?.profile_picture || store.coach?.profile_image 
+                        || `https://ui-avatars.com/api/?name=${store.user?.name}+${store.user?.surname}&background=random&color=fff&size=256` 
+                        || `https://ui-avatars.com/api/?name=${store.coach?.name}+${store.coach?.surname}&background=random&color=fff&size=256`}
                       alt="Profile"
                       className="navbar-avatar"
                     />
@@ -151,12 +165,22 @@ export const Navbar = () => {
 
                     <ul className="dropdown-menu dropdown-menu-end">
                       <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={() => navigate("/users/profile")}
-                        >
-                          Edit Profile
-                        </button>
+                        {isUser &&
+                          <button
+                            className="dropdown-item"
+                            onClick={() => navigate("/users/profile")}
+                          >
+                            Edit Profile
+                          </button>
+                        }
+                        {isCoach &&
+                          <button
+                            className="dropdown-item"
+                            onClick={() => navigate("/coaches/profile")}
+                          >
+                            Edit Profile
+                          </button>
+                        }
                       </li>
 
                       <li>
@@ -167,15 +191,26 @@ export const Navbar = () => {
                           Home
                         </button>
                       </li>
-
-                      <li>
-                        <button
-                          className="dropdown-item text-danger"
-                          onClick={logout}
-                        >
-                          Logout
-                        </button>
-                      </li>
+                      {isUser &&
+                        <li>
+                          <button
+                            className="dropdown-item text-danger"
+                            onClick={logout_user}
+                          >
+                            Logout
+                          </button>
+                        </li>
+                      }
+                      {isCoach &&
+                        <li>
+                          <button
+                            className="dropdown-item text-danger"
+                            onClick={logout_coach}
+                          >
+                            Logout
+                          </button>
+                        </li>
+                      }
                     </ul>
                   </li>
                 }

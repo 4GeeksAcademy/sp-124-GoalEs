@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { UploadCourseImage } from "./UploadCourseImage"; 
+import { UploadCourseImage } from "./UploadCourseImage";
+import "./styles/createCoursesCoach.css"
 
 export const CreateCourse = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -15,13 +16,13 @@ export const CreateCourse = () => {
     coach_id: store.coach?.id || "",
     image_url: "",
     category_id: "",
-    tag_ids: [] 
+    tag_ids: []
   });
 
   const [error, setError] = useState("");
   const [coaches, setCoaches] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [tags, setTags] = useState([]); 
+  const [tags, setTags] = useState([]);
 
   const token =
     store.token ||
@@ -37,10 +38,10 @@ export const CreateCourse = () => {
 
 
 
-  useEffect(() => { 
+  useEffect(() => {
     if (!isAdmin) return;
 
-    fetch(`${BACKEND_URL}/coach`) 
+    fetch(`${BACKEND_URL}/coach`)
       .then(res => res.json())
       .then(data => setCoaches(data.coaches || []));
   }, [isAdmin, BACKEND_URL]);
@@ -108,7 +109,7 @@ export const CreateCourse = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(form) 
+        body: JSON.stringify(form)
       });
 
       if (!res.ok) throw new Error("Error creating course");
@@ -121,111 +122,156 @@ export const CreateCourse = () => {
   };
 
   return (
-    <div className="container py-4">
-      <h1>Create Course</h1>
+    <div className="create-course-layout">
 
-      {error && <div className="text-danger mb-3">{error}</div>}
+      <div className="create-course-container">
 
-      <form onSubmit={createCourse}>
-        <select
-          className="form-select mb-2"
-          value={form.coach_id}
-          onChange={(e) => setForm(p => ({ ...p, coach_id: e.target.value }))}
+        <h1 className="create-course-title">
+          Create Course
+        </h1>
+
+        {error && (
+          <div className="create-course-error">
+            {error}
+          </div>
+        )}
+
+        <form
+          className="create-course-form"
+          onSubmit={createCourse}
         >
-          <option value="">Select coach</option>
-          {coaches.map(c => (
-            <option key={c.id} value={c.id}>
-              {c.name} {c.last_name} (id: {c.id})
-            </option>
-          ))}
-        </select>
 
-        <select
-          className="form-select mb-2"
-          value={form.category_id}
-          onChange={(e) => setForm(p => ({ ...p, category_id: e.target.value }))}
-        >
-          <option value="">Select category</option>
-          {categories.map(cat => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+          <select
+            className="course-select"
+            value={form.coach_id}
+            onChange={(e) =>
+              setForm(p => ({ ...p, coach_id: e.target.value }))
+            }
+          >
+            <option value="">Select coach</option>
+            {coaches.map(c => (
+              <option key={c.id} value={c.id}>
+                {c.name} {c.last_name} (id: {c.id})
+              </option>
+            ))}
+          </select>
 
-        <div className="mt-3 mb-2">
-          <label className="form-label">Tags (optional)</label>
+          <select
+            className="course-select"
+            value={form.category_id}
+            onChange={(e) =>
+              setForm(p => ({ ...p, category_id: e.target.value }))
+            }
+          >
+            <option value="">Select category</option>
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
 
-          {tags.length === 0 ? (
-            <div className="text-muted">No tags available.</div>
-          ) : (
-            <div className="d-flex flex-wrap gap-2">
-              {tags.map((t) => {
-                const checked = (form.tag_ids || []).includes(t.id);
-                const tagId = Number(t.id);
+          <div className="course-tags-section">
+            <label className="course-tags-label">
+              Tags (optional)
+            </label>
 
-                return (
-                  <label key={t.id} className="border rounded px-2 py-1">
-                    <input
-                      type="checkbox"
-                      className="form-check-input me-2"
-                      checked={checked}
-                      onChange={(e) => {
-                        setForm((prev) => {
-                          const prevIds = prev.tag_ids || [];
-                          const nextIds = e.target.checked
-                            ? [...prevIds, tagId]
-                            : prevIds.filter((id) => id !== tagId);
-                          return { ...prev, tag_ids: nextIds };
-                        });
-                      }}
-                    />
-                    {t.name}
-                  </label>
-                );
-              })}
-            </div>
-          )}
+            {tags.length === 0 ? (
+              <div className="course-muted">
+                No tags available.
+              </div>
+            ) : (
+              <div className="course-tags-grid">
+                {tags.map((t) => {
+                  const checked = (form.tag_ids || []).includes(t.id);
+                  const tagId = Number(t.id);
+
+                  return (
+                    <label
+                      key={t.id}
+                      className={`course-tag-item ${checked ? "active" : ""}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => {
+                          setForm((prev) => {
+                            const prevIds = prev.tag_ids || [];
+                            const nextIds = e.target.checked
+                              ? [...prevIds, tagId]
+                              : prevIds.filter((id) => id !== tagId);
+                            return { ...prev, tag_ids: nextIds };
+                          });
+                        }}
+                      />
+                      {t.name}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <input
+            className="course-input"
+            placeholder="Title"
+            value={form.title}
+            onChange={e =>
+              setForm(p => ({ ...p, title: e.target.value }))
+            }
+          />
+
+          <textarea
+            className="course-textarea"
+            placeholder="Description"
+            value={form.description}
+            onChange={e =>
+              setForm(p => ({ ...p, description: e.target.value }))
+            }
+          />
+
+          <input
+            className="course-input"
+            type="number"
+            placeholder="Cost"
+            value={form.cost}
+            onChange={e =>
+              setForm(p => ({ ...p, cost: e.target.value }))
+            }
+          />
+
+          <UploadCourseImage
+            initialUrl={form.image_url}
+            onUpload={(url) =>
+              setForm(p => ({ ...p, image_url: url }))
+            }
+          />
+
+          <button className="course-primary-btn">
+            Create Course
+          </button>
+
+        </form>
+
+        <div className="course-secondary-actions">
+          <button
+            className="course-secondary-btn"
+            onClick={() => navigate("/courses")}
+          >
+            Back to Courses
+          </button>
+
+          <button
+            className="course-secondary-btn"
+            onClick={handleBack}
+            type="button"
+          >
+            Back to Dashboard
+          </button>
         </div>
 
-        <input
-          className="form-control mb-2"
-          placeholder="Title"
-          value={form.title}
-          onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
-        />
-
-        <textarea
-          className="form-control mb-2"
-          placeholder="Description"
-          value={form.description}
-          onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
-        />
-
-        <input
-          className="form-control mb-3"
-          type="number"
-          placeholder="Cost"
-          value={form.cost}
-          onChange={e => setForm(p => ({ ...p, cost: e.target.value }))}
-        />
-
-        <UploadCourseImage
-          initialUrl={form.image_url}
-          onUpload={(url) => setForm(p => ({ ...p, image_url: url }))}
-        />
-
-        <button className="btn btn-success">Create</button>
-      </form>
-
-      <div className="mt-4 d-flex gap-2">
-        <button className="btn btn-secondary" onClick={() => navigate("/courses")}>
-          Back to Courses
-        </button>
-        <button className="btn btn-secondary" onClick={handleBack} type="button">
-          Back to Dashboard
-        </button>
       </div>
+
     </div>
   );
 };

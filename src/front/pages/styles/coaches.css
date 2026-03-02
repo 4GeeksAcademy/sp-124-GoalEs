@@ -1,0 +1,261 @@
+.coaches-layout {
+  min-height: 100vh;
+  background-color: #f4f4f6;
+  padding: 3rem 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.coaches-container {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.coaches-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.coaches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2.5rem;
+}
+
+.coach-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.coach-card:hover {
+  transform: translateY(-8px);
+}
+
+.coach-image-wrapper {
+  width: 100%;
+  height: 360px;
+  overflow: hidden;
+}
+
+.coach-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coach-card-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.coach-name {
+  margin: 0;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.coach-location {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.coach-card-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.8rem;
+}
+
+.coach-view-btn {
+  flex: 1;
+  background-color: #1a1a2e;
+  color: white;
+  border: none;
+  padding: 0.7rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.coach-view-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+.coach-chat-btn {
+  flex: 1;
+  background-color: transparent;
+  border: 2px solid #e8a838;
+  color: #e8a838;
+  padding: 0.7rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.coach-chat-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+.coaches-footer-actions {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.coaches-loading {
+  text-align: center;
+  color: #777;
+  margin-bottom: 2rem;
+}
+
+/* Los detalles de Coaches */
+.coach-profile-layout {
+  min-height: 100vh;
+  background-color: #f4f4f6;
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.coach-profile-container {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.coach-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.coach-profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+
+.coach-profile-name {
+  margin: 0;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.coach-profile-email {
+  color: #777;
+  margin: 0.4rem 0;
+}
+
+.coach-profile-location {
+  color: #555;
+  margin: 0;
+}
+
+.coach-profile-section {
+  margin-bottom: 3rem;
+}
+
+.coach-profile-section-title {
+  margin-bottom: 1.5rem;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.coach-profile-courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.coach-profile-course-card {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+
+.coach-profile-course-card:hover {
+  transform: translateY(-6px);
+}
+
+.coach-profile-course-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.coach-profile-course-content {
+  padding: 1.2rem;
+}
+
+.coach-course-desc {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.coach-course-price {
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0.6rem 0;
+}
+
+.coach-profile-map-wrapper {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+.coach-profile-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.coach-primary-btn {
+  background-color: #1a1a2e;
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.coach-primary-btn:hover {
+  background-color: #e8a838;
+  color: #1a1a2e;
+}
+
+.coach-secondary-btn {
+  background: transparent;
+  border: 2px solid #1a1a2e;
+  color: #1a1a2e;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.coach-secondary-btn:hover {
+  background-color: #1a1a2e;
+  color: white;
+}
+
+.coach-muted {
+  color: #777;
+}

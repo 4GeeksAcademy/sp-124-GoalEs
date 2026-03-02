@@ -189,7 +189,7 @@ export default function CoachPrivate() {
   return (
     <div className="coach-dashboard-layout">
 
-      {/* SIDEBAR */}
+
       <aside className="coach-sidebar">
 
         <h2 className="coach-sidebar-title">
@@ -223,12 +223,11 @@ export default function CoachPrivate() {
 
       </aside>
 
-      {/* MAIN CONTENT */}
       <main className="coach-dashboard-main">
 
         <div className="coach-dashboard-header">
           <h2>
-            {store.coach.name} Dashboard
+            Your Courses
           </h2>
         </div>
 
@@ -305,9 +304,79 @@ export default function CoachPrivate() {
           ))}
 
         </div>
+        {showModal && (
+          <div
+            className="coach-modal-overlay"
+            onClick={closeModal}
+          >
+            <div
+              className="coach-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
 
-        {/* Modal lo dejamos igual, solo cambiaremos clases si quieres luego */}
+              <div className="coach-modal-header">
+                <h3>
+                  Students — {selectedCourse?.title}
+                </h3>
+                <button
+                  className="coach-modal-close"
+                  onClick={closeModal}
+                >
+                  ✕
+                </button>
+              </div>
 
+              <div className="coach-modal-body">
+
+                {loadingStudents ? (
+                  <p>Loading...</p>
+                ) : studentsError ? (
+                  <p className="coach-error">{studentsError}</p>
+                ) : students.length === 0 ? (
+                  <p className="coach-empty">
+                    No students enrolled yet.
+                  </p>
+                ) : (
+                  <div className="coach-students-table-wrapper">
+
+                    <table className="coach-students-table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Name</th>
+                          <th>Email</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {students.map((s, idx) => (
+                          <tr key={s.id}>
+                            <td>{idx + 1}</td>
+                            <td>
+                              {`${s.name ?? ""} ${s.surname ?? ""}`.trim() || "—"}
+                            </td>
+                            <td>{s.email || "—"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                  </div>
+                )}
+
+              </div>
+
+              <div className="coach-modal-footer">
+                <button
+                  className="coach-modal-btn"
+                  onClick={closeModal}
+                >
+                  Close
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
       </main>
 
     </div>

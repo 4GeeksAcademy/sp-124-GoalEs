@@ -83,7 +83,7 @@ export const LoginUser = () => {
 
       {welcome && (
         <div className="alert-login" role="alert">
-          Bienvenido {store.user.name}
+          Welcome {store.user.name}!
         </div>
       )}
 

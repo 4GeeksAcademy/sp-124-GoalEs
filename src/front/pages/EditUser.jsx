@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import "./styles/editUser.css"
 
 const back_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -85,51 +86,71 @@ export const EditUser = () => {
   if (error) return <p className="container py-4 text-danger">{error}</p>;
 
   return (
-    <div className="container py-4">
-      <h1>Edit User #{id}</h1>
+    <div className="edit-user-layout">
 
-      <form onSubmit={handleUpdate} className="mt-3">
-        <input
-          className="form-control mb-2"
-          placeholder="name"
-          value={form.name}
-          onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-        />
+      <div className="edit-user-container">
 
-        <input
-          className="form-control mb-2"
-          placeholder="surname"
-          value={form.surname}
-          onChange={(e) => setForm((p) => ({ ...p, surname: e.target.value }))}
-        />
+        <h1 className="edit-user-title">
+          Edit User #{id}
+        </h1>
 
-        <input
-          className="form-control mb-2"
-          placeholder="email"
-          value={form.email}
-          onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-        />
+        <form onSubmit={handleUpdate} className="edit-user-form">
 
-        <input
-          className="form-control mb-3"
-          type="password"
-          placeholder="password"
-          value={form.password}
-          onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
-        />
+          <input
+            className="edit-user-input"
+            placeholder="Name"
+            value={form.name}
+            onChange={(e) => setForm(p => ({ ...p, name: e.target.value }))}
+          />
 
-        <button className="btn btn-primary">Save</button>
-      </form>
+          <input
+            className="edit-user-input"
+            placeholder="Surname"
+            value={form.surname}
+            onChange={(e) => setForm(p => ({ ...p, surname: e.target.value }))}
+          />
 
-      <div className="mt-4 d-flex gap-2">
-        <button className="btn btn-secondary" onClick={() => navigate("/users")}>
-          Back to Users
-        </button>
+          <input
+            className="edit-user-input"
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm(p => ({ ...p, email: e.target.value }))}
+          />
 
-        <button className="btn btn-outline-secondary" onClick={() => navigate("/")}>
-          Back to Home
-        </button>
+          <input
+            className="edit-user-input"
+            type="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={(e) => setForm(p => ({ ...p, password: e.target.value }))}
+          />
+
+          <button className="edit-user-save-btn">
+            Save Changes
+          </button>
+
+        </form>
+
+        <div className="edit-user-actions">
+
+          <button
+            className="edit-user-secondary-btn"
+            onClick={() => navigate("/users")}
+          >
+            Back to Users
+          </button>
+
+          <button
+            className="edit-user-outline-btn"
+            onClick={() => navigate("/")}
+          >
+            Back to Home
+          </button>
+
+        </div>
+
       </div>
+
     </div>
   );
 };

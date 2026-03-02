@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import "./styles/myappointmentsCoach.css"
 
 export const MyAppointmentsCoach = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -129,82 +130,126 @@ export const MyAppointmentsCoach = () => {
 
   if (!token) {
     return (
-      <div className="container py-4">
-        <div className="alert alert-warning">
-          Coach token not found. Please login again.
+      <div className="coach-appointments-layout">
+        <div className="coach-appointments-container">
+
+          <div className="coach-warning">
+            Coach token not found. Please login again.
+          </div>
+
+          <button
+            className="coach-primary-btn"
+            onClick={() => navigate("/coaches/login")}
+          >
+            Go to Coach Login
+          </button>
+
         </div>
-        <button className="btn btn-primary" onClick={() => navigate("/coaches/login")}>
-          Go to Coach Login
-        </button>
       </div>
     );
   }
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h1 className="mb-0">My Appointments</h1>
+    <div className="coach-appointments-layout">
 
-        <div className="d-flex gap-2">
-          <button className="btn btn-outline-secondary" type="button" onClick={fetchAppointments}>
-            Refresh
-          </button>
-          <button className="btn btn-secondary" type="button" onClick={() => navigate("/coach/private")}>
-            Back to Dashboard
-          </button>
+      <div className="coach-appointments-container">
+
+        <div className="coach-appointments-header">
+
+          <h1 className="coach-appointments-title">
+            My Appointments
+          </h1>
+
+          <div className="coach-appointments-actions">
+
+            <button
+              className="coach-outline-btn"
+              type="button"
+              onClick={fetchAppointments}
+            >
+              Refresh
+            </button>
+
+            <button
+              className="coach-secondary-btn"
+              type="button"
+              onClick={() => navigate("/coach/private")}
+            >
+              Back to Dashboard
+            </button>
+
+          </div>
+
         </div>
+
+        {error && (
+          <div className="coach-error">
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="coach-appointments-sections">
+
+            <Section
+              title={`Pending (${pending.length})`}
+              items={pending}
+            >
+              {(a) => (
+                <div className="coach-appointment-actions">
+                  <button
+                    className="coach-approve-btn"
+                    onClick={() => updateStatus(a.id, "approved")}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="coach-reject-btn"
+                    onClick={() => updateStatus(a.id, "rejected")}
+                  >
+                    Reject
+                  </button>
+                </div>
+              )}
+            </Section>
+
+            <Section
+              title={`Approved (${approved.length})`}
+              items={approved}
+            >
+              {(a) => (
+                <div className="coach-appointment-actions">
+                  <button
+                    className="coach-cancel-btn"
+                    onClick={() => updateStatus(a.id, "canceled")}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </Section>
+
+            <Section
+              title={`Rejected (${rejected.length})`}
+              items={rejected}
+            >
+              {() => <span className="coach-muted">—</span>}
+            </Section>
+
+            <Section
+              title={`Canceled (${canceled.length})`}
+              items={canceled}
+            >
+              {() => <span className="coach-muted">—</span>}
+            </Section>
+
+          </div>
+        )}
+
       </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <Section title={`Pending (${pending.length})`} items={pending}>
-            {(a) => (
-              <div className="d-flex justify-content-end gap-2">
-                <button
-                  className="btn btn-success btn-sm"
-                  type="button"
-                  onClick={() => updateStatus(a.id, "approved")}
-                >
-                  Approve
-                </button>
-                <button
-                  className="btn btn-outline-danger btn-sm"
-                  type="button"
-                  onClick={() => updateStatus(a.id, "rejected")}
-                >
-                  Reject
-                </button>
-              </div>
-            )}
-          </Section>
-
-          <Section title={`Approved (${approved.length})`} items={approved}>
-            {(a) => (
-              <div className="d-flex justify-content-end gap-2">
-                <button
-                  className="btn btn-outline-warning btn-sm"
-                  type="button"
-                  onClick={() => updateStatus(a.id, "canceled")}
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-          </Section>
-
-          <Section title={`Rejected (${rejected.length})`} items={rejected}>
-            {() => <span className="text-muted">—</span>}
-          </Section>
-
-          <Section title={`Canceled (${canceled.length})`} items={canceled}>
-            {() => <span className="text-muted">—</span>}
-          </Section>
-        </>
-      )}
     </div>
   );
 };

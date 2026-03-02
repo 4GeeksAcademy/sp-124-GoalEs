@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./styles/adminAppointments.css"
 
 export const AdminAppointments = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -220,152 +221,170 @@ export const AdminAppointments = () => {
 
   if (!isAdmin) {
     return (
-      <div className="container py-4">
-        <div className="alert alert-warning">
-          Admin token not found. Please login as admin.
+      <div className="admin-appointments-layout">
+        <div className="admin-appointments-container">
+
+          <div className="admin-warning">
+            Admin token not found. Please login as admin.
+          </div>
+
+          <button
+            className="admin-primary-btn"
+            onClick={() => navigate("/admin/login")}
+          >
+            Go to Admin Login
+          </button>
+
         </div>
-        <button className="btn btn-primary" onClick={() => navigate("/admin/login")}>
-          Go to Admin Login
-        </button>
       </div>
     );
   }
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h1 className="mb-0">Manage Appointments </h1>
+    <div className="admin-appointments-layout">
 
-        <div className="d-flex gap-2">
-          <button className="btn btn-outline-secondary" type="button" onClick={fetchAllAppointments}>
-            Refresh
-          </button>
-          <button className="btn btn-secondary" type="button" onClick={() => navigate("/admin/home")}>
-            Back to Admin Dashboard
-          </button>
+      <div className="admin-appointments-container">
+
+        {/* ===== HEADER ===== */}
+        <div className="admin-appointments-header">
+
+          <h1 className="admin-appointments-title">
+            Manage Appointments
+          </h1>
+
+          <div className="admin-appointments-actions">
+
+            <button
+              className="admin-outline-btn"
+              onClick={fetchAllAppointments}
+            >
+              Refresh
+            </button>
+
+          </div>
+
         </div>
-      </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
+        {error && (
+          <div className="admin-error">
+            {error}
+          </div>
+        )}
 
-      {/* CREATE */}
-      <div className="card mb-4">
-        <div className="card-body">
-          <h5 className="card-title">Create an appointment</h5>
+        {/* ===== CREATE SECTION ===== */}
+        <div className="admin-create-card">
 
-          <form onSubmit={createAppointment} className="row g-2">
-            <div className="col-md-4">
-              <select
-                className="form-select"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-              >
-                <option value="">Select user</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name} {u.surname}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <h2 className="admin-section-title">
+            Create Appointment
+          </h2>
 
-            <div className="col-md-4">
-              <select
-                className="form-select"
-                value={coachId}
-                onChange={(e) => setCoachId(e.target.value)}
-              >
-                <option value="">Select coach</option>
-                {coaches.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} {c.last_name}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <form onSubmit={createAppointment} className="admin-create-form">
 
-            <div className="col-md-4">
-              <input
-                className="form-control"
-                type="datetime-local"
-                value={startsAtLocal}
-                onChange={(e) => setStartsAtLocal(e.target.value)}
-              />
-              
-            </div>
+            <select
+              className="admin-input"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+            >
+              <option value="">Select user</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.name} {u.surname}
+                </option>
+              ))}
+            </select>
 
-            <div className="col-md-10">
-              <input
-                className="form-control"
-                placeholder="Note (optional)"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-              />
-            </div>
+            <select
+              className="admin-input"
+              value={coachId}
+              onChange={(e) => setCoachId(e.target.value)}
+            >
+              <option value="">Select coach</option>
+              {coaches.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} {c.last_name}
+                </option>
+              ))}
+            </select>
 
-            <div className="col-md-2 d-grid">
-              <button className="btn btn-success">Create</button>
-            </div>
+            <input
+              className="admin-input"
+              type="datetime-local"
+              value={startsAtLocal}
+              onChange={(e) => setStartsAtLocal(e.target.value)}
+            />
+
+            <input
+              className="admin-input"
+              placeholder="Note (optional)"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+
+            <button className="admin-success-btn">
+              Create
+            </button>
+
           </form>
+
         </div>
+
+        {/* ===== SECTIONS ===== */}
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="admin-appointments-sections">
+
+            <Section
+              title={`Pending (${pending.length})`}
+              items={pending}
+              renderActions={(a) => (
+                <div className="admin-actions-row">
+                  <button
+                    className="admin-approve-btn"
+                    onClick={() => updateStatus(a.id, "approved")}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="admin-reject-btn"
+                    onClick={() => updateStatus(a.id, "rejected")}
+                  >
+                    Reject
+                  </button>
+                  <button
+                    className="admin-cancel-btn"
+                    onClick={() => updateStatus(a.id, "canceled")}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            />
+
+            <Section
+              title={`Approved (${approved.length})`}
+              items={approved}
+              renderActions={(a) => (
+                <div className="admin-actions-row">
+                  <button
+                    className="admin-cancel-btn"
+                    onClick={() => updateStatus(a.id, "canceled")}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            />
+
+            <Section
+              title={`Canceled / Rejected (${canceledRejected.length})`}
+              items={canceledRejected}
+            />
+
+          </div>
+        )}
+
       </div>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <Section
-            title={`Pending (${pending.length})`}
-            items={pending}
-            renderActions={(a) => (
-              <div className="d-flex justify-content-end gap-2">
-                <button
-                  className="btn btn-success btn-sm"
-                  type="button"
-                  onClick={() => updateStatus(a.id, "approved")}
-                >
-                  Approve
-                </button>
-                <button
-                  className="btn btn-outline-danger btn-sm"
-                  type="button"
-                  onClick={() => updateStatus(a.id, "rejected")}
-                >
-                  Reject
-                </button>
-                <button
-                  className="btn btn-outline-warning btn-sm"
-                  type="button"
-                  onClick={() => updateStatus(a.id, "canceled")}
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-          />
-
-          <Section
-            title={`Approved (${approved.length})`}
-            items={approved}
-            renderActions={(a) => (
-              <div className="d-flex justify-content-end gap-2">
-                <button
-                  className="btn btn-outline-warning btn-sm"
-                  type="button"
-                  onClick={() => updateStatus(a.id, "canceled")}
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-          />
-
-          <Section
-            title={`Canceled / Rejected (${canceledRejected.length})`}
-            items={canceledRejected}
-          />
-        </>
-      )}
     </div>
   );
 };

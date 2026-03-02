@@ -1,0 +1,95 @@
+.coach-appointments-layout {
+  min-height: calc(100vh - 70px);
+  background-color: #f4f4f6;
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.coach-appointments-container {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.coach-appointments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.coach-appointments-title {
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.coach-appointments-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.coach-outline-btn {
+  background: transparent;
+  border: 2px solid #1a1a2e;
+  color: #1a1a2e;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.coach-outline-btn:hover {
+  background-color: #1a1a2e;
+  color: white;
+}
+
+.coach-approve-btn {
+  background-color: #e8a838;
+  border: none;
+  color: #1a1a2e;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.coach-reject-btn {
+  background-color: transparent;
+  border: 2px solid #c0392b;
+  color: #c0392b;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.coach-cancel-btn {
+  background-color: transparent;
+  border: 2px solid #e8a838;
+  color: #e8a838;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.coach-error {
+  background-color: #ffe5e5;
+  color: #c0392b;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.coach-warning {
+  background-color: #fff3cd;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.coach-muted {
+  color: #777;
+}
+
+.coach-appointment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+}
