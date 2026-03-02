@@ -2,7 +2,6 @@ import os
 import inspect
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask_admin.theme import Bootstrap4Theme
 
 from .models import db
 from . import models
@@ -26,8 +25,7 @@ def setup_admin(app):
         app,
         name="4Geeks Admin",
         url="/admin",                # URL ro explicit mikonim (default ham hamine vali shafaf beshe)
-        endpoint="admin_panel",      # endpoint yektA ta conflict blueprint 'admin' pish nayad
-        theme=Bootstrap4Theme(swatch="cerulean")
+        endpoint="admin_panel"     # endpoint yektA ta conflict blueprint 'admin' pish nayad
     )
 
     for name, obj in inspect.getmembers(models):
