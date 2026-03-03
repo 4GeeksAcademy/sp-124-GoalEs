@@ -9,7 +9,6 @@ export const About = () => {
   const team = [
     {
       name: "Arash Tahamtan",
-      role: "Full-Stack",
       bio:
         "Focused on building a simple, reliable experience for users.\n" +
         "Turns messy ideas into clear features and shipped pages.",
@@ -17,7 +16,6 @@ export const About = () => {
     },
     {
       name: "Cristian David Trapiello",
-      role: "Full-Stack",
       bio:
         "Brings the UI to life with clean components and strong styling.\n" +
         "Obsessed with usability, consistency, and polished flows.",
@@ -25,7 +23,6 @@ export const About = () => {
     },
     {
       name: "Sarah Cardoso",
-      role: "Full-Stack",
       bio:
         "I’m a lifelong learner who believes in the power of education to drive both personal\n" +
         "and professional growth. I’m constantly seeking new challenges that help me evolve and expand my skills.",
@@ -126,7 +123,7 @@ export const About = () => {
           <h2 className="public-h2">Values</h2>
           <div className="public-grid-3">
             {values.map((v) => (
-              <div className="public-card" key={v.title}>
+              <div className="public-card mt-3" key={v.title}>
                 <h3 className="public-card-title">{v.title}</h3>
                 <p className="public-muted">{v.text}</p>
               </div>

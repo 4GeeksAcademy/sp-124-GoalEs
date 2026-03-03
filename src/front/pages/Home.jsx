@@ -190,7 +190,9 @@ export const Home = () => {
                 coach can change everything — a career, a mindset, a life. Today, GoalEs
                 is more than a platform. It's a community where learning meets purpose.
               </p>
+            <button className="btn-hero-primary" onClick={() => navigate("/about")}>Know about us</button>
             </div>
+
 
           </div>
         </div>
