@@ -275,3 +275,64 @@
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+@media (max-width: 992px) {
+  .coach-dashboard-layout {
+    flex-direction: column;
+    min-height: calc(100vh - 70px);
+  }
+
+  .coach-sidebar {
+    width: 100%;
+    padding: 1.25rem 1rem;
+  }
+
+  .coach-sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .coach-sidebar-btn {
+    width: auto;
+    flex: 1 1 180px;
+    text-align: center;
+  }
+
+  .coach-dashboard-main {
+    padding: 1.5rem 1rem;
+  }
+
+  .coach-courses-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .coach-sidebar-title {
+    margin-bottom: 1rem;
+  }
+
+  .coach-sidebar-nav {
+    flex-direction: column;
+  }
+
+  .coach-sidebar-btn {
+    width: 100%;
+    flex: none;
+  }
+
+  .coach-course-actions {
+    flex-direction: column;
+  }
+
+  .coach-edit-btn,
+  .coach-delete-btn {
+    width: 100%;
+  }
+
+  .coach-modal-body {
+    max-height: 60vh;
+  }
+}

@@ -11,6 +11,9 @@
   min-height: 100vh;
   background-color: var(--light-bg);
   font-family: "Segoe UI", sans-serif;
+
+  height: 100vh;
+  overflow: hidden;
 }
 
 .admin-sidebar {
@@ -21,6 +24,12 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 2rem 1.5rem;
+
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex: 0 0 260px;
+  overflow-y: auto;
 }
 
 .sidebar-header {
@@ -87,6 +96,10 @@
 .admin-main {
   flex: 1;
   padding: 3rem;
+
+  height: 100vh;
+  overflow-y: auto;
+  min-width: 0;
 }
 
 .admin-card {
@@ -94,6 +107,7 @@
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  
 }
 
 .admin-header {
@@ -141,4 +155,35 @@
   background-color: #e8a838;
   color: #1a1a2e;
   border-color: #e8a838;
+}
+
+@media (max-width: 992px) {
+  .admin-layout {
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+    min-height: 100vh;
+  }
+
+  .admin-sidebar {
+    position: relative;
+    height: auto;
+    width: 100%;
+    flex: none;
+  }
+
+  .admin-main {
+    height: auto;
+    overflow: visible;
+    padding: 1.5rem;
+  }
+
+  .admin-primary-actions {
+    gap: 1rem;
+  }
+
+  .primary-action-btn {
+    min-width: 160px;
+    width: 100%;
+  }
 }

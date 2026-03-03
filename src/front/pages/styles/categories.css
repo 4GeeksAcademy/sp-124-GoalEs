@@ -23,7 +23,7 @@
   font-weight: 600;
 }
 
-.admin-card {
+.cat-card {
   background: white;
   padding: 2rem;
   border-radius: 18px;
@@ -142,9 +142,7 @@
   cursor: pointer;
 }
 
-.small {
-  font-size: 0.8rem;
-}
+.small { font-size: 0.8rem; }
 
 .admin-warning {
   background-color: #fff3cd;
@@ -161,6 +159,8 @@
   margin-bottom: 2rem;
 }
 
-.admin-muted {
-  color: #888;
+.admin-muted { color: #888; }
+
+@media (max-width: 768px) {
+  .admin-form-grid { grid-template-columns: 1fr; }
 }

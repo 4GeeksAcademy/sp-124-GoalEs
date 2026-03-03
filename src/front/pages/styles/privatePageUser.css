@@ -2,6 +2,9 @@
   display: flex;
   min-height: 100vh;
   background-color: #f4f4f6;
+
+  height: 100vh;
+  overflow: hidden;
 }
 
 .user-sidebar {
@@ -11,6 +14,12 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex: 0 0 240px;
+  overflow-y: auto;
 }
 
 .user-sidebar-title {
@@ -39,6 +48,10 @@
 .user-main-content {
   flex: 1;
   padding: 3rem;
+
+  height: 100vh;
+  overflow-y: auto;
+  min-width: 0;
 }
 
 .user-dashboard-title {
@@ -61,40 +74,66 @@
   font-weight: 600;
 }
 
+@media (max-width: 992px) {
+  .user-dashboard-layout {
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+    min-height: 100vh;
+  }
+
+  .user-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    flex: none;
+  }
+
+  .user-main-content {
+    height: auto;
+    overflow: visible;
+    padding: 1.5rem;
+  }
+
+  .user-sidebar-btn:hover {
+    transform: none;
+  }
+}
+
 .pay-button {
-    background: #e8a838;
-    color: #1a1a2e;
-    border: 2px solid #e8a838;
-    border-radius: 8px;
-    padding: 12px 32px;
-    margin-top: 5px;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  background: #e8a838;
+  color: #1a1a2e;
+  border: 2px solid #e8a838;
+  border-radius: 8px;
+  padding: 12px 32px;
+  margin-top: 5px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .pay-button:hover {
-    background: #1a1a2e;
-    color: #e8a838;
-    border-color: #1a1a2e;
+  background: #1a1a2e;
+  color: #e8a838;
+  border-color: #1a1a2e;
 }
 
 .pay-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background: #e8a838;
-    color: #1a1a2e;
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #e8a838;
+  color: #1a1a2e;
 }
 
 .payment-success {
-    text-align: center;
-    padding: 2rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #1a1a2e;
-    background: #fff8ec;
-    border: 2px solid #e8a838;
-    border-radius: 10px;
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  background: #fff8ec;
+  border: 2px solid #e8a838;
+  border-radius: 10px;
 }

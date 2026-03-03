@@ -5,7 +5,7 @@ export const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
   const mailtoHref = useMemo(() => {
-    const to = "support@goales.app"; // یا goales@gmail.com
+    const to = "support@goales.app";
     const subject = "GoalEs Support";
     const body = [
       `Name: ${form.name || "-"}`,

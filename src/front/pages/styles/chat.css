@@ -1,15 +1,15 @@
 .chat-layout {
   display: flex;
   width: 100%;
-  height: calc(100vh - 110px); /* navbar بلندتره */
+  height: calc(100vh - 110px); 
   background-color: #f4f4f6;
 
-  justify-content: flex-start; /* ❗️به جای center */
-  align-items: stretch;        /* تا تمام قد بشه */
+  justify-content: flex-start; 
+  align-items: stretch;
 }
 
 .chat-sidebar {
-  width: 340px; /* کمی بهتر */
+  width: 340px;
   background-color: #1a1a2e;
   color: white;
   padding: 1.5rem;
@@ -204,4 +204,54 @@
 .chat-empty-inner {
   text-align: center;
   color: #6b7280;
+}
+
+@media (max-width: 992px) {
+  .chat-layout {
+    flex-direction: column;    
+    height: calc(100vh - 110px);
+  }
+
+  .chat-sidebar {
+    width: 100%; 
+    height: auto;
+    max-height: 45vh;
+  }
+
+  .chat-window {
+    height: auto;
+    flex: 1;
+  }
+
+  .chat-messages {
+    padding: 1rem;
+  }
+
+  .chat-header {
+    padding: 1rem;
+  }
+
+  .chat-input-area {
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .chat-sidebar {
+    padding: 1rem;
+    max-height: 40vh;
+  }
+
+  .chat-item {
+    padding: 0.85rem;
+  }
+
+  .chat-bubble {
+    max-width: 90%;
+  }
+
+  .chat-send-btn {
+    min-width: 92px;
+    padding: 0 1rem;
+  }
 }
