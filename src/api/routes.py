@@ -1247,7 +1247,7 @@ def get_user_favorites(user_id):
     results = []
     for fav in favorites:
         course = Course.query.get(fav.course_favorite_id)
-        results.apiend({
+        results.append({
             "id": fav.id,
             "course": course.serialize()
         })

@@ -34,11 +34,16 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
-CORS(app, resources={r"/*": {"origins": "*"}},
-     allow_headers=["Content-Type", "Authorization"])
-
+CORS(app, 
+    resources={r"/api/*": {"origins": "*"}},
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
 # configurar socketio
-socketio.init_app(app, cors_allowed_origins="*")
+socketio.init_app(app, 
+    cors_allowed_origins="*",
+    cors_credentials=True
+    )
 
 
 app.url_map.strict_slashes = False
