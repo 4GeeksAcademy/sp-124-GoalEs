@@ -35,7 +35,10 @@ export default function PaymentPage() {
                 user_id: user.id,
             }),
         })
-            .then(res => res.json())
+            .then(res => {
+                console.log("status:", res.status);
+                return res.json();
+            })
             .then(data => {
                 console.log("respuesta backend:", data);
                 setClientSecret(data.clientSecret);
@@ -47,12 +50,12 @@ export default function PaymentPage() {
     }
 
     return (
-    <div style={{ display: "flex", justifyContent: "center", padding: "40px 16px" }}>
-        <div style={{ width: "100%", maxWidth: "480px", backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", padding: "32px" }}>
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
-                <CheckoutForm course={course} />
-            </Elements>
+        <div style={{ display: "flex", justifyContent: "center", padding: "40px 16px" }}>
+            <div style={{ width: "100%", maxWidth: "480px", backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", padding: "32px" }}>
+                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                    <CheckoutForm course={course} />
+                </Elements>
+            </div>
         </div>
-    </div>
-);
+    );
 }
