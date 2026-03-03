@@ -58,19 +58,19 @@ export const Navbar = () => {
 
           <ul className="navbar-nav mx-auto gap-1">
             <li className="nav-item">
-              <a className="nav-link" href="#our-story">Our Story</a>
+              <a className="nav-link nav-main-link" href="#our-story">Our Story</a>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/coaches">Our Coaches</Link>
+              <Link className="nav-link nav-main-link" to="/coaches">Our Coaches</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/about">About</Link>
+              <Link className="nav-link nav-main-link" to="/about">About</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/features">Features</Link>
+              <Link className="nav-link nav-main-link" to="/features">Features</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/contact">Contact</Link>
+              <Link className="nav-link nav-main-link" to="/contact">Contact</Link>
             </li>
           </ul>
 

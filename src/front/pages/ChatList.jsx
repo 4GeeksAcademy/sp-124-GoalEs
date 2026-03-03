@@ -50,72 +50,80 @@ export default function ChatList({ chats, onSelectChat, selectedChat, onDeleteCh
 
       <h3 className="chat-sidebar-title">Chats</h3>
 
-    <div className="chat-list-scroll">
+      <div className="chat-list-scroll">
 
-      {sortedChats.map(chat => {
-        
-        const otherName =
-        role === "user"
-        ? chat.coach_name
-        : chat.user_name;
-        
-        const lastMessage =
-        chat.messages && chat.messages.length > 0
-        ? chat.messages[chat.messages.length - 1]
-        : null;
-        
-        const isMine =
-        lastMessage &&
-        lastMessage.sender_role === role;
-        
-        return (
-          <div
-          key={chat.id}
-          className={`chat-item ${selectedChat?.id === chat.id ? "active" : ""}`}
-          >
+        {sortedChats.map(chat => {
+
+          const otherName =
+            role === "user"
+              ? chat.coach_name
+              : chat.user_name;
+
+          const lastMessage =
+            chat.messages && chat.messages.length > 0
+              ? chat.messages[chat.messages.length - 1]
+              : null;
+
+          const isMine =
+            lastMessage &&
+            lastMessage.sender_role === role;
+
+          return (
             <div
-              onClick={() => onSelectChat(chat)}
-              className="chat-item-top"
+              key={chat.id}
+              className={`chat-item ${selectedChat?.id === chat.id ? "active" : ""}`}
+            >
+              <div
+                onClick={() => onSelectChat(chat)}
+                className="chat-item-top"
               >
-              <strong>{otherName}</strong>
+                <strong>{otherName}</strong>
 
-              <span className="chat-item-date">
-                {lastMessage
-                  ? formatSmartDate(lastMessage.created_at)
-                  : ""}
-              </span>
-            </div>
+                <span className="chat-item-date">
+                  {lastMessage
+                    ? formatSmartDate(lastMessage.created_at)
+                    : ""}
+                </span>
+              </div>
 
-            <div className="chat-item-preview">
-              <span>
-                {lastMessage
-                  ? lastMessage.text
-                  : "Sin mensajes aún"}
-              </span>
+              <div className="chat-item-preview">
+                <span>
+                  {lastMessage
+                    ? lastMessage.text
+                    : "Sin mensajes aún"}
+                </span>
 
-              {isMine && <span className="chat-check">✓✓</span>}
-            </div>
+                {isMine && <span className="chat-check">✓✓</span>}
+              </div>
 
-            <button
-              onClick={() => onDeleteChat(chat.id)}
-              className="chat-delete-btn"
+              <button
+                onClick={() => onDeleteChat(chat.id)}
+                className="chat-delete-btn"
               >
-              Eliminar chat
-            </button>
+                Eliminar chat
+              </button>
 
-          </div>
-        );
-      })}
+            </div>
+          );
+        })}
       </div>
 
       <div className="chat-dashboard-btn-wrapper">
         {role === "user" && (
-          <button
-            className="chat-dashboard-btn"
-            onClick={() => navigate("/users/home")}
-          >
-            Dashboard User
-          </button>
+          <>
+            <button
+              className="chat-dashboard-btn"
+              onClick={() => navigate("/users/home")}
+            >
+              Dashboard User
+            </button>
+            <button
+              className="chat-dashboard-btn mt-2"
+              onClick={() => navigate("/coaches")}
+            >
+              Start Chat with some coaches
+            </button>
+          </>
         )}
 
         {role === "coach" && (

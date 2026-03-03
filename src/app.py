@@ -12,6 +12,7 @@ from api.models import db, User, Coach, Course, Message, User_course, User_Cours
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from api.socket import socketio
 from flask_cors import CORS
 from sqlalchemy import select
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt, verify_jwt_in_request
@@ -33,11 +34,16 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
-CORS(app, resources={r"/*": {"origins": "*"}},
-     allow_headers=["Content-Type", "Authorization"])
-
+CORS(app, 
+    resources={r"/api/*": {"origins": "*"}},
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
 # configurar socketio
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio.init_app(app, 
+    cors_allowed_origins="*",
+    cors_credentials=True
+    )
 
 
 app.url_map.strict_slashes = False
@@ -94,4 +100,4 @@ def serve_any_other_file(path):
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
-    socketio.run(app, host="0.0.0.0", port=3001, debug=True)
+    socketio.run(app, host="0.0.0.0", port=PORT, debug=True)

@@ -109,13 +109,6 @@ export const User = () => {
               Create New User
             </button>
 
-            <button
-              className="admin-secondary-btn"
-              onClick={() => navigate("/admin/home")}
-            >
-              Back to Admin Dashboard
-            </button>
-
           </div>
 
         </div>
