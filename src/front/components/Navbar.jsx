@@ -58,9 +58,6 @@ export const Navbar = () => {
 
           <ul className="navbar-nav mx-auto gap-1">
             <li className="nav-item">
-              <a className="nav-link nav-main-link" href="#our-story">Our Story</a>
-            </li>
-            <li className="nav-item">
               <Link className="nav-link nav-main-link" to="/coaches">Our Coaches</Link>
             </li>
             <li className="nav-item">
