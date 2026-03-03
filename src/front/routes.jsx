@@ -75,6 +75,7 @@ export const router = createBrowserRouter(
 
         <Route path="admin" element={<SignupAdmin />} />
         <Route path="admin/login" element={<LoginAdmin />} />
+        <Route path="admin/signup" element={<SignupAdmin />} />
 
         <Route path="users/signup" element={<SignupUser />} />
         <Route path="users/login" element={<LoginUser />} />
