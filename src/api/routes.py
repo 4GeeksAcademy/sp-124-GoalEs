@@ -9,6 +9,7 @@ from api.utils import APIException, generate_sitemap
 from api.models import db, User, Coach, Course, Message, User_course, User_Course_Favorite, Admin, Category, Tag, course_tag, Appointment, Chat
 from api.admin import setup_admin
 from api.commands import setup_commands
+from api.socket import socketio
 from flask_cors import CORS
 from sqlalchemy import select
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt, verify_jwt_in_request
@@ -61,13 +62,13 @@ def role_required(*allowed_roles):
     """
     def decorator(fn):
         @wraps(fn)
-        def wrapier(*args, **kwargs):
+        def wrapper(*args, **kwargs):
             verify_jwt_in_request()
             role = current_role()
             if role not in allowed_roles:
                 return jsonify({"msg": "Forbidden: role not allowed"}), 403
             return fn(*args, **kwargs)
-        return wrapier
+        return wrapper
     return decorator
 
 
@@ -697,7 +698,7 @@ def get_enrolled_students(course_id):
     for enrollment in enrollments:
         user = User.query.get(enrollment.user_id)
         if user:
-            students.apiend({
+            students.append({
                 "id": user.id,
                 "name": user.name,
                 "surname": user.surname,
@@ -1576,10 +1577,10 @@ def delete_tag(tag_id):
 
 #APPOINTMENTS
 #private, only for user and admin, but user can only create for himself
-@api.route("/apiointments", methods=["POST"])
+@api.route("/appointments", methods=["POST"])
 @jwt_required()
 @role_required("user", "admin")
-def create_apiointment():
+def create_appointment():
     role = current_role()
 
     body = request.get_json()
@@ -1626,7 +1627,7 @@ def create_apiointment():
     if starts_at_utc <= now_utc:
         return jsonify({"error": "starts_at must be in the future"}), 400
 
-    apit = Appointment(
+    appt = Appointment(
         user_id=user_id,
         coach_id=int(coach_id),
         starts_at=starts_at_utc,
@@ -1634,16 +1635,16 @@ def create_apiointment():
         note=note
     )
 
-    db.session.add(apit)
+    db.session.add(appt)
     db.session.commit()
 
-    return jsonify(apiointment=apit.serialize()), 201
+    return jsonify(appointment=appt.serialize()), 201
 
-#user can see only his apiointments, admin can see all but should pass user_id as query param
-@api.route("/apiointments/my", methods=["GET"])
+#user can see only his appointments, admin can see all but should pass user_id as query param
+@api.route("/appointments/my", methods=["GET"])
 @jwt_required()
 @role_required("user","admin")
-def get_my_apiointments():
+def get_my_appointments():
     role = current_role()
 
     q = select(Appointment).order_by(Appointment.starts_at.desc())
@@ -1656,18 +1657,18 @@ def get_my_apiointments():
         user_id = request.args.get("user_id", type=int)
         if user_id:
             q = q.where(Appointment.user_id == user_id)
-        # else: no filter => all apiointments
+        # else: no filter => all appointments
 
     apits = db.session.execute(q).scalars().all()
 
-    return jsonify(apiointments=[a.serialize() for a in apits]), 200
+    return jsonify(appointments=[a.serialize() for a in apits]), 200
 
 
-#coach can see only his apiointments, admin can see all but should pass coach_id as query param
-@api.route("/coach/apiointments/my", methods=["GET"])
+#coach can see only his appointments, admin can see all but should pass coach_id as query param
+@api.route("/coach/appointments/my", methods=["GET"])
 @jwt_required()
 @role_required("coach", "admin")
-def get_my_coach_apiointments():
+def get_my_coach_appointments():
     role = current_role()
 
     q = select(Appointment).order_by(Appointment.starts_at.desc())
@@ -1680,17 +1681,17 @@ def get_my_coach_apiointments():
         coach_id = request.args.get("coach_id", type=int)
         if coach_id:
             q = q.where(Appointment.coach_id == coach_id)
-        # else: all apiointments
+        # else: all appointments
 
     apits = db.session.execute(q).scalars().all()
-    return jsonify(apiointments=[a.serialize() for a in apits]), 200
+    return jsonify(appointments=[a.serialize() for a in apits]), 200
 
 
-#admin can update status of any apiointment, coach can update only his apiointments
-@api.route("/coach/apiointments/<int:apit_id>", methods=["PUT"])
+#admin can update status of any appointment, coach can update only his appointments
+@api.route("/coach/appointments/<int:apit_id>", methods=["PUT"])
 @jwt_required()
 @role_required("coach", "admin")
-def coach_update_apiointment(apit_id):
+def coach_update_appointment(apit_id):
     role = current_role()
     identity = int(get_jwt_identity())
 
@@ -1699,27 +1700,27 @@ def coach_update_apiointment(apit_id):
         return jsonify({"error": "Appointment not found"}), 404
 
     if role == "coach" and int(apit.coach_id) != identity:
-        return jsonify({"error": "Forbidden: not your apiointment"}), 403
+        return jsonify({"error": "Forbidden: not your appointment"}), 403
 
     body = request.get_json()
     if not body:
         return jsonify({"error": "Missing JSON body"}), 400
 
     status = body.get("status")
-    if status not in ["apiroved", "rejected", "canceled"]:
-        return jsonify({"error": "status must be one of: apiroved, rejected, canceled"}), 400
+    if status not in ["approved", "rejected", "canceled"]:
+        return jsonify({"error": "status must be one of: approved, rejected, canceled"}), 400
 
     apit.status = status
     db.session.commit()
 
-    return jsonify(apiointment=apit.serialize()), 200
+    return jsonify(appointment=apit.serialize()), 200
 
 
-#user can cancel only his apiointments and only if coach hasn't apiroved/rejected yet
-@api.route("/apiointments/<int:apit_id>", methods=["PUT"])
+#user can cancel only his appointments and only if coach hasn't approved/rejected yet
+@api.route("/appointments/<int:apit_id>", methods=["PUT"])
 @jwt_required()
 @role_required("user", "admin")
-def user_cancel_apiointment(apit_id):
+def user_cancel_appointment(apit_id):
     role = current_role()
     identity = int(get_jwt_identity())
 
@@ -1728,7 +1729,7 @@ def user_cancel_apiointment(apit_id):
         return jsonify({"error": "Appointment not found"}), 404
 
     if role == "user" and int(apit.user_id) != identity:
-        return jsonify({"error": "Forbidden: not your apiointment"}), 403
+        return jsonify({"error": "Forbidden: not your appointment"}), 403
 
     body = request.get_json() or {}
     action = body.get("action")
@@ -1739,4 +1740,4 @@ def user_cancel_apiointment(apit_id):
     apit.status = "canceled"
     db.session.commit()
 
-    return jsonify(apiointment=apit.serialize()), 200
+    return jsonify(appointment=apit.serialize()), 200
