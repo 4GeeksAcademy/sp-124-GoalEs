@@ -2,13 +2,14 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { StripeWrapper } from "../hooks/StripeWrapper"
+
 import "./styles/availablecoursesUser.css"
-import PaymentPage from "./PaymentPage";
+
 
 export const AvailableCoursesUser = () => {
 
     const backendURL = import.meta.env.VITE_BACKEND_URL;
+    const navigate = useNavigate();
 
     const { store } = useGlobalReducer();
 
@@ -138,8 +139,7 @@ export const AvailableCoursesUser = () => {
                                     </button>
 
                                     <button
-                                        className="course-btn-primary"
-                                        onClick={() => setSelectedCourse(course)}
+                                        className="course-btn-primary" onClick={() => navigate(`/payment/${course.id}`, { state: { course } })}
                                     >
                                         Start
                                     </button>
@@ -150,12 +150,6 @@ export const AvailableCoursesUser = () => {
                     ))}
 
                 </div>
-
-                {selectedCourse && (
-                    <div className="course-payment-section">
-                        <PaymentPage course={selectedCourse} />
-                    </div>
-                )}
 
             </div>
         </div>
