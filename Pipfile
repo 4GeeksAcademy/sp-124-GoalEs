@@ -24,6 +24,8 @@ stripe = "*"
 python-dateutil = "*"
 flask-socketio = "*"
 eventlet = "*"
+gevent = "*"
+gevent-websocket = "*"
 
 [requires]
 python_version = "3.13"

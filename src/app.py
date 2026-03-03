@@ -1,6 +1,9 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+
+from gevent import monkey
+monkey.patch_all()
 import os
 import stripe
 from sqlite3 import IntegrityError
