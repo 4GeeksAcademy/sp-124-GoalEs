@@ -82,13 +82,15 @@ export const Courses = () => {
               </button>
             }
 
-            <button
-              className="course-secondary-btn"
-              onClick={handleBack}
-              type="button"
-            >
-              Back to Dashboard
-            </button>
+            {isCoach &&
+              <button
+                className="course-secondary-btn"
+                onClick={handleBack}
+                type="button"
+              >
+                Back to Dashboard
+              </button>
+            }
 
           </div>
 

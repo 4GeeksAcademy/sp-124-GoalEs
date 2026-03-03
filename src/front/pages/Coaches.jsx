@@ -178,14 +178,15 @@ export const Coaches = () => {
           >
             Do you want to be one?
           </button>
-
-          <button
-            className="coach-secondary-btn"
-            onClick={handleBack}
-            type="button"
-          >
-            Back to Dashboard
-          </button>
+          {isCoach || isAdmin &&
+            <button
+              className="coach-secondary-btn"
+              onClick={handleBack}
+              type="button"
+            >
+              Back to Dashboard
+            </button>
+          }
 
         </div>
 

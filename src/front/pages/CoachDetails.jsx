@@ -15,6 +15,8 @@ export const CoachDetails = () => {
 
     const { store } = useGlobalReducer();
 
+    const isUser = localStorage.getItem("token-user")
+
     const [coach, setCoach] = useState();
     const [courses, setCourses] = useState([]);
     const getCoachCourses = async () => {
@@ -92,9 +94,9 @@ export const CoachDetails = () => {
 
                         </div>
 
-                        
 
-                            {/* ===== MAP ===== */}
+
+                        {/* ===== MAP ===== */}
                         <div className="coach-profile-section">
                             <h2 className="coach-profile-section-title">
                                 Where am I?
@@ -148,7 +150,7 @@ export const CoachDetails = () => {
                             </div>
                         </div>
 
-                        
+
 
                         {/* ===== ACTIONS ===== */}
                         <div className="coach-profile-actions">
@@ -159,13 +161,15 @@ export const CoachDetails = () => {
                             >
                                 Back to Coaches
                             </button>
-
-                            <button
-                                className="coach-primary-btn"
-                                onClick={() => navigate(`/coaches/${id}/reserve`)}
-                            >
-                                Reserve
-                            </button>
+                            
+                            {isUser &&
+                                <button
+                                    className="coach-primary-btn"
+                                    onClick={() => navigate(`/coaches/${id}/reserve`)}
+                                >
+                                    Reserve
+                                </button>
+                            }
 
                         </div>
 
