@@ -101,6 +101,7 @@
 }
 
 .pay-button {
+  position: relative;
   background: #e8a838;
   color: #1a1a2e;
   border: 2px solid #e8a838;
@@ -111,29 +112,109 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
-.pay-button:hover {
+.pay-button:hover:not(:disabled) {
   background: #1a1a2e;
   color: #e8a838;
   border-color: #1a1a2e;
 }
 
 .pay-button:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
-  background: #e8a838;
+  opacity: 0.8;
+}
+
+.pay-button.loading {
+  color: transparent;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(26, 26, 46, 0.2);
+  border-top: 3px solid #1a1a2e;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.payment-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 46, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.payment-modal {
+  background: #ffffff;
+  padding: 3rem 4rem;
+  border-radius: 14px;
+  text-align: center;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.3s ease forwards;
+}
+
+.payment-modal h2 {
+  margin-top: 1.5rem;
   color: #1a1a2e;
 }
 
-.payment-success {
-  text-align: center;
-  padding: 2rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #1a1a2e;
-  background: #fff8ec;
-  border: 2px solid #e8a838;
-  border-radius: 10px;
+.payment-modal p {
+  margin-top: 0.5rem;
+  color: #555;
+}
+
+.big-spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid rgba(232, 168, 56, 0.2);
+  border-top: 5px solid #e8a838;
+  border-radius: 50%;
+  margin: 0 auto;
+  animation: spin 0.8s linear infinite;
+}
+
+.checkmark {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #e8a838;
+  position: relative;
+  margin: 0 auto;
+  animation: pop 0.4s ease forwards;
+}
+
+.checkmark::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 30px;
+  width: 18px;
+  height: 8px;
+  border-left: 4px solid #1a1a2e;
+  border-bottom: 4px solid #1a1a2e;
+  transform: rotate(-45deg);
+}
+
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }

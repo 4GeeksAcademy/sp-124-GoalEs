@@ -56,15 +56,54 @@ export const CheckoutForm = ({ course }) => {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <PaymentElement />
-            <button
-                className="pay-button"
-                disabled={!stripe || loading}
-            >
-                {loading ? "Processing..." : "Pay"}
-            </button>
-            {message && <p>{message}</p>}
-        </form>
+        <>
+            <form onSubmit={handleSubmit}>
+                <PaymentElement />
+                <button
+                    className={`pay-button ${loading ? "loading" : ""}`}
+                    disabled={!stripe || loading}
+                >
+                    {loading ? <span className="spinner"></span> : "Pay"}
+                </button>
+                {message && <p>{message}</p>}
+            </form>
+
+            {loading && (
+                <div className="payment-overlay">
+                    <div className="payment-modal">
+                        <div className="big-spinner"></div>
+                        <h2>Processing payment...</h2>
+                        <p>Please wait while we unlock your course.</p>
+                    </div>
+                </div>
+            )}
+
+            {success && (
+                <div className="payment-overlay success">
+                    <div className="payment-modal success-modal">
+
+                        <div className="success-icon">
+                            <svg viewBox="0 0 52 52">
+                                <circle
+                                    className="success-circle"
+                                    cx="26"
+                                    cy="26"
+                                    r="25"
+                                    fill="none"
+                                />
+                                <path
+                                    className="success-check"
+                                    fill="none"
+                                    d="M14 27l7 7 16-16"
+                                />
+                            </svg>
+                        </div>
+
+                        <h2>Course Unlocked</h2>
+                        <p>Your payment was successful. Welcome aboard.</p>
+                    </div>
+                </div>
+            )}
+        </>
     );
 };
