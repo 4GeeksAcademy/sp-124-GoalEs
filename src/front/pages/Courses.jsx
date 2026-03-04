@@ -115,6 +115,10 @@ export const Courses = () => {
                   {course.title}
                 </h3>
 
+                <p className="course-description">
+                  {course.description}
+                </p>
+
                 <p className="course-price">
                   € {course.cost}
                 </p>
